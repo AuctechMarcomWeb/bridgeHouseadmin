@@ -10,11 +10,10 @@ const DefaultLayout = () => {
 
   useEffect(() => {
     const savedUser = localStorage.getItem('bridgeHousAdminToken')
- 
+
     // if (!savedUser) return
 
     const parsedUser = JSON.parse(savedUser)
-   
 
     setUserData(parsedUser)
 
