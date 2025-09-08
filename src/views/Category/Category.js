@@ -7,7 +7,6 @@ import { Pagination } from 'antd'
 import axios from 'axios'
 import CategoryModal from './CategoryModal'
 
-
 const Category = () => {
   const [searchTerm, setSearchTerm] = useState('')
   const [data, setData] = useState([])
@@ -31,7 +30,6 @@ const Category = () => {
       .catch((error) => {
         console.log('error', error)
       })
-      
   }, [page, limit, searchTerm, updateStatus])
 
   // ✅ Delete handler
@@ -93,7 +91,7 @@ const Category = () => {
             }}
             className="bg-green-600 text-white px-4 py-2 hover:bg-green-700 flex items-center"
           >
-            <Plus className="w-4 h-4 mr-2" /> Add Banners
+            <Plus className="w-4 h-4 mr-2" /> Add Category
           </button>
         </div>
       </div>
@@ -120,9 +118,7 @@ const Category = () => {
         <table className="w-full">
           <thead>
             <tr>
-              <th className="px-6 py-3 ">
-                Title
-              </th>
+              <th className="px-6 py-3 ">Title</th>
               <th className="px-6 py-3">Discription</th>
               <th className="px-6 py-3">Image</th>
               <th className="px-6 py-3">Active</th>
@@ -133,7 +129,7 @@ const Category = () => {
             {data?.map((item) => (
               <tr key={item._id}>
                 <td className="px-6 py-4">{item?.title}</td>
-                    <td className="px-6 py-4">{item?.discription}</td>
+                <td className="px-6 py-4">{item?.discription}</td>
                 <td className="px-6 py-4">
                   <img
                     src={item?.image}
@@ -141,7 +137,7 @@ const Category = () => {
                     className="w-10 h-10 rounded-full object-cover"
                   />
                 </td>
-              
+
                 <td className="px-6 py-4">
                   {item?.isActive ? (
                     <span className="px-2 py-1 text-xs bg-blue-100 text-blue-800">Active</span>
@@ -150,10 +146,13 @@ const Category = () => {
                   )}
                 </td>
                 <td className="px-6 py-4 flex gap-2">
-                  <button onClick={() => {
+                  <button
+                    onClick={() => {
                       setSelectedItem(item)
                       setIsModalOpen(true)
-                    }} className="text-blue-600 hover:text-blue-800">
+                    }}
+                    className="text-blue-600 hover:text-blue-800"
+                  >
                     <Edit className="w-4 h-4" />
                   </button>
                   <button
@@ -183,11 +182,16 @@ const Category = () => {
         />
       </div>
       {isModalOpen && (
-        <CategoryModal setUpdateStatus={setUpdateStatus} setModalData={setSelectedItem} modalData={selectedItem}  isModalOpen={isModalOpen} setIsModalOpen={setIsModalOpen} />
+        <CategoryModal
+          setUpdateStatus={setUpdateStatus}
+          setModalData={setSelectedItem}
+          modalData={selectedItem}
+          isModalOpen={isModalOpen}
+          setIsModalOpen={setIsModalOpen}
+        />
       )}
     </div>
   )
 }
 
 export default Category
-

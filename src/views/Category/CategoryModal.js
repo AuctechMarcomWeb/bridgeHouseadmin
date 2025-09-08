@@ -10,6 +10,9 @@ const CategoryModal = ({
   isModalOpen,
   setIsModalOpen,
 }) => {
+
+
+  
   const [formData, setFormData] = useState(
     modalData
       ? {
