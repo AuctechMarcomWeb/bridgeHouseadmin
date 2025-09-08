@@ -1,0 +1,20 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+@import "tailwindcss";
+
+.sidebar-dark {
+  --cui-body-color: rgba(255, 255, 255, 0.87);
+  --cui-body-bg: #005697;
+  --cui-emphasis-color: #fff;
+  --cui-secondary-color: #005697;
+  --cui-secondary-bg: #005697;
+  --cui-tertiary-color: #005697;
+  --cui-tertiary-bg: #ef4444;
+  --cui-border-color: #005697 !important;
+  /* border: none !important; */
+}
+
+body {
+  background-color: #f7f7f7 !important;
+}
