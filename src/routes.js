@@ -11,6 +11,7 @@ import Product from './views/masters/Product'
 import Site from './views/masters/Site'
 import Banners from './views/Banners/Banners'
 import Category from './views/Category/Category'
+import Properties from './views/Properties/Properties'
 const Dashboard = React.lazy(() => import('./views/dashboard/Dashboard'))
 
 const routes = [
@@ -27,6 +28,7 @@ const routes = [
   { path: '/productMaster', name: 'ELM Profile', element: Product },
   { path: '/siteMaster', name: 'ELM Profile', element: Site },
   { path: '/banner', name: 'ELM Profile', element: Banners },
+  { path: '/properties', name: 'ELM Profile', element: Properties },
 
 ]
 

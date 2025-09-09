@@ -91,6 +91,13 @@ const useNav = () => {
       icon: <MdOutlineDashboard className="me-3" />,
       
     },
+     {
+      component: CNavItem,
+      name: 'Properties',
+      to: '/properties',
+      icon: <MdOutlineDashboard className="me-3" />,
+      
+    },
 
     {
       component: CNavGroup,
