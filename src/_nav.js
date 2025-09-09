@@ -84,6 +84,13 @@ const useNav = () => {
       icon: <MdOutlineDashboard className="me-3" />,
       
     },
+    {
+      component: CNavItem,
+      name: 'Category',
+      to: '/category',
+      icon: <MdOutlineDashboard className="me-3" />,
+      
+    },
 
     {
       component: CNavGroup,

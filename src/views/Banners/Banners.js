@@ -42,7 +42,7 @@ const Banners = () => {
         setSelectedItem(null)
         setUpdateStatus((prev) => !prev)
         setShowDeleteModal(false)
-      })
+      })  
       .catch((error) => {
         console.log('error', error)
       })

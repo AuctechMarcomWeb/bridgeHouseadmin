@@ -11,18 +11,14 @@ const CategoryModal = ({
   setIsModalOpen,
 }) => {
 
-
-  
   const [formData, setFormData] = useState(
     modalData
       ? {
           ...modalData,
         }
       : {
-          title: '',
+          name: '',
           image: '',
-          discription: '',
-
           isActive: true,
         },
   )
@@ -35,7 +31,7 @@ const CategoryModal = ({
 
   // 🔹 Close modal
   const handleCancel = () => {
-    setFormData({ title: '', image: '', discription: '', isActive: true })
+    setFormData({ name: '', image: '', isActive: true })
     setErrors({})
     setModalData(null)
     setIsModalOpen(false)
@@ -62,7 +58,6 @@ const CategoryModal = ({
   }
 
   // 🔹 Handle input change
-
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target
     setFormData({
@@ -74,10 +69,9 @@ const CategoryModal = ({
   // 🔹 Validate form
   const validateForm = () => {
     let newErrors = {}
-    if (!formData.title.trim()) newErrors.title = 'title is required'
-    if (!formData.discription.trim()) newErrors.discription = 'discription is required'
-    if (!formData.image.trim()) newErrors.image = 'Image URL is required'
-   setErrors(newErrors)
+    if (!formData.name.trim()) newErrors.name = 'Name is required'
+    if (!formData.image.trim()) newErrors.image = 'Image is required'
+    setErrors(newErrors)
     return Object.keys(newErrors).length === 0
   }
 
@@ -86,9 +80,9 @@ const CategoryModal = ({
     e.preventDefault()
     if (!validateForm()) return
 
-    putRequest({ url: `banner/${modalData?._id}`, cred: formData })
+    putRequest({ url: `category/${modalData?._id}`, cred: formData })
       .then((res) => {
-        toast.success(res?.data?.message || 'Banners added successfully')
+        toast.success(res?.data?.message || 'Category updated successfully')
         setUpdateStatus((prev) => !prev)
         handleCancel()
       })
@@ -97,13 +91,14 @@ const CategoryModal = ({
         toast.error(error?.response?.data?.message)
       })
   }
+  
   const handleSubmit = (e) => {
     e.preventDefault()
     if (!validateForm()) return
 
-    postRequest({ url: `banner`, cred: formData })
+    postRequest({ url: `category`, cred: formData })
       .then((res) => {
-        toast.success(res?.data?.message || 'Banners added successfully')
+        toast.success(res?.data?.message || 'Category added successfully')
         setUpdateStatus((prev) => !prev)
         handleCancel()
       })
@@ -115,7 +110,7 @@ const CategoryModal = ({
 
   return (
     <Modal
-      title={modalData ? `Edit Banners` : `Add Banners`}
+      title={modalData ? `Edit Category` : `Add Category`}
       open={isModalOpen}
       footer={null}
       onCancel={handleCancel}
@@ -130,28 +125,17 @@ const CategoryModal = ({
           <label className="form-label fw-bold">Name</label>
           <input
             type="text"
-            className={`form-control ${errors.title ? 'is-invalid' : ''}`}
-            name="title"
-            value={formData?.title}
+            className={`form-control ${errors.name ? 'is-invalid' : ''}`}
+            name="name"
+            value={formData?.name}
             onChange={handleChange}
           />
-          {errors?.title && <div className="invalid-feedback">{errors.title}</div>}
-        </div>
-        <div className="mb-3">
-          <label className="form-label fw-bold">Discription</label>
-          <input
-            type="text"
-            className={`form-control ${errors.discription ? 'is-invalid' : ''}`}
-            name="discription"
-            value={formData.discription}
-            onChange={handleChange}
-          />
-          {errors.discription && <div className="invalid-feedback">{errors.discription}</div>}
+          {errors?.name && <div className="invalid-feedback">{errors.name}</div>}
         </div>
 
         {/* Image */}
         <div className="mb-3">
-          <label className="form-label fw-bold">Image URL</label>
+          <label className="form-label fw-bold">Image</label>
           <input
             type="file"
             className={`form-control ${errors?.image ? 'is-invalid' : ''}`}
@@ -160,9 +144,6 @@ const CategoryModal = ({
           />
           {errors.image && <div className="invalid-feedback">{errors.image}</div>}
         </div>
-
-       
-      
 
         {/* Active Status */}
         <div className="form-check mb-3">
@@ -185,7 +166,7 @@ const CategoryModal = ({
             Cancel
           </button>
           <button type="submit" className="btn btn-primary">
-            Save Banners
+            {loading ? 'Uploading...' : 'Save Category'}
           </button>
         </div>
       </form>
@@ -194,4 +175,3 @@ const CategoryModal = ({
 }
 
 export default CategoryModal
-
