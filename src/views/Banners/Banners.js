@@ -82,18 +82,18 @@ const Banners = () => {
       {/* Header */}
       <div className="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
         <div>
-          <h2 className="text-2xl font-bold text-gray-900">Bannerss</h2>
-          <p className="text-gray-600 mt-1">Manage Bannerss</p>
+          <h2 className="text-2xl font-bold text-gray-900">Banners</h2>
+          <p className="text-gray-600 mt-1">Manage Banners</p>
         </div>
         <div className="flex items-center space-x-3">
-          <ExportButton data={data} fileName="Bannerss.xlsx" sheetName="Bannerss" />
+          <ExportButton data={data} fileName="Banners.xlsx" sheetName="Banners" />
           <button
             onClick={() => {
               setIsModalOpen(true)
             }}
             className="bg-green-600 text-white px-4 py-2 hover:bg-green-700 flex items-center"
           >
-            <Plus className="w-4 h-4 mr-2" /> Add Banners
+            <Plus className="w-4 h-4 mr-2" /> Add Banner
           </button>
         </div>
       </div>
@@ -120,10 +120,9 @@ const Banners = () => {
         <table className="w-full">
           <thead>
             <tr>
-              <th className="px-6 py-3 ">
+              <th className="px-6 py-3">
                 Title
               </th>
-              <th className="px-6 py-3">Discription</th>
               <th className="px-6 py-3">Image</th>
               <th className="px-6 py-3">Active</th>
               <th className="px-6 py-3">Actions</th>
@@ -133,7 +132,6 @@ const Banners = () => {
             {data?.map((item) => (
               <tr key={item._id}>
                 <td className="px-6 py-4">{item?.title}</td>
-                    <td className="px-6 py-4">{item?.discription}</td>
                 <td className="px-6 py-4">
                   <img
                     src={item?.image}
@@ -141,7 +139,6 @@ const Banners = () => {
                     className="w-10 h-10 rounded-full object-cover"
                   />
                 </td>
-              
                 <td className="px-6 py-4">
                   {item?.isActive ? (
                     <span className="px-2 py-1 text-xs bg-blue-100 text-blue-800">Active</span>
@@ -190,4 +187,3 @@ const Banners = () => {
 }
 
 export default Banners
-
