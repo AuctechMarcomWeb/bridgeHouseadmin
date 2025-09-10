@@ -1,8 +1,8 @@
 import { Modal } from 'antd'
-import React, { useState, useEffect } from 'react'
+import React, { useState,useContext  } from 'react'
 import toast from 'react-hot-toast'
 import { fileUpload, postRequest, putRequest, getRequest } from '../../Helpers'
-
+import { AppContext } from '../../Context/AppContext'
 const PropertiesModal = ({
   setUpdateStatus,
   setModalData,
@@ -50,9 +50,16 @@ const PropertiesModal = ({
   const [nearbyDistance, setNearbyDistance] = useState('')
   const [docName, setDocName] = useState('')
   const [docNumber, setDocNumber] = useState('')
+   const { user, setUser } = useContext(AppContext)
+     const [addedBy, setAddBy]=useState(null)
+   React.useEffect(() => {
+  if (user?._id) {
+    setAddBy(user._id)
+  }
+}, [user])
+  console.log('formData', formData,addedBy)
 
-  console.log('formData', formData)
-
+  console.log("user details from context Provider",user)
   // 🔹 Close modal
   const handleCancel = () => {
     setFormData({ 
@@ -273,26 +280,27 @@ const PropertiesModal = ({
   }
 
   // 🔹 Prepare data for submission
-  const prepareSubmissionData = () => {
-    return {
-      name: formData.name.trim(),
-      address: formData.address.trim(),
-      location: {
-        type: 'Point',
-        coordinates: formData.coordinates
-      },
-      propertyType: formData.propertyType,
-      actualPrice: parseFloat(formData.actualPrice),
-      sellingPrice: parseFloat(formData.sellingPrice),
-      description: formData.description.trim(),
-      facilities: formData.facilities,
-      services: formData.services,
-      nearby: formData.nearby,
-      gallery: formData.gallery,
-      documents: formData.documents,
-      isActive: formData.isActive
-    }
+const prepareSubmissionData = () => {
+  return {
+    name: formData.name.trim(),
+    address: formData.address.trim(),
+    location: {
+      type: 'Point',
+      coordinates: formData.coordinates
+    },
+    propertyType: formData.propertyType,
+    actualPrice: parseFloat(formData.actualPrice),
+    sellingPrice: parseFloat(formData.sellingPrice),
+    description: formData.description.trim(),
+    facilities: formData.facilities,
+    services: formData.services,
+    nearby: formData.nearby,
+    gallery: formData.gallery,
+    documents: formData.documents,
+    isActive: formData.isActive,
+    addedBy: addedBy  // ✅ Add this line
   }
+}
 
   // 🔹 Submit handler for edit
   const handleEdit = (e) => {

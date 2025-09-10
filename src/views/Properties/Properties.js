@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from 'react'
+import React, { useState, useEffect,} from 'react'
 import { Search, Plus, Edit, Trash2, AlertTriangle, MapPin, IndianRupee } from 'lucide-react'
 import ExportButton from '../ExportButton'
 import { deleteRequest, getRequest } from '../../Helpers'
@@ -18,11 +18,11 @@ const Properties = () => {
   // Modal states
   const [showDeleteModal, setShowDeleteModal] = useState(false)
   const [selectedItem, setSelectedItem] = useState(null)
-  const { user, setUser } = useContext(AppContext)
+
+ 
   // ✅ Fetch Properties with Pagination + Search
 
 
-  console.log("user details from context Provider",user)
   useEffect(() => {
     getRequest(`properties?search=${searchTerm}&page=${page}&limit=${limit}`)
       .then((res) => {
