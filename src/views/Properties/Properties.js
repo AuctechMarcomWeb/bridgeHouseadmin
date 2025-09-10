@@ -1,4 +1,4 @@
-import React, { useState, useEffect,} from 'react'
+import React, { useState, useEffect } from 'react'
 import { Search, Plus, Edit, Trash2, AlertTriangle, MapPin, IndianRupee } from 'lucide-react'
 import ExportButton from '../ExportButton'
 import { deleteRequest, getRequest } from '../../Helpers'
@@ -18,23 +18,21 @@ const Properties = () => {
   // Modal states
   const [showDeleteModal, setShowDeleteModal] = useState(false)
   const [selectedItem, setSelectedItem] = useState(null)
-const googleApiKey = import.meta.env.VITE_GOOGLE_API;
- 
-  // ✅ Fetch Properties with Pagination + Search
+  const googleApiKey = import.meta.env.VITE_GOOGLE_API
 
+  // ✅ Fetch Properties with Pagination + Search
 
   useEffect(() => {
     getRequest(`properties?search=${searchTerm}&page=${page}&limit=${limit}`)
       .then((res) => {
         const responseData = res?.data?.data
-        console.log("Properties=>>", responseData)
+        console.log('Properties=>>', responseData)
         setData(responseData?.properties || [])
         setTotal(responseData?.totalProperties || responseData?.total || 0)
       })
       .catch((error) => {
         console.log('error', error)
       })
-      
   }, [page, limit, searchTerm, updateStatus])
 
   // ✅ Delete handler
@@ -45,7 +43,7 @@ const googleApiKey = import.meta.env.VITE_GOOGLE_API;
         setSelectedItem(null)
         setUpdateStatus((prev) => !prev)
         setShowDeleteModal(false)
-      })  
+      })
       .catch((error) => {
         console.log('error', error)
         toast.error('Delete failed')
@@ -165,11 +163,14 @@ const googleApiKey = import.meta.env.VITE_GOOGLE_API;
                 <td className="px-6 py-4">
                   <div className="flex flex-col">
                     <div className="text-sm font-medium text-gray-900">{item?.name}</div>
-                    <div className="text-sm text-gray-500 truncate" style={{maxWidth: '200px'}}>
+                    <div className="text-sm text-gray-500 truncate" style={{ maxWidth: '200px' }}>
                       {item?.address}
                     </div>
                     {item?.description && (
-                      <div className="text-xs text-gray-400 truncate mt-1" style={{maxWidth: '200px'}}>
+                      <div
+                        className="text-xs text-gray-400 truncate mt-1"
+                        style={{ maxWidth: '200px' }}
+                      >
                         {item.description}
                       </div>
                     )}
@@ -188,10 +189,9 @@ const googleApiKey = import.meta.env.VITE_GOOGLE_API;
                   <div className="flex items-center text-sm text-gray-500">
                     <MapPin className="w-4 h-4 mr-1" />
                     <div>
-                      {item?.location?.coordinates ? 
-                        `${item.location.coordinates[1]?.toFixed(4)}, ${item.location.coordinates[0]?.toFixed(4)}` : 
-                        'No coordinates'
-                      }
+                      {item?.location?.coordinates
+                        ? item?.address?.split(' ').slice(0, 5).join(' ')
+                        : 'No coordinates'}
                     </div>
                   </div>
                 </td>
@@ -250,11 +250,11 @@ const googleApiKey = import.meta.env.VITE_GOOGLE_API;
                 {/* Actions */}
                 <td className="px-6 py-4">
                   <div className="flex gap-2">
-                    <button 
+                    <button
                       onClick={() => {
                         setSelectedItem(item)
                         setIsModalOpen(true)
-                      }} 
+                      }}
                       className="text-blue-600 hover:text-blue-800 p-1"
                       title="Edit property"
                     >
@@ -274,7 +274,7 @@ const googleApiKey = import.meta.env.VITE_GOOGLE_API;
                 </td>
               </tr>
             ))}
-            
+
             {/* Empty State */}
             {data?.length === 0 && (
               <tr>
@@ -293,7 +293,8 @@ const googleApiKey = import.meta.env.VITE_GOOGLE_API;
       {/* ✅ Pagination */}
       <div className="flex justify-between items-center px-6 py-4 border-t border-gray-200">
         <div className="text-sm text-gray-700">
-          Showing {data?.length > 0 ? ((page - 1) * limit) + 1 : 0} to {Math.min(page * limit, total)} of {total} properties
+          Showing {data?.length > 0 ? (page - 1) * limit + 1 : 0} to {Math.min(page * limit, total)}{' '}
+          of {total} properties
         </div>
         <Pagination
           current={page}
@@ -307,12 +308,12 @@ const googleApiKey = import.meta.env.VITE_GOOGLE_API;
 
       {/* Properties Modal */}
       {isModalOpen && (
-        <PropertiesModal 
-          setUpdateStatus={setUpdateStatus} 
-          setModalData={setSelectedItem} 
-          modalData={selectedItem}  
-          isModalOpen={isModalOpen} 
-          setIsModalOpen={setIsModalOpen} 
+        <PropertiesModal
+          setUpdateStatus={setUpdateStatus}
+          setModalData={setSelectedItem}
+          modalData={selectedItem}
+          isModalOpen={isModalOpen}
+          setIsModalOpen={setIsModalOpen}
         />
       )}
     </div>

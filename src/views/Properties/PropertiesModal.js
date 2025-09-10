@@ -40,6 +40,8 @@ const PropertiesModal = ({
         },
   )
 
+console.log('formData===>',formData)
+
   const [loading, setLoading] = useState(false)
   const [galleryLoading, setGalleryLoading] = useState(false)
   const [documentLoading, setDocumentLoading] = useState(false)
@@ -431,7 +433,7 @@ const PropertiesModal = ({
       width={1000}
       style={{ top: 20 }}
     >
-      <div style={{ maxHeight: '80vh', overflowY: 'auto', paddingRight: '10px' }}>
+      <div style={{ maxHeight: '80vh', overflowY: 'auto', paddingRight: '50px', marginBottom:"50px"}}>
         <form
           onSubmit={modalData ? handleEdit : handleSubmit}
           className="needs-validation"
