@@ -21,26 +21,8 @@ const useNav = () => {
       icon: <FaRegAddressCard className="me-3" />,
       items: [
       
-        {
-          component: CNavItem,
-          name: 'BHK Types',
-          to: '/maintenanceMaster',
-        },
-        {
-          component: CNavItem,
-          name: 'Property Types',
-          to: '/categoryMaster',
-        },
-        {
-          component: CNavItem,
-          name: 'Product Master',
-          to: '/productMaster',
-        },
-        {
-          component: CNavItem,
-          name: 'Site Master',
-          to: '/siteMaster',
-        },
+       
+
       ],
     },
      {
@@ -48,35 +30,10 @@ const useNav = () => {
       name: 'Customer Profile',
       to: '/Customer-Profile',
       icon: <FaRegAddressCard className="me-3" />,
-      items: [
-      
-        {
-          component: CNavItem,
-          name: 'ELM',
-          to: '/elmProfile',
-        },
-        {
-          component: CNavItem,
-          name: 'Maintenance',
-          to: '/maintenanceProfile',
-        },
+      items: [     
       ],
     },
  
-    {
-      component: CNavItem,
-      name: 'Monthly Billing ',
-      to: '/smartMeters',
-      icon: <MdOutlineDashboard className="me-3 " />,
-      
-    },
-    {
-      component: CNavItem,
-      name: 'Complaints',
-      to: '/complaints',
-      icon: <MdOutlineDashboard className="me-3" />,
-      
-    },
     {
       component: CNavItem,
       name: 'Banner',
@@ -99,26 +56,7 @@ const useNav = () => {
       
     },
 
-    {
-      component: CNavGroup,
-      name: 'Inventory',
-      to: '/sub-menu',
-      icon: <FaRegAddressCard className="me-3" />,
-      items: [
-      
-        {
-          component: CNavItem,
-          name: 'Stock In',
-          to: '/stockIn',
-        },
-        {
-          component: CNavItem,
-          name: 'Stock Out',
-          to: '/stockOut',
-        },
-      ],
-    },
-   
+  
   ]
 
   return navItems
