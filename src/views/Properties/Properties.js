@@ -18,7 +18,7 @@ const Properties = () => {
   // Modal states
   const [showDeleteModal, setShowDeleteModal] = useState(false)
   const [selectedItem, setSelectedItem] = useState(null)
-
+const googleApiKey = import.meta.env.VITE_GOOGLE_API;
  
   // ✅ Fetch Properties with Pagination + Search
 
