@@ -14,7 +14,7 @@ const useNav = () => {
       icon: <MdOutlineDashboard className="me-3" />,
       
     },
-     {
+     {  
       component: CNavGroup,
       name: 'Masters',
       to: '/Customer-Profile',
