@@ -1,8 +1,10 @@
 import { Modal } from 'antd'
-import React, { useState,useContext  } from 'react'
+import React, { useState, useContext } from 'react'
 import toast from 'react-hot-toast'
+import axios from 'axios'
 import { fileUpload, postRequest, putRequest, getRequest } from '../../Helpers'
 import { AppContext } from '../../Context/AppContext'
+
 const PropertiesModal = ({
   setUpdateStatus,
   setModalData,
@@ -43,6 +45,11 @@ const PropertiesModal = ({
   const [documentLoading, setDocumentLoading] = useState(false)
   const [errors, setErrors] = useState({})
 
+  // Location search states
+  const [addressSearchTerm, setAddressSearchTerm] = useState(modalData?.address || '')
+  const [places, setPlaces] = useState([])
+  const [showPlacesSuggestions, setShowPlacesSuggestions] = useState(false)
+
   // Form inputs for dynamic arrays
   const [facilityInput, setFacilityInput] = useState('')
   const [serviceInput, setServiceInput] = useState('')
@@ -50,16 +57,82 @@ const PropertiesModal = ({
   const [nearbyDistance, setNearbyDistance] = useState('')
   const [docName, setDocName] = useState('')
   const [docNumber, setDocNumber] = useState('')
-   const { user, setUser } = useContext(AppContext)
-     const [addedBy, setAddBy]=useState(null)
-   React.useEffect(() => {
-  if (user?._id) {
-    setAddBy(user._id)
-  }
-}, [user])
-  console.log('formData', formData,addedBy)
+  const { user, setUser } = useContext(AppContext)
+  const [addedBy, setAddBy] = useState(null)
 
-  console.log("user details from context Provider",user)
+  // Google Places API configuration
+  const apiKey = 'AIzaSyAQqh6qd0umyH9zAmfsfbVHuMvFcN_m3kQ' // Secure this key in production
+  const placesUrl = 'https://places.googleapis.com/v1/places:searchText'
+
+  React.useEffect(() => {
+    if (user?._id) {
+      setAddBy(user._id)
+    }
+  }, [user])
+
+  React.useEffect(() => {
+    if (modalData?.address) {
+      setAddressSearchTerm(modalData.address)
+    }
+  }, [modalData])
+
+  console.log('formData', formData, addedBy)
+  console.log("user details from context Provider", user)
+
+  // 🔹 Handle location search
+  const handleLocationSearch = async (e) => {
+    const value = e.target.value
+    setAddressSearchTerm(value)
+    setShowPlacesSuggestions(true)
+
+    // Update formData address
+    setFormData(prev => ({
+      ...prev,
+      address: value
+    }))
+
+    if (value.trim().length < 3) {
+      setPlaces([])
+      return
+    }
+
+    try {
+      const response = await axios.post(
+        placesUrl,
+        { textQuery: value },
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            'X-Goog-Api-Key': apiKey,
+            'X-Goog-FieldMask': 'places.displayName,places.formattedAddress,places.priceLevel,places.location',
+          },
+        }
+      )
+
+      if (response.data?.places) {
+        setPlaces(response.data.places)
+      } else {
+        setPlaces([])
+      }
+    } catch (error) {
+      console.error('Error fetching places:', error)
+      setPlaces([])
+    }
+  }
+
+  // 🔹 Handle place selection
+  const handlePlaceSelect = (place) => {
+    setFormData(prev => ({
+      ...prev,
+      address: place.formattedAddress,
+      coordinates: [place.location.longitude, place.location.latitude]
+    }))
+    
+    setAddressSearchTerm(place.formattedAddress)
+    setShowPlacesSuggestions(false)
+    setPlaces([])
+  }
+
   // 🔹 Close modal
   const handleCancel = () => {
     setFormData({ 
@@ -84,6 +157,9 @@ const PropertiesModal = ({
     setNearbyDistance('')
     setDocName('')
     setDocNumber('')
+    setAddressSearchTerm('')
+    setPlaces([])
+    setShowPlacesSuggestions(false)
     setModalData(null)
     setIsModalOpen(false)
   }
@@ -280,27 +356,27 @@ const PropertiesModal = ({
   }
 
   // 🔹 Prepare data for submission
-const prepareSubmissionData = () => {
-  return {
-    name: formData.name.trim(),
-    address: formData.address.trim(),
-    location: {
-      type: 'Point',
-      coordinates: formData.coordinates
-    },
-    propertyType: formData.propertyType,
-    actualPrice: parseFloat(formData.actualPrice),
-    sellingPrice: parseFloat(formData.sellingPrice),
-    description: formData.description.trim(),
-    facilities: formData.facilities,
-    services: formData.services,
-    nearby: formData.nearby,
-    gallery: formData.gallery,
-    documents: formData.documents,
-    isActive: formData.isActive,
-    addedBy: addedBy  // ✅ Add this line
+  const prepareSubmissionData = () => {
+    return {
+      name: formData.name.trim(),
+      address: formData.address.trim(),
+      location: {
+        type: 'Point',
+        coordinates: formData.coordinates
+      },
+      propertyType: formData.propertyType,
+      actualPrice: parseFloat(formData.actualPrice),
+      sellingPrice: parseFloat(formData.sellingPrice),
+      description: formData.description.trim(),
+      facilities: formData.facilities,
+      services: formData.services,
+      nearby: formData.nearby,
+      gallery: formData.gallery,
+      documents: formData.documents,
+      isActive: formData.isActive,
+      addedBy: addedBy
+    }
   }
-}
 
   // 🔹 Submit handler for edit
   const handleEdit = (e) => {
@@ -375,21 +451,58 @@ const prepareSubmissionData = () => {
             {errors?.name && <div className="invalid-feedback">{errors.name}</div>}
           </div>
 
-          {/* Address */}
+          {/* Address with Location Search */}
           <div className="mb-3">
             <label className="form-label fw-bold">Address *</label>
-            <textarea
-              className={`form-control ${errors.address ? 'is-invalid' : ''}`}
-              name="address"
-              value={formData?.address}
-              onChange={handleChange}
-              placeholder="Enter complete address"
-              rows="2"
-            />
+            <div className="position-relative">
+              <textarea
+                className={`form-control ${errors.address ? 'is-invalid' : ''}`}
+                name="address"
+                value={addressSearchTerm}
+                onChange={handleLocationSearch}
+                placeholder="Search for location or enter complete address"
+                rows="2"
+                onFocus={() => setShowPlacesSuggestions(true)}
+              />
+              
+              {/* Places Suggestions Dropdown */}
+              {showPlacesSuggestions && places.length > 0 && (
+                <div 
+                  className="bg-white border rounded shadow position-absolute w-100 mt-1 p-2" 
+                  style={{ 
+                    zIndex: 1050, 
+                    maxHeight: '200px', 
+                    overflowY: 'auto',
+                    top: '100%'
+                  }}
+                >
+                  {places.map((place, idx) => (
+                    <div
+                      key={idx}
+                      onClick={() => handlePlaceSelect(place)}
+                      className="cursor-pointer py-2 px-2 border-bottom"
+                      style={{ 
+                        cursor: 'pointer',
+                        fontSize: '14px'
+                      }}
+                      onMouseEnter={(e) => e.target.style.backgroundColor = '#f8f9fa'}
+                      onMouseLeave={(e) => e.target.style.backgroundColor = 'white'}
+                    >
+                      <p className="m-0 fw-bold">
+                        {place.displayName?.text}
+                      </p>
+                      <p className="m-0 text-muted">
+                        {place.formattedAddress}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
             {errors?.address && <div className="invalid-feedback">{errors.address}</div>}
           </div>
 
-          {/* Coordinates */}
+          {/* Coordinates (Auto-filled from location search) */}
           <div className="row mb-3">
             <div className="col-md-6">
               <label className="form-label fw-bold">Longitude *</label>
@@ -416,6 +529,9 @@ const prepareSubmissionData = () => {
               />
             </div>
             {errors.coordinates && <div className="invalid-feedback d-block">{errors.coordinates}</div>}
+            <small className="text-muted mt-1">
+              💡 Tip: Coordinates are automatically filled when you select a location from the address search
+            </small>
           </div>
 
           {/* Property Type */}
