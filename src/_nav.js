@@ -27,21 +27,16 @@ const useNav = () => {
           to: '/category',
           icon: <MdOutlineDashboard className="me-3" />,
         },
-        {
-          component: CNavItem,
-          name: 'Properties',
-          to: '/properties',
-          icon: <MdOutlineDashboard className="me-3" />,
-        },
+       
       ],
     },
-    {
-      component: CNavGroup,
-      name: 'Customer Profile',
-      to: '/Customer-Profile',
-      icon: <FaRegAddressCard className="me-3" />,
-      items: [],
+      {
+      component: CNavItem,
+      name: 'Properties',
+      to: '/properties',
+      icon: <MdOutlineDashboard className="me-3" />,
     },
+   
   ]
 
   return navItems
