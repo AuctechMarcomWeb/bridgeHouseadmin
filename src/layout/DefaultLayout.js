@@ -1,12 +1,15 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState,useContext } from 'react'
 import { AppContent, AppSidebar, AppFooter, AppHeader } from '../components/index'
 import { getRequest } from '../Helpers'
 import { useNavigate } from 'react-router-dom'
 import { deleteCookie } from '../Hooks/cookie'
+import {AppContext} from '../Context/AppContext'
+
 
 const DefaultLayout = () => {
   const navigate = useNavigate()
   const [userData, setUserData] = useState(null)
+     const { user, setUser } = useContext(AppContext);
 
   useEffect(() => {
     const savedUser = localStorage.getItem('bridgeHousAdminToken')
@@ -20,6 +23,7 @@ const DefaultLayout = () => {
     getRequest(`auth/profile`)
       .then((res) => {
         console.log('res data', res?.data?.data)
+        setUser(res?.data?.data)
       })
       .catch((error) => {
         if (error.response?.status === 401) {

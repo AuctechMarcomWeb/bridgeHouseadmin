@@ -24,8 +24,8 @@ const Category = () => {
     getRequest(`category?search=${searchTerm}&page=${page}&limit=${limit}`)
       .then((res) => {
         const responseData = res?.data?.data
-        setData(responseData?.banners || [])
-        setTotal(responseData?.totalBanners || 0)
+        setData(responseData?.categories || [])
+        setTotal(responseData?.totalCategories || 0)
       })
       .catch((error) => {
         console.log('error', error)
@@ -34,7 +34,7 @@ const Category = () => {
 
   // ✅ Delete handler
   const confirmDelete = () => {
-    deleteRequest(`banner/${selectedItem?._id}`)
+    deleteRequest(`category/${selectedItem?._id}`)
       .then((res) => {
         toast.success(res?.data?.message)
         setSelectedItem(null)
@@ -118,8 +118,7 @@ const Category = () => {
         <table className="w-full">
           <thead>
             <tr>
-              <th className="px-6 py-3 ">Title</th>
-              <th className="px-6 py-3">Discription</th>
+              <th className="px-6 py-3">Name</th>
               <th className="px-6 py-3">Image</th>
               <th className="px-6 py-3">Active</th>
               <th className="px-6 py-3">Actions</th>
@@ -128,16 +127,14 @@ const Category = () => {
           <tbody className="bg-white divide-y divide-gray-200">
             {data?.map((item) => (
               <tr key={item._id}>
-                <td className="px-6 py-4">{item?.title}</td>
-                <td className="px-6 py-4">{item?.discription}</td>
+                <td className="px-6 py-4">{item?.name}</td>
                 <td className="px-6 py-4">
                   <img
                     src={item?.image}
-                    alt="profile"
+                    alt="category"
                     className="w-10 h-10 rounded-full object-cover"
                   />
                 </td>
-
                 <td className="px-6 py-4">
                   {item?.isActive ? (
                     <span className="px-2 py-1 text-xs bg-blue-100 text-blue-800">Active</span>
