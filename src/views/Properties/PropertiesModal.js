@@ -140,7 +140,7 @@ console.log('formData===>',formData)
     setFormData({ 
       name: '',
       address: '',
-      coordinates: [77.5946, 12.9716],
+      coordinates:'',
       propertyType: '',
       actualPrice: '',
       sellingPrice: '',
