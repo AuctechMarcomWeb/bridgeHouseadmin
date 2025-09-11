@@ -56,8 +56,8 @@ const Banners = () => {
 
   // Helper function to get banner image
   const getBannerImage = (item) => {
-    if (item?.bannersImages && Array.isArray(item.bannersImages) && item.bannersImages.length > 0) {
-      return item.bannersImages[0]
+    if (item?.bannersImages && Array.isArray(item?.bannersImages) && item?.bannersImages?.length > 0) {
+      return item?.bannersImages[0]
     }
     return item?.bannerImage || '/placeholder-image.jpg'
   }
@@ -158,6 +158,12 @@ const Banners = () => {
                   Category
                 </th>
                 <th className="px-6 py-3">
+                  Property
+                </th>
+                <th className="px-6 py-3">
+                  Property Code
+                </th>
+                <th className="px-6 py-3">
                   Status
                 </th>
                 <th className="px-6 py-3">
@@ -168,18 +174,16 @@ const Banners = () => {
             <tbody className="bg-white divide-y divide-gray-200">
               {data?.length > 0 ? (
                 data.map((item) => (
-                  <tr key={item._id} className="hover:bg-gray-50 transition-colors">
+                  <tr key={item?._id} className="hover:bg-gray-50 transition-colors">
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="text-sm font-medium text-gray-900">{item?.title}</div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <img
-                        src={getBannerImage(item)}
-                        alt={item?.title || 'Banner'}
+                        src={item?.bannerImage}
+                        alt={item?.title }
                            className="w-10 h-10 rounded-full object-cover"
-                        onError={(e) => {
-                          e.target.src = '/placeholder-image.jpg'
-                        }}
+                        
                       />
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
@@ -189,7 +193,17 @@ const Banners = () => {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="text-sm text-gray-900">
-                        {item?.categoryId?.name || 'N/A'}
+                        {item?.categoryId?.name || 'N/A'} 
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="text-sm text-gray-900">
+                        <p className='p-0 m-0'>{item?.propertyId?.name || 'N/A'}({item?.propertyId?.propertyType})</p>
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="text-sm text-gray-900">
+                        <p className='p-0 m-0'>{item?.propertyId?.propertyCode || 'N/A'}</p>
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
