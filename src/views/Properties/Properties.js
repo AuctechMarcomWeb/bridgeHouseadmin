@@ -149,9 +149,6 @@ const Properties = () => {
                 Gallery
               </th>
               <th className="px-6 py-3">
-                Status
-              </th>
-              <th className="px-6 py-3">
                 Actions
               </th>
             </tr>
@@ -232,19 +229,6 @@ const Properties = () => {
                       <span className="text-xs text-gray-400">No images</span>
                     )}
                   </div>
-                </td>
-
-                {/* Status */}
-                <td className="px-6 py-4">
-                  {item?.isActive ? (
-                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                      Active
-                    </span>
-                  ) : (
-                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
-                      Inactive
-                    </span>
-                  )}
                 </td>
 
                 {/* Actions */}

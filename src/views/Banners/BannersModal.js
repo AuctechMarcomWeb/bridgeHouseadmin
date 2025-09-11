@@ -14,6 +14,9 @@ const BannersModal = ({
     modalData
       ? {
           ...modalData,
+          // Extract IDs from objects if they exist
+          propertyId: typeof modalData.propertyId === 'object' ? modalData.propertyId._id : modalData.propertyId,
+          categoryId: typeof modalData.categoryId === 'object' ? modalData.categoryId._id : modalData.categoryId,
         }
       : {
           title: '',
@@ -21,7 +24,7 @@ const BannersModal = ({
           categoryId: '',
           bannerImage: '',
           bannersImages: [],
-          bannerType: 'top',
+          bannerType: '',
           isActive: true,
         },
   )
@@ -36,6 +39,28 @@ const BannersModal = ({
 
   const [errors, setErrors] = useState({})
 
+  // 🔹 Update formData when modalData changes
+  useEffect(() => {
+    if (modalData) {
+      setFormData({
+        ...modalData,
+        // Extract IDs from objects if they exist
+        propertyId: typeof modalData.propertyId === 'object' ? modalData.propertyId._id : modalData.propertyId,
+        categoryId: typeof modalData.categoryId === 'object' ? modalData.categoryId._id : modalData.categoryId,
+      })
+    } else {
+      setFormData({
+        title: '',
+        propertyId: '',
+        categoryId: '',
+        bannerImage: '',
+        bannersImages: [],
+        bannerType: '',
+        isActive: true,
+      })
+    }
+  }, [modalData])
+
   // 🔹 Close modal
   const handleCancel = () => {
     setFormData({ 
@@ -44,7 +69,7 @@ const BannersModal = ({
       categoryId: '',
       bannerImage: '',
       bannersImages: [],
-      bannerType: 'top',
+      bannerType: '',
       isActive: true 
     })
     setErrors({})
@@ -211,7 +236,7 @@ const BannersModal = ({
             type="text"
             className={`form-control ${errors.title ? 'is-invalid' : ''}`}
             name="title"
-            value={formData?.title}
+            value={formData.title}
             onChange={handleChange}
             placeholder="Enter banner title"
           />
@@ -265,10 +290,11 @@ const BannersModal = ({
             value={formData.bannerType}
             onChange={handleChange}
           >
-            <option value="top">leftside</option>
-            <option value="middle">rightside</option>
-            <option value="bottom">top</option>
-            <option value="sidebar">bottom</option>
+            <option value="">Select Banner Type</option>
+            <option value="leftside">leftside</option>
+            <option value="rightside">rightside</option>
+            <option value="top">top</option>
+            <option value="bottom">bottom</option>
           </select>
           {errors.bannerType && <div className="invalid-feedback">{errors.bannerType}</div>}
         </div>
