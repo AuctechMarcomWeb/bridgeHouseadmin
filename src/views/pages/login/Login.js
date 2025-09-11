@@ -139,7 +139,7 @@ const Login = () => {
         setLoading(false)
         toast.success(res?.data?.message)
 
-        setCookie('token', res?.data?.data?.authToken, 30)
+        setCookie('bridgeHousAdminToken', res?.data?.data?.authToken, 30)
         navigate('/')
         window.location.reload()
       })
