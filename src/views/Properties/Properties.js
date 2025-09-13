@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { Search, Plus, Edit, Trash2, AlertTriangle, MapPin, IndianRupee } from 'lucide-react'
 import ExportButton from '../ExportButton'
-import { deleteRequest, getRequest } from '../../Helpers'
+import { deleteRequest, getRequest, putRequest } from '../../Helpers'
 import toast from 'react-hot-toast'
 import { Pagination } from 'antd'
 import PropertiesModal from './PropertiesModal'
@@ -17,13 +17,16 @@ const Properties = () => {
   const [isModalOpen, setIsModalOpen] = useState(false)
   // Modal states
   const [showDeleteModal, setShowDeleteModal] = useState(false)
+  const [approvalStatus, setApprovalStatus] = useState('')
   const [selectedItem, setSelectedItem] = useState(null)
   const googleApiKey = import.meta.env.VITE_GOOGLE_API
 
   // ✅ Fetch Properties with Pagination + Search
 
   useEffect(() => {
-    getRequest(`properties?search=${searchTerm}&page=${page}&limit=${limit}`)
+    getRequest(
+      `properties?search=${searchTerm}&page=${page}&limit=${limit}&approvalStatus=${approvalStatus}`,
+    )
       .then((res) => {
         const responseData = res?.data?.data
         console.log('Properties=>>', responseData)
@@ -47,6 +50,25 @@ const Properties = () => {
       .catch((error) => {
         console.log('error', error)
         toast.error('Delete failed')
+      })
+  }
+
+  const approveData = (data, status) => {
+    console.log('approveData', data)
+    putRequest({
+      url: `properties/${data?._id}`,
+      cred: {
+        approvalStatus: status,
+      },
+    })
+      .then((res) => {
+        console.log('res', res?.data)
+        setUpdateStatus((prev) => !prev)
+        toast.success(res?.data?.message)
+      })
+      .catch((error) => {
+        console.log('error', error)
+        toast.error(error?.response?.data?.message)
       })
   }
 
@@ -133,131 +155,137 @@ const Properties = () => {
         <table className="w-full">
           <thead>
             <tr className="bg-gray-50">
-              <th className="px-6 py-3">
-                Property
-              </th>
-              <th className="px-6 py-3">
-                Type
-              </th>
-              <th className="px-6 py-3">
-                Location
-              </th>
-              <th className="px-6 py-3">
-                Price
-              </th>
-              <th className="px-6 py-3">
-                Gallery
-              </th>
-              <th className="px-6 py-3">
-                Actions
-              </th>
+              <th className="px-6 py-3">Property</th>
+              <th className="px-6 py-3">Type</th>
+              <th className="px-6 py-3">Location</th>
+              <th className="px-6 py-3">Price</th>
+              <th className="px-6 py-3">Gallery</th>
+              <th className="px-6 py-3">Actions</th>
             </tr>
           </thead>
           <tbody className="bg-white divide-y divide-gray-200">
-            {data?.map((item) => (
-              <tr key={item._id} className="hover:bg-gray-50">
-                {/* Property Details */}
-                <td className="px-6 py-4">
-                  <div className="flex flex-col">
-                    <div className="text-sm font-medium text-gray-900">{item?.name}</div>
-                    <div className="text-sm text-gray-500 truncate" style={{ maxWidth: '200px' }}>
-                      {item?.address}
-                    </div>
-                    {item?.description && (
-                      <div
-                        className="text-xs text-gray-400 truncate mt-1"
-                        style={{ maxWidth: '200px' }}
-                      >
-                        {item.description}
+            {data?.map((item, index) => {
+              console.log('item', item)
+
+              return (
+                <tr key={item._id} className="hover:bg-gray-50">
+                  {/* Property Details */}
+                  <td className="px-6 py-4">
+                    <div className="flex flex-col">
+                      <div className="text-sm font-medium text-gray-900">{item?.name}</div>
+                      <div className="text-sm text-gray-500 truncate" style={{ maxWidth: '200px' }}>
+                        {item?.address}
                       </div>
-                    )}
-                  </div>
-                </td>
-
-                {/* Property Type */}
-                <td className="px-6 py-4">
-                  <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                    {item?.propertyType || 'N/A'}
-                  </span>
-                </td>
-
-                {/* Location */}
-                <td className="px-6 py-4">
-                  <div className="flex items-center text-sm text-gray-500">
-                    <MapPin className="w-4 h-4 mr-1" />
-                    <div>
-                      {item?.location?.coordinates
-                        ? item?.address?.split(' ').slice(0, 5).join(' ')
-                        : 'No coordinates'}
+                      {item?.description && (
+                        <div
+                          className="text-xs text-gray-400 truncate mt-1"
+                          style={{ maxWidth: '200px' }}
+                        >
+                          {item.description}
+                        </div>
+                      )}
                     </div>
-                  </div>
-                </td>
+                  </td>
 
-                {/* Price */}
-                <td className="px-6 py-4">
-                  <div className="flex flex-col">
-                    <div className="text-sm font-medium text-gray-900 flex items-center">
-                      <IndianRupee className="w-3 h-3 mr-1" />
-                      {formatPrice(item?.sellingPrice)}
+                  {/* Property Type */}
+                  <td className="px-6 py-4">
+                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                      {item?.propertyType || 'N/A'}
+                    </span>
+                  </td>
+
+                  {/* Location */}
+                  <td className="px-6 py-4">
+                    <div className="flex items-center text-sm text-gray-500">
+                      <MapPin className="w-4 h-4 mr-1" />
+                      <div>
+                        {item?.location?.coordinates
+                          ? item?.address?.split(' ').slice(0, 5).join(' ')
+                          : 'No coordinates'}
+                      </div>
                     </div>
-                    {item?.actualPrice && item?.actualPrice !== item?.sellingPrice && (
-                      <div className="text-xs text-gray-500 line-through flex items-center">
+                  </td>
+
+                  {/* Price */}
+                  <td className="px-6 py-4">
+                    <div className="flex flex-col">
+                      <div className="text-sm font-medium text-gray-900 flex items-center">
                         <IndianRupee className="w-3 h-3 mr-1" />
-                        {formatPrice(item?.actualPrice)}
+                        {formatPrice(item?.sellingPrice)}
                       </div>
-                    )}
-                  </div>
-                </td>
+                      {item?.actualPrice && item?.actualPrice !== item?.sellingPrice && (
+                        <div className="text-xs text-gray-500 line-through flex items-center">
+                          <IndianRupee className="w-3 h-3 mr-1" />
+                          {formatPrice(item?.actualPrice)}
+                        </div>
+                      )}
+                    </div>
+                  </td>
 
-                {/* Gallery */}
-                <td className="px-6 py-4">
-                  <div className="flex -space-x-2 overflow-hidden">
-                    {item?.gallery?.slice(0, 3).map((imageUrl, index) => (
-                      <img
-                        key={index}
-                        src={imageUrl}
-                        alt={`Gallery ${index + 1}`}
-                        className="inline-block w-8 h-8 rounded-full border-2 border-white object-cover"
-                      />
-                    ))}
-                    {item?.gallery?.length > 3 && (
-                      <span className="flex items-center justify-center w-8 h-8 rounded-full bg-gray-200 border-2 border-white text-xs font-medium text-gray-500">
-                        +{item.gallery.length - 3}
-                      </span>
-                    )}
-                    {(!item?.gallery || item?.gallery?.length === 0) && (
-                      <span className="text-xs text-gray-400">No images</span>
-                    )}
-                  </div>
-                </td>
+                  {/* Gallery */}
+                  <td className="px-6 py-4">
+                    <div className="flex -space-x-2 overflow-hidden">
+                      {item?.gallery?.slice(0, 3).map((imageUrl, index) => (
+                        <img
+                          key={index}
+                          src={imageUrl}
+                          alt={`Gallery ${index + 1}`}
+                          className="inline-block w-8 h-8 rounded-full border-2 border-white object-cover"
+                        />
+                      ))}
+                      {item?.gallery?.length > 3 && (
+                        <span className="flex items-center justify-center w-8 h-8 rounded-full bg-gray-200 border-2 border-white text-xs font-medium text-gray-500">
+                          +{item.gallery.length - 3}
+                        </span>
+                      )}
+                      {(!item?.gallery || item?.gallery?.length === 0) && (
+                        <span className="text-xs text-gray-400">No images</span>
+                      )}
+                    </div>
+                  </td>
 
-                {/* Actions */}
-                <td className="px-6 py-4">
-                  <div className="flex gap-2">
-                    <button
-                      onClick={() => {
-                        setSelectedItem(item)
-                        setIsModalOpen(true)
-                      }}
-                      className="text-blue-600 hover:text-blue-800 p-1"
-                      title="Edit property"
-                    >
-                      <Edit className="w-4 h-4" />
-                    </button>
-                    <button
-                      onClick={() => {
-                        setSelectedItem(item)
-                        setShowDeleteModal(true)
-                      }}
-                      className="text-red-600 hover:text-red-800 p-1"
-                      title="Delete property"
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </button>
-                  </div>
-                </td>
-              </tr>
-            ))}
+                  {/* Actions */}
+                  <td className="px-6 py-4">
+                    <div className="flex gap-2">
+                      <button
+                        onClick={() => approveData(item, 'Published')}
+                        className=" btn btn-primary  p-1"
+                        title="Edit property"
+                      >
+                        Approve
+                      </button>
+                      <button
+                        onClick={() => approveData(item, 'Rejected')}
+                        className=" btn btn-primary  p-1"
+                        title="Edit property"
+                      >
+                        Reject
+                      </button>
+                      <button
+                        onClick={() => {
+                          setSelectedItem(item)
+                          setIsModalOpen(true)
+                        }}
+                        className="text-blue-600 hover:text-blue-800 p-1"
+                        title="Edit property"
+                      >
+                        <Edit className="w-4 h-4" />
+                      </button>
+                      <button
+                        onClick={() => {
+                          setSelectedItem(item)
+                          setShowDeleteModal(true)
+                        }}
+                        className="text-red-600 hover:text-red-800 p-1"
+                        title="Delete property"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              )
+            })}
 
             {/* Empty State */}
             {data?.length === 0 && (
