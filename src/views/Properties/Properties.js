@@ -6,7 +6,8 @@ import toast from 'react-hot-toast'
 import { Pagination } from 'antd'
 import PropertiesModal from './PropertiesModal'
 import { AppContext } from '../../Context/AppContext'
-
+import { MdVerified } from 'react-icons/md'
+import { SiMercadopago } from "react-icons/si";
 const Properties = () => {
   const [searchTerm, setSearchTerm] = useState('')
   const [data, setData] = useState([])
@@ -158,6 +159,8 @@ const Properties = () => {
               <th className="px-6 py-3">Property</th>
               <th className="px-6 py-3">Type</th>
               <th className="px-6 py-3">Approval Status</th>
+              <th className="px-6 py-3">Addopted Status</th>
+              <th className="px-6 py-3">Verifyed Status</th>
               <th className="px-6 py-3">Location</th>
               <th className="px-6 py-3">Price</th>
               <th className="px-6 py-3">Gallery</th>
@@ -190,14 +193,32 @@ const Properties = () => {
 
                   {/* Property Type */}
                   <td className="px-6 py-4">
-                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                    <span className="">
                       {item?.propertyType || 'N/A'}
                     </span>
                   </td>
+
+
                   <td className="px-6 py-4">
                     <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
                       {item?.approvalStatus || 'N/A'}
                     </span>
+                  </td>
+                  <td className="px-6 py-4">
+                    {item?.isAdopted ? <SiMercadopago  className='fs-4' /> 
+                  :  
+                    <span className="">
+                      Not Adopted
+                    </span>
+                  }
+                  </td>
+                  <td className="px-6 py-4">
+                    {item?.isVerified ? <MdVerified className='fs-4' /> 
+                  :  
+                    <span className="">
+                      Not Verified
+                    </span>
+                  }
                   </td>
 
                   {/* Location */}

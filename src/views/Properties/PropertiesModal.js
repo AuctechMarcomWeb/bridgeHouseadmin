@@ -1,7 +1,7 @@
 import { Modal, Select } from 'antd'
 import React, { useState, useContext } from 'react'
 import toast from 'react-hot-toast'
-import axios from 'axios'
+
 import { fileUpload, postRequest, putRequest, getRequest } from '../../Helpers'
 import { AppContext } from '../../Context/AppContext'
 import LocationSearchInput from '../../components/LocationSearchInput/LocationSearchInput'
@@ -151,27 +151,7 @@ const PropertiesModal = ({
     })
   }
 
-  // 🔹 Validate form
-  const validateForm = () => {
-    let newErrors = {}
 
-    if (!formData.name.trim()) newErrors.name = 'Property name is required'
-    if (!formData.address.trim()) newErrors.address = 'Address is required'
-    if (!formData.propertyType.trim()) newErrors.propertyType = 'Property type is required'
-    if (!formData.actualPrice || formData.actualPrice <= 0)
-      newErrors.actualPrice = 'Valid actual price is required'
-    if (!formData.sellingPrice || formData.sellingPrice <= 0)
-      newErrors.sellingPrice = 'Valid selling price is required'
-    if (!formData.description.trim()) newErrors.description = 'Description is required'
-
-    // Validate coordinates
-    if (!formData.coordinates[0] || !formData.coordinates[1]) {
-      newErrors.coordinates = 'Valid coordinates are required'
-    }
-
-    setErrors(newErrors)
-    return Object.keys(newErrors).length === 0
-  }
 
   // nearBY
 
