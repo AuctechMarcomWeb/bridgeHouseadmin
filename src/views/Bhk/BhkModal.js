@@ -1,9 +1,11 @@
+
+
 import { Modal } from 'antd'
 import React, { useState } from 'react'
 import toast from 'react-hot-toast'
 import { fileUpload, postRequest, putRequest } from '../../Helpers' // <-- apka helper
 
-const CategoryModal = ({
+const BhkModal = ({
   setUpdateStatus,
   setModalData,
   modalData,
@@ -18,7 +20,7 @@ const CategoryModal = ({
         }
       : {
           name: '',
-          image: '',
+          
           isActive: true,
         },
   )
@@ -31,7 +33,7 @@ const CategoryModal = ({
 
   // 🔹 Close modal
   const handleCancel = () => {
-    setFormData({ name: '', image: '', isActive: true })
+    setFormData({ name: '',  isActive: true })
     setErrors({})
     setModalData(null)
     setIsModalOpen(false)
@@ -70,7 +72,6 @@ const CategoryModal = ({
   const validateForm = () => {
     let newErrors = {}
     if (!formData.name.trim()) newErrors.name = 'Name is required'
-    if (!formData.image.trim()) newErrors.image = 'Image is required'
     setErrors(newErrors)
     return Object.keys(newErrors).length === 0
   }
@@ -80,9 +81,9 @@ const CategoryModal = ({
     e.preventDefault()
     if (!validateForm()) return
 
-    putRequest({ url: `category/${modalData?._id}`, cred: formData })
+    putRequest({ url: `bhk/${modalData?._id}`, cred: formData })
       .then((res) => {
-        toast.success(res?.data?.message || 'Property Type updated successfully')
+        toast.success(res?.data?.message || 'BHK updated successfully')
         setUpdateStatus((prev) => !prev)
         handleCancel()
       })
@@ -96,9 +97,9 @@ const CategoryModal = ({
     e.preventDefault()
     if (!validateForm()) return
 
-    postRequest({ url: `category`, cred: formData })
+    postRequest({ url: `bhk`, cred: formData })
       .then((res) => {
-        toast.success(res?.data?.message || 'Property Type added successfully')
+        toast.success(res?.data?.message || 'BHK added successfully')
         setUpdateStatus((prev) => !prev)
         handleCancel()
       })
@@ -110,7 +111,7 @@ const CategoryModal = ({
 
   return (
     <Modal
-      title={modalData ? `Edit Property Type` : `Add Property Type`}
+      title={modalData ? `Edit BHK` : `Add BHK`}
       open={isModalOpen}
       footer={null}
       onCancel={handleCancel}
@@ -133,17 +134,7 @@ const CategoryModal = ({
           {errors?.name && <div className="invalid-feedback">{errors.name}</div>}
         </div>
 
-        {/* Image */}
-        <div className="mb-3">
-          <label className="form-label fw-bold">Image</label>
-          <input
-            type="file"
-            className={`form-control ${errors?.image ? 'is-invalid' : ''}`}
-            name="image"
-            onChange={handleChangeImage}
-          />
-          {errors.image && <div className="invalid-feedback">{errors.image}</div>}
-        </div>
+     
 
         {/* Active Status */}
         <div className="form-check mb-3">
@@ -166,7 +157,7 @@ const CategoryModal = ({
             Cancel
           </button>
           <button type="submit" className="btn btn-primary">
-            {loading ? 'Uploading...' : 'Save Property Type'}
+            {loading ? 'Uploading...' : 'Save BHK'}
           </button>
         </div>
       </form>
@@ -174,4 +165,4 @@ const CategoryModal = ({
   )
 }
 
-export default CategoryModal
+export default BhkModal

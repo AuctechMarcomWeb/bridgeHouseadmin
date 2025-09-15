@@ -1,3 +1,6 @@
+
+
+
 import React, { useState, useEffect } from 'react'
 import { Search, Plus, Edit, Trash2, AlertTriangle } from 'lucide-react'
 import ExportButton from '../ExportButton'
@@ -5,9 +8,9 @@ import { deleteRequest, getRequest } from '../../Helpers'
 import toast from 'react-hot-toast'
 import { Pagination } from 'antd'
 import axios from 'axios'
-import CategoryModal from './CategoryModal'
+import BhkModal from './BhkModal'
 
-const Category = () => {
+const Bhk = () => {
   const [searchTerm, setSearchTerm] = useState('')
   const [data, setData] = useState([])
   const [total, setTotal] = useState(0)
@@ -19,13 +22,13 @@ const Category = () => {
   const [showDeleteModal, setShowDeleteModal] = useState(false)
   const [selectedItem, setSelectedItem] = useState(null)
 
-  // ✅ Fetch Property Type with Pagination + Search
+  // ✅ Fetch BHK with Pagination + Search
   useEffect(() => {
-    getRequest(`category?search=${searchTerm}&page=${page}&limit=${limit}`)
+    getRequest(`bhk?search=${searchTerm}&page=${page}&limit=${limit}`)
       .then((res) => {
         const responseData = res?.data?.data
-        setData(responseData?.categories || [])
-        setTotal(responseData?.totalCategories || 0)
+        setData(responseData?.bhks || [])
+        setTotal(responseData?.totalBhks || 0)
       })
       .catch((error) => {
         console.log('error', error)
@@ -34,7 +37,7 @@ const Category = () => {
 
   // ✅ Delete handler
   const confirmDelete = () => {
-    deleteRequest(`category/${selectedItem?._id}`)
+    deleteRequest(`bhk/${selectedItem?._id}`)
       .then((res) => {
         toast.success(res?.data?.message)
         setSelectedItem(null)
@@ -80,18 +83,18 @@ const Category = () => {
       {/* Header */}
       <div className="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
         <div>
-          <h2 className="text-2xl font-bold text-gray-900">Property Type</h2>
-          <p className="text-gray-600 mt-1">Manage Property Type</p>
+          <h2 className="text-2xl font-bold text-gray-900">BHK</h2>
+          <p className="text-gray-600 mt-1">Manage BHK</p>
         </div>
         <div className="flex items-center space-x-3">
-          <ExportButton data={data} fileName="Property Type.xlsx" sheetName="Property Type" />
+          <ExportButton data={data} fileName="BHK.xlsx" sheetName="BHK" />
           <button
             onClick={() => {
               setIsModalOpen(true)
             }}
             className="bg-green-600 text-white px-4 py-2 hover:bg-green-700 flex items-center"
           >
-            <Plus className="w-4 h-4 mr-2" /> Add Property Type
+            <Plus className="w-4 h-4 mr-2" /> Add BHK
           </button>
         </div>
       </div>
@@ -119,7 +122,6 @@ const Category = () => {
           <thead>
             <tr>
               <th className="px-6 py-3">Name</th>
-              <th className="px-6 py-3">Image</th>
               <th className="px-6 py-3">Active</th>
               <th className="px-6 py-3">Actions</th>
             </tr>
@@ -128,13 +130,7 @@ const Category = () => {
             {data?.map((item) => (
               <tr key={item._id}>
                 <td className="px-6 py-4">{item?.name}</td>
-                <td className="px-6 py-4">
-                  <img
-                    src={item?.image}
-                    alt="category"
-                    className="w-10 h-10 rounded-full object-cover"
-                  />
-                </td>
+             
                 <td className="px-6 py-4">
                   {item?.isActive ? (
                     <span className="px-2 py-1 text-xs bg-blue-100 text-blue-800">Active</span>
@@ -179,7 +175,7 @@ const Category = () => {
         />
       </div>
       {isModalOpen && (
-        <CategoryModal
+        <BhkModal
           setUpdateStatus={setUpdateStatus}
           setModalData={setSelectedItem}
           modalData={selectedItem}
@@ -191,4 +187,4 @@ const Category = () => {
   )
 }
 
-export default Category
+export default Bhk

@@ -1,5 +1,5 @@
 import { Modal, Select } from 'antd'
-import React, { useState, useContext } from 'react'
+import React, { useState, useContext, useEffect } from 'react'
 import toast from 'react-hot-toast'
 
 import { fileUpload, postRequest, putRequest, getRequest } from '../../Helpers'
@@ -16,6 +16,12 @@ const PropertiesModal = ({
   const { user, setUser } = useContext(AppContext)
 
   console.log('modalData===', modalData)
+
+  const [type, setType] = useState([])
+  const [bhk, setBhk] = useState([])
+  const [services, setServices] = useState([])
+  const [facilites, setFacilites] = useState([])
+  const [documents, setDocuments] = useState([])
 
   const [formData, setFormData] = useState(
     modalData
@@ -54,6 +60,76 @@ const PropertiesModal = ({
           propertyCode: '',
         },
   )
+
+  useEffect(() => {
+    getRequest(`category?isPagination=false`)
+      .then((res) => {
+        const responseData = res?.data?.data
+        console.log('Category', responseData)
+        setType(responseData?.categories)
+      })
+      .catch((error) => {
+        console.log('error', error)
+      })
+    getRequest(`bhk?isPagination=false`)
+      .then((res) => {
+        const responseData = res?.data?.data
+        console.log('bhk', responseData)
+        setBhk(responseData?.bhks)
+      })
+      .catch((error) => {
+        console.log('error', error)
+      })
+    getRequest(`facilites?isPagination=false`)
+      .then((res) => {
+        const responseData = res?.data?.data
+        console.log('facilites', responseData)
+        setFacilites(responseData?.facilities)
+      })
+      .catch((error) => {
+        console.log('error', error)
+      })
+    getRequest(`service?isPagination=false`)
+      .then((res) => {
+        const responseData = res?.data?.data
+        console.log('service', responseData)
+        setServices(responseData?.services)
+      })
+      .catch((error) => {
+        console.log('error', error)
+      })
+    getRequest(`documents?isPagination=false`)
+      .then((res) => {
+        const responseData = res?.data?.data
+        console.log('documents', responseData)
+        setDocuments(responseData?.documents)
+      })
+      .catch((error) => {
+        console.log('error', error)
+      })
+  }, [])
+
+  const typeOption = type?.map((item, index) => {
+    return (
+      <>
+        <option value={item?.name}>{item?.name}</option>
+      </>
+    )
+  })
+  const bhkOption = bhk?.map((item, index) => {
+    return (
+      <>
+        <option value={item?.name}>{item?.name}</option>
+      </>
+    )
+  })
+  const documentsOption = documents?.map((item, index) => {
+    return (
+      <>
+        <option value={item?.name}>{item?.name}</option>
+      </>
+    )
+  })
 
   console.log('formData===>', formData)
 
@@ -109,26 +185,68 @@ const PropertiesModal = ({
     setIsModalOpen(false)
   }
 
-  const handleChange = (e) => {
-    const { name, value, type, checked, dataset } = e.target
+  // const handleChange = (e) => {
+  //   const { name, value, type, checked, dataset } = e.target
 
-    // If data-nested is present, update nested object
-    if (dataset.nested) {
-      const nestedKey = dataset.nested // e.g., "propertyDetails"
-      setFormData((prev) => ({
+  //   // If data-nested is present, update nested object
+  //   if (dataset.nested) {
+  //     const nestedKey = dataset.nested // e.g., "propertyDetails"
+  //     setFormData((prev) => ({
+  //       ...prev,
+  //       [nestedKey]: {
+  //         ...prev[nestedKey],
+  //         [name]: type === 'checkbox' ? checked : value,
+  //       },
+  //     }))
+  //   } else {
+      
+  //     setFormData((prev) => ({
+  //       ...prev,
+  //       [name]: type === 'checkbox' ? checked : value,
+  //     }))
+  //   }
+  // }
+
+
+  const handleChange = (e) => {
+  const { name, value, type, checked, dataset } = e.target;
+
+  if (dataset.nested) {
+    // ✅ Update nested object (unchanged)
+    const nestedKey = dataset.nested;
+    setFormData((prev) => ({
+      ...prev,
+      [nestedKey]: {
+        ...prev[nestedKey],
+        [name]: type === "checkbox" ? checked : value,
+      },
+    }));
+  } else {
+    // ✅ Update main object + auto-calc totalSqft
+    setFormData((prev) => {
+      const updatedData = {
         ...prev,
-        [nestedKey]: {
-          ...prev[nestedKey],
-          [name]: type === 'checkbox' ? checked : value,
-        },
-      }))
-    } else {
-      setFormData((prev) => ({
-        ...prev,
-        [name]: type === 'checkbox' ? checked : value,
-      }))
-    }
+        [name]: type === "checkbox" ? checked : value,
+      };
+
+      // Auto-calculate totalSqft only when height or width changes
+      if (name === "height" || name === "width") {
+        const height =
+          name === "height" ? value : updatedData.height || prev.height || 0;
+        const width =
+          name === "width" ? value : updatedData.width || prev.width || 0;
+
+        const totalSqft =
+          parseFloat(height || 0) * parseFloat(width || 0);
+
+        updatedData.totalSqft = isNaN(totalSqft) ? "" : totalSqft.toFixed(2);
+      }
+
+      return updatedData;
+    });
   }
+};
+
 
   const handleChangeImage = (e) => {
     const files = Array.from(e.target.files) // ✅ Convert FileList to array
@@ -150,8 +268,6 @@ const PropertiesModal = ({
         })
     })
   }
-
-
 
   // nearBY
 
@@ -262,7 +378,7 @@ const PropertiesModal = ({
       .then((res) => {
         toast.success(res?.data?.message || 'Property updated successfully')
         setUpdateStatus((prev) => !prev)
-         setLoading(false)
+        setLoading(false)
         handleCancel()
       })
       .catch((error) => {
@@ -270,19 +386,18 @@ const PropertiesModal = ({
         setLoading(false)
         toast.error(error?.response?.data?.message || 'Update failed')
       })
-     
   }
 
   // 🔹 Submit handler for create
   const handleSubmit = (e) => {
     e.preventDefault()
-   
+
     setLoading(true)
     postRequest({ url: `properties`, cred: formData })
       .then((res) => {
         toast.success(res?.data?.message || 'Property added successfully')
         setUpdateStatus((prev) => !prev)
-         setLoading(false)
+        setLoading(false)
         handleCancel()
       })
       .catch((error) => {
@@ -290,7 +405,6 @@ const PropertiesModal = ({
         setLoading(false)
         toast.error(error?.response?.data?.message || 'Creation failed')
       })
-     
   }
 
   return (
@@ -312,14 +426,13 @@ const PropertiesModal = ({
                 <label className="form-label fw-bold">Property Name *</label>
                 <input
                   type="text"
-                  className={`form-control ${errors.name ? 'is-invalid' : ''}`}
+                  className={`form-control `}
                   name="name"
                   required
                   value={formData?.name}
                   onChange={handleChange}
                   placeholder="Enter property name (e.g., Luxury Villa)"
                 />
-                {errors?.name && <div className="invalid-feedback">{errors.name}</div>}
               </div>
             </div>
             <div className="col-md-6">
@@ -334,16 +447,11 @@ const PropertiesModal = ({
                   onChange={handleChange}
                 >
                   <option value="">Select Property Type</option>
-                  <option value="Villa">Villa</option>
-                  <option value="Apartment">Apartment</option>
-                  <option value="House">House</option>
-                  <option value="Plot">Plot</option>
-                  <option value="Commercial">Commercial</option>
-                  <option value="Office">Office</option>
-                  <option value="Shop">Shop</option>
+                  {typeOption}
                 </select>
               </div>
             </div>
+
             <div className="col-md-6">
               <label className="form-label fw-bold">Actual Price (₹) *</label>
               <input
@@ -473,6 +581,21 @@ const PropertiesModal = ({
                 onChange={handleChange}
               />
             </div>
+            <div className="col-md-6">
+              {' '}
+              <div className="mb-3">
+                <label className="form-label fw-bold">BHK </label>
+                <select
+                  className={`form-select `}
+                  name="bhk"
+                  value={formData.bhk}
+                  onChange={handleChange}
+                >
+                  <option value="">Select BHK </option>
+                  {bhkOption}
+                </select>
+              </div>
+            </div>
 
             {/* Facilities */}
 
@@ -491,6 +614,10 @@ const PropertiesModal = ({
                     facilities: value,
                   })
                 }}
+                options={facilites?.map((service) => ({
+                  label: service?.name,
+                  value: service?.name,
+                }))}
               />
             </div>
 
@@ -510,6 +637,10 @@ const PropertiesModal = ({
                     services: value,
                   })
                 }}
+                options={services?.map((service) => ({
+                  label: service?.name,
+                  value: service?.name,
+                }))}
               />
             </div>
 
@@ -521,14 +652,14 @@ const PropertiesModal = ({
                 className={`form-control `}
                 name="propertyCode"
                 accept="image/*"
-                required={modalData ? false :true}
+                required={modalData ? false : true}
                 multiple
                 onChange={handleChangeImage}
               />
             </div>
             {formData?.gallery?.length > 0 && (
-              <div className="col-md-6">
-                <div className="d-flex gap-2 my-2 flex-wrap">
+              <div className="col-md-12 ">
+                <div className="d-flex justify-content-end gap-2 my-2 flex-wrap">
                   {formData.gallery.map((item, index) => (
                     <div key={index} style={{ position: 'relative', display: 'inline-block' }}>
                       {/* Image */}
@@ -575,6 +706,42 @@ const PropertiesModal = ({
                 </div>
               </div>
             )}
+
+            <hr className="m-0 p-0 my-3" />
+            <label className="form-label fw-bold">Project Dimension </label>
+            <div className="col-md-6">
+              <label className="form-label fw-bold">Height (ft)</label>
+              <input
+                type="text"
+                className={`form-control `}
+                name="height"
+                value={formData?.height}
+                required
+                onChange={handleChange}
+              />
+            </div>
+            <div className="col-md-6">
+              <label className="form-label fw-bold">Width (ft)</label>
+              <input
+                type="text"
+                className={`form-control `}
+                name="width"
+                value={formData?.width}
+                required
+                onChange={handleChange}
+              />
+            </div>
+            <div className="col-md-6">
+              <label className="form-label fw-bold">Total Sqft </label>
+              <input
+                type="text"
+                className={`form-control `}
+                name="totalSqft"
+                value={formData?.totalSqft}
+                required
+                onChange={handleChange}
+              />
+            </div>
 
             <hr className="m-0 p-0 my-3" />
 
@@ -640,13 +807,16 @@ const PropertiesModal = ({
                 <div className="row m-0 p-0 border mb-2" key={index}>
                   <div className="col-md-6 m-0 my-2">
                     <label className="form-label">Document Name</label>
-                    <input
-                      type="text"
+
+                    <select
                       name={`facilityName_${index}`}
                       value={facility?.name}
                       onChange={(e) => handleDocumentChange(e, index)}
                       className="form-control"
-                    />
+                    >
+                      <option value="">Select Document</option>
+                      {documentsOption}
+                    </select>
                   </div>
                   <div className="col-md-6 m-0 my-2">
                     <label className="form-label">Document Number</label>

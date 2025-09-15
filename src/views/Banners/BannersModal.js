@@ -35,6 +35,7 @@ const BannersModal = ({
   const [limit] = useState(10)
   const [allProperties, setAllProperties] = useState([])
   const [allCategories, setAllCategories] = useState([])
+  
   console.log('formData', formData)
 
   const [errors, setErrors] = useState({})
