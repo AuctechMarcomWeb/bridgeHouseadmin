@@ -13,80 +13,54 @@ const PropertiesModal = ({
   isModalOpen,
   setIsModalOpen,
 }) => {
-  const [formData, setFormData] = useState({
-    address: '123 Main Street, New Delhi',
-    location: {
-      type: 'Point',
-      coordinates: [77.1025, 28.7041],
-    },
-    addedBy: '66e1f7c0a13b8c7e9f3d1234',
-    name: 'Luxury Apartment12',
-    propertyType: 'Residential',
-    documents: [
-      {
-        name: 'Registry',
-        number: 'DOC-12345',
-        image: 'https://example.com/docs/registry.pdf',
-      },
-      {
-        name: 'Agreement',
-        number: 'AGR-98765',
-        image: 'https://example.com/docs/agreement.pdf',
-      },
-    ],
-    description: 'A beautiful 3BHK apartment with park view and all modern amenities.',
-    propertyDetails: {
-      area: '1500 sqft',
-      bedrooms: 3,
-      bathrooms: 2,
-      floors: 1,
-      facing: 'East',
-      builtYear: 2020,
-    },
-    status: 'Available',
-    approvalStatus: 'Pending',
-    isVerified: true,
-    isAdopted: false,
-    actualPrice: 5000000,
-    sellingPrice: 4800000,
-    facilities: ['Parking', 'Lift', 'Power Backup'],
-    services: ['Maintenance', 'Water Supply'],
-    nearby: [
-      { name: 'School', distance: '1 km' },
-      { name: 'Hospital', distance: '2 km' },
-    ],
-    gallery: [
-      'https://example.com/images/property1.jpg',
-      'https://example.com/images/property2.jpg',
-    ],
-    propertyCode: 'PROP-2025-001',
-  })
+  const { user, setUser } = useContext(AppContext)
+
+  console.log('modalData===', modalData)
+
+  const [formData, setFormData] = useState(
+    modalData
+      ? {
+          ...modalData,
+        }
+      : {
+          address: '',
+          location: {
+            type: 'Point',
+            coordinates: [],
+          },
+          addedBy: user?._id,
+          name: '',
+          propertyType: '',
+          documents: [],
+          description: '',
+          propertyDetails: {
+            area: '',
+            bedrooms: '',
+            bathrooms: '',
+            floors: '',
+            facing: '',
+            builtYear: '',
+          },
+          status: 'Available',
+          approvalStatus: 'Published',
+          isVerified: false,
+          isAdopted: false,
+          actualPrice: '',
+          sellingPrice: '',
+          facilities: [],
+          services: [],
+          nearby: [],
+          gallery: [],
+          propertyCode: '',
+        },
+  )
 
   console.log('formData===>', formData)
 
   const [loading, setLoading] = useState(false)
-  const [galleryLoading, setGalleryLoading] = useState(false)
-  const [documentLoading, setDocumentLoading] = useState(false)
   const [errors, setErrors] = useState({})
 
-  // Location search states
-  const [addressSearchTerm, setAddressSearchTerm] = useState(modalData?.address || '')
-  const [places, setPlaces] = useState([])
-  const [showPlacesSuggestions, setShowPlacesSuggestions] = useState(false)
-
-  // Form inputs for dynamic arrays
-  const [facilityInput, setFacilityInput] = useState('')
-  const [serviceInput, setServiceInput] = useState('')
-  const [nearbyName, setNearbyName] = useState('')
-  const [nearbyDistance, setNearbyDistance] = useState('')
-  const [docName, setDocName] = useState('')
-  const [docNumber, setDocNumber] = useState('')
-  const { user, setUser } = useContext(AppContext)
   const [addedBy, setAddBy] = useState(null)
-
-  // Google Places API configuration
-  const apiKey = 'AIzaSyAQqh6qd0umyH9zAmfsfbVHuMvFcN_m3kQ' // Secure this key in production
-  const placesUrl = 'https://places.googleapis.com/v1/places:searchText'
 
   React.useEffect(() => {
     if (user?._id) {
@@ -94,66 +68,86 @@ const PropertiesModal = ({
     }
   }, [user])
 
-  React.useEffect(() => {
-    if (modalData?.address) {
-      setAddressSearchTerm(modalData.address)
-    }
-  }, [modalData])
-
   console.log('formData', formData, addedBy)
   console.log('user details from context Provider', user)
-
-  // 🔹 Handle place selection
-  const handlePlaceSelect = (place) => {
-    setFormData((prev) => ({
-      ...prev,
-      address: place.formattedAddress,
-      coordinates: [place.location.longitude, place.location.latitude],
-    }))
-
-    setAddressSearchTerm(place.formattedAddress)
-    setShowPlacesSuggestions(false)
-    setPlaces([])
-  }
 
   // 🔹 Close modal
   const handleCancel = () => {
     setFormData({
-      name: '',
       address: '',
-      coordinates: '',
+      location: {
+        type: 'Point',
+        coordinates: [],
+      },
+      addedBy: user?._id,
+      name: '',
       propertyType: '',
+      documents: [],
+      description: '',
+      propertyDetails: {
+        area: '',
+        bedrooms: '',
+        bathrooms: '',
+        floors: '',
+        facing: '',
+        builtYear: '',
+      },
+      status: 'Available',
+      approvalStatus: 'Published',
+      isVerified: false,
+      isAdopted: false,
       actualPrice: '',
       sellingPrice: '',
-      description: '',
       facilities: [],
       services: [],
       nearby: [],
       gallery: [],
-      documents: [],
-      isActive: true,
+      propertyCode: '',
     })
-    setErrors({})
-    setFacilityInput('')
-    setServiceInput('')
-    setNearbyName('')
-    setNearbyDistance('')
-    setDocName('')
-    setDocNumber('')
-    setAddressSearchTerm('')
-    setPlaces([])
-    setShowPlacesSuggestions(false)
+
     setModalData(null)
     setIsModalOpen(false)
   }
 
-  // 🔹 Handle input change
   const handleChange = (e) => {
-    const { name, value, type, checked } = e.target
+    const { name, value, type, checked, dataset } = e.target
 
-    setFormData({
-      ...formData,
-      [name]: type === 'checkbox' ? checked : value,
+    // If data-nested is present, update nested object
+    if (dataset.nested) {
+      const nestedKey = dataset.nested // e.g., "propertyDetails"
+      setFormData((prev) => ({
+        ...prev,
+        [nestedKey]: {
+          ...prev[nestedKey],
+          [name]: type === 'checkbox' ? checked : value,
+        },
+      }))
+    } else {
+      setFormData((prev) => ({
+        ...prev,
+        [name]: type === 'checkbox' ? checked : value,
+      }))
+    }
+  }
+
+  const handleChangeImage = (e) => {
+    const files = Array.from(e.target.files) // ✅ Convert FileList to array
+
+    files.forEach((file) => {
+      fileUpload({
+        url: `upload/uploadImage`,
+        cred: { file },
+      })
+        .then((res) => {
+          setFormData((prev) => ({
+            ...prev,
+            gallery: [...(prev.gallery || []), res.data?.data?.imageUrl], // ✅ Push into gallery array
+          }))
+          console.log('res data pic ', res?.data)
+        })
+        .catch((error) => {
+          console.error('Image upload failed:', error)
+        })
     })
   }
 
@@ -178,7 +172,6 @@ const PropertiesModal = ({
     setErrors(newErrors)
     return Object.keys(newErrors).length === 0
   }
-
 
   // nearBY
 
@@ -231,10 +224,43 @@ const PropertiesModal = ({
     }))
   }
 
+  const handleDocumentImageChange = (e, index) => {
+    const file = e.target.files[0]
+    if (!file) return
+
+    // Upload to server
+    fileUpload({
+      url: `upload/uploadImage`,
+      cred: { file },
+    })
+      .then((res) => {
+        const uploadedUrl = res.data?.data?.imageUrl
+        const updatedDocuments = [...formData.documents]
+        updatedDocuments[index].image = uploadedUrl
+
+        setFormData((prev) => ({
+          ...prev,
+          documents: updatedDocuments,
+        }))
+      })
+      .catch((error) => {
+        console.error('Document image upload failed:', error)
+      })
+  }
+
+  const removeDocumentImage = (index) => {
+    const updatedDocuments = [...formData.documents]
+    updatedDocuments[index].image = '' // clear the image
+    setFormData((prev) => ({
+      ...prev,
+      documents: updatedDocuments,
+    }))
+  }
+
   const addDocument = () => {
     setFormData((prev) => ({
       ...prev,
-      documents: [...prev.nearby, { name: '', number: '' }],
+      documents: [...prev.nearby, { name: '', number: '', image: '' }],
     }))
   }
 
@@ -249,7 +275,6 @@ const PropertiesModal = ({
   // 🔹 Submit handler for edit
   const handleEdit = (e) => {
     e.preventDefault()
-    if (!validateForm()) return
 
     setLoading(true)
 
@@ -257,36 +282,35 @@ const PropertiesModal = ({
       .then((res) => {
         toast.success(res?.data?.message || 'Property updated successfully')
         setUpdateStatus((prev) => !prev)
+         setLoading(false)
         handleCancel()
       })
       .catch((error) => {
         console.log('error', error)
+        setLoading(false)
         toast.error(error?.response?.data?.message || 'Update failed')
       })
-      .finally(() => {
-        setLoading(false)
-      })
+     
   }
 
   // 🔹 Submit handler for create
   const handleSubmit = (e) => {
     e.preventDefault()
-    if (!validateForm()) return
-
+   
     setLoading(true)
     postRequest({ url: `properties`, cred: formData })
       .then((res) => {
         toast.success(res?.data?.message || 'Property added successfully')
         setUpdateStatus((prev) => !prev)
+         setLoading(false)
         handleCancel()
       })
       .catch((error) => {
         console.log('error', error)
+        setLoading(false)
         toast.error(error?.response?.data?.message || 'Creation failed')
       })
-      .finally(() => {
-        setLoading(false)
-      })
+     
   }
 
   return (
@@ -301,11 +325,7 @@ const PropertiesModal = ({
       <div
         style={{ maxHeight: '80vh', overflowY: 'auto', paddingRight: '50px', marginBottom: '50px' }}
       >
-        <form
-          onSubmit={modalData ? handleEdit : handleSubmit}
-          className="needs-validation"
-          noValidate
-        >
+        <form onSubmit={modalData ? handleEdit : handleSubmit} className="needs-validation">
           <div className="row">
             <div className="col-md-6">
               <div className="mb-3">
@@ -314,6 +334,7 @@ const PropertiesModal = ({
                   type="text"
                   className={`form-control ${errors.name ? 'is-invalid' : ''}`}
                   name="name"
+                  required
                   value={formData?.name}
                   onChange={handleChange}
                   placeholder="Enter property name (e.g., Luxury Villa)"
@@ -326,9 +347,10 @@ const PropertiesModal = ({
               <div className="mb-3">
                 <label className="form-label fw-bold">Property Type *</label>
                 <select
-                  className={`form-select ${errors.propertyType ? 'is-invalid' : ''}`}
+                  className={`form-select `}
                   name="propertyType"
                   value={formData.propertyType}
+                  required
                   onChange={handleChange}
                 >
                   <option value="">Select Property Type</option>
@@ -340,49 +362,122 @@ const PropertiesModal = ({
                   <option value="Office">Office</option>
                   <option value="Shop">Shop</option>
                 </select>
-                {errors.propertyType && (
-                  <div className="invalid-feedback">{errors.propertyType}</div>
-                )}
               </div>
             </div>
             <div className="col-md-6">
               <label className="form-label fw-bold">Actual Price (₹) *</label>
               <input
                 type="number"
-                className={`form-control ${errors.actualPrice ? 'is-invalid' : ''}`}
+                className={`form-control `}
                 name="actualPrice"
                 value={formData?.actualPrice}
+                required
                 onChange={handleChange}
-                placeholder="5000000"
+                placeholder=""
                 min="0"
               />
-              {errors.actualPrice && <div className="invalid-feedback">{errors.actualPrice}</div>}
             </div>
             <div className="col-md-6">
               <label className="form-label fw-bold">Selling Price (₹) *</label>
               <input
                 type="number"
-                className={`form-control ${errors.sellingPrice ? 'is-invalid' : ''}`}
+                className={`form-control `}
                 name="sellingPrice"
                 value={formData?.sellingPrice}
+                required
                 onChange={handleChange}
-                placeholder="4500000"
+                placeholder=""
                 min="0"
               />
-              {errors.sellingPrice && <div className="invalid-feedback">{errors.sellingPrice}</div>}
             </div>
             <div className="col-md-12">
               <label className="form-label fw-bold">Description *</label>
               <textarea
                 type="text"
-                className={`form-control ${errors.description ? 'is-invalid' : ''}`}
+                className={`form-control`}
                 name="description"
                 rows={3}
+                required
                 value={formData?.description}
                 onChange={handleChange}
               />
-              {errors.sellingPrice && <div className="invalid-feedback">{errors.sellingPrice}</div>}
             </div>
+
+            {/* =================== */}
+
+            <hr className="m-0 p-0 my-3" />
+
+            <label className="form-label fw-bold">Property Details </label>
+            <div className="col-md-6">
+              <label className="form-label fw-bold">Area </label>
+              <input
+                type="text"
+                className="form-control"
+                name="area"
+                data-nested="propertyDetails" // ✅ specify nested object
+                value={formData?.propertyDetails?.area}
+                onChange={handleChange}
+              />
+            </div>
+            <div className="col-md-6">
+              <label className="form-label fw-bold">Bedrooms </label>
+              <input
+                type="text"
+                className="form-control"
+                name="bedrooms"
+                data-nested="propertyDetails" // ✅ specify nested object
+                value={formData?.propertyDetails?.bedrooms}
+                onChange={handleChange}
+              />
+            </div>
+            <div className="col-md-6">
+              <label className="form-label fw-bold"> Bathrooms </label>
+              <input
+                type="text"
+                className="form-control"
+                name="bathrooms"
+                data-nested="propertyDetails" // ✅ specify nested object
+                value={formData?.propertyDetails?.bathrooms}
+                onChange={handleChange}
+              />
+            </div>
+            <div className="col-md-6">
+              <label className="form-label fw-bold">Floors </label>
+              <input
+                type="text"
+                className="form-control"
+                name="floors"
+                data-nested="propertyDetails" // ✅ specify nested object
+                value={formData?.propertyDetails?.floors}
+                onChange={handleChange}
+              />
+            </div>
+            <div className="col-md-6">
+              <label className="form-label fw-bold">Facing </label>
+              <input
+                type="text"
+                className="form-control"
+                name="facing"
+                data-nested="propertyDetails" // ✅ specify nested object
+                value={formData?.propertyDetails?.facing}
+                onChange={handleChange}
+              />
+            </div>
+            <div className="col-md-6">
+              <label className="form-label fw-bold">BuiltYear </label>
+              <input
+                type="text"
+                className="form-control"
+                name="builtYear"
+                data-nested="propertyDetails" // ✅ specify nested object
+                value={formData?.propertyDetails?.builtYear}
+                onChange={handleChange}
+              />
+            </div>
+
+            <hr className="m-0 p-0 my-3" />
+
+            {/* ======================= */}
             <div className="col-md-6">
               <label className="form-label fw-bold">Address *</label>
               <LocationSearchInput formData={formData} setFormData={setFormData} />
@@ -394,9 +489,13 @@ const PropertiesModal = ({
                 className={`form-control ${errors?.propertyCode ? 'is-invalid' : ''}`}
                 name="propertyCode"
                 value={formData?.propertyCode}
+                required
                 onChange={handleChange}
               />
             </div>
+
+            {/* Facilities */}
+
             <div className="col-md-6">
               <label className="form-label fw-bold">Facilities *</label>
 
@@ -405,7 +504,7 @@ const PropertiesModal = ({
                 mode="tags"
                 size="large"
                 style={{ width: '100%' }}
-                placeholder="Tags Mode"
+                placeholder="Enter/Select Your Facilities"
                 onChange={(value) => {
                   setFormData({
                     ...formData,
@@ -414,6 +513,8 @@ const PropertiesModal = ({
                 }}
               />
             </div>
+
+            {/* Services */}
             <div className="col-md-6">
               <label className="form-label fw-bold">Services *</label>
 
@@ -422,7 +523,7 @@ const PropertiesModal = ({
                 mode="tags"
                 size="large"
                 style={{ width: '100%' }}
-                placeholder="Tags Mode"
+                placeholder="Enter/Select Your Services"
                 onChange={(value) => {
                   setFormData({
                     ...formData,
@@ -432,6 +533,72 @@ const PropertiesModal = ({
               />
             </div>
 
+            {/* Property Images */}
+            <div className="col-md-6">
+              <label className="form-label fw-bold">Property Images *</label>
+              <input
+                type="file"
+                className={`form-control `}
+                name="propertyCode"
+                accept="image/*"
+                required={modalData ? false :true}
+                multiple
+                onChange={handleChangeImage}
+              />
+            </div>
+            {formData?.gallery?.length > 0 && (
+              <div className="col-md-6">
+                <div className="d-flex gap-2 my-2 flex-wrap">
+                  {formData.gallery.map((item, index) => (
+                    <div key={index} style={{ position: 'relative', display: 'inline-block' }}>
+                      {/* Image */}
+                      <img
+                        src={item}
+                        alt={`gallery-${index}`}
+                        style={{
+                          width: '50px',
+                          height: '50px',
+                          objectFit: 'cover',
+                          borderRadius: '4px',
+                        }}
+                      />
+
+                      {/* Cross Button */}
+                      <button
+                        onClick={() => {
+                          setFormData((prev) => ({
+                            ...prev,
+                            gallery: prev.gallery.filter((_, i) => i !== index),
+                          }))
+                        }}
+                        style={{
+                          position: 'absolute',
+                          top: '-5px',
+                          right: '-5px',
+                          background: 'red',
+                          color: 'white',
+                          border: 'none',
+                          borderRadius: '50%',
+                          width: '18px',
+                          height: '18px',
+                          fontSize: '12px',
+                          cursor: 'pointer',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                        }}
+                      >
+                        ✕
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            <hr className="m-0 p-0 my-3" />
+
+            {/* Nearby */}
             <div className="col-md-12">
               <label className="form-label">
                 <strong>Nearby</strong>
@@ -482,6 +649,8 @@ const PropertiesModal = ({
                 </button>
               </div>
             </div>
+            <hr className="m-0 p-0 my-3" />
+            {/* Documents */}
             <div className="col-md-12">
               <label className="form-label">
                 <strong>Documents</strong>
@@ -495,7 +664,7 @@ const PropertiesModal = ({
                       type="text"
                       name={`facilityName_${index}`}
                       value={facility?.name}
-                      onChange={(e) => handleNearByChange(e, index)}
+                      onChange={(e) => handleDocumentChange(e, index)}
                       className="form-control"
                     />
                   </div>
@@ -513,11 +682,51 @@ const PropertiesModal = ({
                     <label className="form-label">Document Image</label>
                     <input
                       type="file"
-                      name={`facilityDistance_${index}`}
-                      value={facility?.distance}
-                      onChange={(e) => handleDocumentChange(e, index)}
+                      accept="image/*"
                       className="form-control"
+                      onChange={(e) => handleDocumentImageChange(e, index)}
                     />
+                  </div>
+                  <div className="col-md-6 m-0 my-2">
+                    {facility?.image && (
+                      <div style={{ position: 'relative', display: 'inline-block' }}>
+                        <img
+                          src={facility.image}
+                          alt={`doc-${index}`}
+                          style={{
+                            width: '60px',
+                            height: '60px',
+                            marginTop: '5px',
+                            borderRadius: '4px',
+                            objectFit: 'cover',
+                          }}
+                        />
+                        {/* ❌ Remove button */}
+                        <button
+                          type="button"
+                          onClick={() => removeDocumentImage(index)}
+                          style={{
+                            position: 'absolute',
+                            top: '-5px',
+                            right: '-5px',
+                            background: 'red',
+                            color: 'white',
+                            border: 'none',
+                            borderRadius: '50%',
+                            width: '18px',
+                            height: '18px',
+                            fontSize: '12px',
+                            cursor: 'pointer',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            padding: 0,
+                          }}
+                        >
+                          ✕
+                        </button>
+                      </div>
+                    )}
                   </div>
 
                   {/* Button to remove a facility */}
@@ -541,6 +750,63 @@ const PropertiesModal = ({
                   Add More
                 </button>
               </div>
+            </div>
+            <hr className="m-0 p-0 my-3" />
+
+            <div className="col-md-6">
+              <label className="form-label fw-bold"> Adopted Status *</label>
+
+              <select
+                className={`form-control `}
+                name="isAdopted"
+                value={formData?.isAdopted}
+                onChange={handleChange}
+              >
+                <option value="true">Adopted</option>
+                <option value="false"> Not Adopted</option>
+              </select>
+            </div>
+            <div className="col-md-6">
+              <label className="form-label fw-bold">Verifyed Status *</label>
+
+              <select
+                className={`form-control `}
+                name="isVerified"
+                value={formData?.isVerified}
+                onChange={handleChange}
+              >
+                <option value="true">Verifyed</option>
+                <option value="false"> Not Verifyed</option>
+              </select>
+            </div>
+            <div className="col-md-6">
+              <label className="form-label fw-bold">Approval Status *</label>
+
+              <select
+                className={`form-control `}
+                name="approvalStatus"
+                value={formData?.approvalStatus}
+                onChange={handleChange}
+              >
+                <option value="Pending">Pending</option>
+                <option value="Published">Published</option>
+                <option value="Rejected"> Rejected</option>
+              </select>
+            </div>
+            <div className="col-md-6">
+              <label className="form-label fw-bold">Property Status *</label>
+
+              <select
+                className={`form-control `}
+                name="status"
+                value={formData?.status}
+                onChange={handleChange}
+              >
+                <option value="Available">Available</option>
+                <option value="Sold">Sold</option>
+                <option value="Registered">Registered</option>
+                <option value="Booked">Booked</option>
+              </select>
             </div>
           </div>
 

@@ -157,6 +157,7 @@ const Properties = () => {
             <tr className="bg-gray-50">
               <th className="px-6 py-3">Property</th>
               <th className="px-6 py-3">Type</th>
+              <th className="px-6 py-3">Approval Status</th>
               <th className="px-6 py-3">Location</th>
               <th className="px-6 py-3">Price</th>
               <th className="px-6 py-3">Gallery</th>
@@ -191,6 +192,11 @@ const Properties = () => {
                   <td className="px-6 py-4">
                     <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
                       {item?.propertyType || 'N/A'}
+                    </span>
+                  </td>
+                  <td className="px-6 py-4">
+                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                      {item?.approvalStatus || 'N/A'}
                     </span>
                   </td>
 
@@ -247,20 +253,39 @@ const Properties = () => {
                   {/* Actions */}
                   <td className="px-6 py-4">
                     <div className="flex gap-2">
-                      <button
-                        onClick={() => approveData(item, 'Published')}
-                        className=" btn btn-primary  p-1"
-                        title="Edit property"
-                      >
-                        Approve
-                      </button>
-                      <button
-                        onClick={() => approveData(item, 'Rejected')}
-                        className=" btn btn-primary  p-1"
-                        title="Edit property"
-                      >
-                        Reject
-                      </button>
+                
+                      {item?.approvalStatus == 'Pending' ? (
+                        <>
+                          <button
+                            onClick={() => approveData(item, 'Published')}
+                            className=" btn btn-primary  p-1"
+                            title="Edit property"
+                          >
+                            Approve
+                          </button>
+                          <button
+                            onClick={() => approveData(item, 'Rejected')}
+                            className=" btn btn-primary  p-1"
+                            title="Edit property"
+                          >
+                            Reject
+                          </button>
+                        </>
+                      ) : (
+                        ''
+                      )}
+                      {item?.approvalStatus == 'Rejected' ? (
+                        <button
+                          onClick={() => approveData(item, 'Published')}
+                          className=" btn btn-primary  p-1"
+                          title="Edit property"
+                        >
+                          Approve
+                        </button>
+                      ) : (
+                        ''
+                      )}
+
                       <button
                         onClick={() => {
                           setSelectedItem(item)
