@@ -62,6 +62,7 @@ const LocationSearchInput = ({   formData, setFormData }) => {
         onChange={handleSearch}
         placeholder="Search for a location"
         className="form-control"
+        required
       />
 
       {detailsVisible && places.length > 0 && (
