@@ -17,26 +17,49 @@ const useNav = () => {
       items: [
         {
           component: CNavItem,
-          name: 'Banner',
-          to: '/banner',
+          name: 'Property Type',
+          to: '/propertyType',
           icon: <MdOutlineDashboard className="me-3" />,
         },
         {
           component: CNavItem,
-          name: 'Category',
-          to: '/category',
+          name: 'BHK',
+          to: '/bhk',
           icon: <MdOutlineDashboard className="me-3" />,
         },
-       
+        {
+          component: CNavItem,
+          name: 'Services',
+          to: '/services',
+          icon: <MdOutlineDashboard className="me-3" />,
+        },
+        {
+          component: CNavItem,
+          name: 'Facilities',
+          to: '/facilities',
+          icon: <MdOutlineDashboard className="me-3" />,
+        },
+        {
+          component: CNavItem,
+          name: 'Documents',
+          to: '/documents',
+          icon: <MdOutlineDashboard className="me-3" />,
+        },
       ],
     },
-      {
+    {
       component: CNavItem,
       name: 'Properties',
       to: '/properties',
       icon: <MdOutlineDashboard className="me-3" />,
     },
-   
+
+    {
+      component: CNavItem,
+      name: 'Banner',
+      to: '/banner',
+      icon: <MdOutlineDashboard className="me-3" />,
+    },
   ]
 
   return navItems

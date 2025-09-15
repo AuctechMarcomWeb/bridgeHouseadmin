@@ -2,14 +2,22 @@ import React from 'react'
 import Banners from './views/Banners/Banners'
 import Category from './views/Category/Category'
 import Properties from './views/Properties/Properties'
+import Services from './views/Services/Services'
+import Facilities from './views/Facilities/Facilities'
+import Bhk from './views/Bhk/Bhk'
+import Documents from './views/Documents/Documents'
 
 const Dashboard = React.lazy(() => import('./views/dashboard/Dashboard'))
 
 const routes = [
   { path: '/Dashboard', exact: true, name: 'Dashboard', element: Dashboard }, // ✅ use Dashboard here
-  { path: '/category', name: 'ELM Profile', element: Category },
-  { path: '/banner', name: 'ELM Profile', element: Banners },
-  { path: '/properties', name: 'ELM Profile', element: Properties },
+  { path: '/banner', name: 'Banners ', element: Banners },
+  { path: '/properties', name: 'Properties', element: Properties },
+  { path: '/propertyType', name: 'Category', element: Category },
+  { path: '/bhk', name: 'Bhk', element: Bhk },
+  { path: '/services', name: 'Services', element: Services },
+  { path: '/facilities', name: 'Facilities', element: Facilities },
+  { path: '/documents', name: 'ELM Profile', element: Documents },
 ]
 
 export default routes
