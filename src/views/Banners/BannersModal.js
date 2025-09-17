@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 import { Modal } from 'antd'
 import React, { useState, useEffect } from 'react'
 import toast from 'react-hot-toast'
@@ -15,8 +16,14 @@ const BannersModal = ({
       ? {
           ...modalData,
           // Extract IDs from objects if they exist
-          propertyId: typeof modalData.propertyId === 'object' ? modalData.propertyId._id : modalData.propertyId,
-          categoryId: typeof modalData.categoryId === 'object' ? modalData.categoryId._id : modalData.categoryId,
+          propertyId:
+            typeof modalData.propertyId === 'object'
+              ? modalData.propertyId._id
+              : modalData.propertyId,
+          categoryId:
+            typeof modalData.categoryId === 'object'
+              ? modalData.categoryId._id
+              : modalData.categoryId,
         }
       : {
           title: '',
@@ -35,7 +42,7 @@ const BannersModal = ({
   const [limit] = useState(10)
   const [allProperties, setAllProperties] = useState([])
   const [allCategories, setAllCategories] = useState([])
-  
+
   console.log('formData', formData)
 
   const [errors, setErrors] = useState({})
@@ -46,8 +53,14 @@ const BannersModal = ({
       setFormData({
         ...modalData,
         // Extract IDs from objects if they exist
-        propertyId: typeof modalData.propertyId === 'object' ? modalData.propertyId._id : modalData.propertyId,
-        categoryId: typeof modalData.categoryId === 'object' ? modalData.categoryId._id : modalData.categoryId,
+        propertyId:
+          typeof modalData.propertyId === 'object'
+            ? modalData.propertyId._id
+            : modalData.propertyId,
+        categoryId:
+          typeof modalData.categoryId === 'object'
+            ? modalData.categoryId._id
+            : modalData.categoryId,
       })
     } else {
       setFormData({
@@ -64,14 +77,14 @@ const BannersModal = ({
 
   // 🔹 Close modal
   const handleCancel = () => {
-    setFormData({ 
-      title: '', 
+    setFormData({
+      title: '',
       propertyId: '',
       categoryId: '',
       bannerImage: '',
       bannersImages: [],
       bannerType: '',
-      isActive: true 
+      isActive: true,
     })
     setErrors({})
     setModalData(null)
@@ -103,20 +116,20 @@ const BannersModal = ({
   const handleChangeMultipleBannerImages = (e) => {
     const files = Array.from(e.target.files)
     setMultiImageLoading(true)
-    
-    const uploadPromises = files.map(file => 
+
+    const uploadPromises = files.map((file) =>
       fileUpload({
         url: `upload/uploadImage`,
         cred: { file },
-      })
+      }),
     )
 
     Promise.all(uploadPromises)
       .then((responses) => {
-        const imageUrls = responses.map(res => res.data?.data?.imageUrl)
-        setFormData((prev) => ({ 
-          ...prev, 
-          bannersImages: [...prev.bannersImages, ...imageUrls] 
+        const imageUrls = responses.map((res) => res.data?.data?.imageUrl)
+        setFormData((prev) => ({
+          ...prev,
+          bannersImages: [...prev.bannersImages, ...imageUrls],
         }))
         console.log('Multiple images uploaded:', imageUrls)
         setMultiImageLoading(false)
@@ -131,7 +144,7 @@ const BannersModal = ({
   const removeBannerImage = (indexToRemove) => {
     setFormData((prev) => ({
       ...prev,
-      bannersImages: prev.bannersImages.filter((_, index) => index !== indexToRemove)
+      bannersImages: prev.bannersImages.filter((_, index) => index !== indexToRemove),
     }))
   }
 
@@ -152,7 +165,7 @@ const BannersModal = ({
     if (!formData.propertyId.trim()) newErrors.propertyId = 'Property selection is required'
     if (!formData.categoryId.trim()) newErrors.categoryId = 'Category selection is required'
     if (!formData.bannerType.trim()) newErrors.bannerType = 'Banner type is required'
-    
+
     setErrors(newErrors)
     return Object.keys(newErrors).length === 0
   }
@@ -197,7 +210,7 @@ const BannersModal = ({
       .then((res) => {
         const responseData = res?.data?.data
         setAllProperties(responseData.properties)
-        console.log("Properties", responseData)
+        console.log('Properties', responseData)
       })
       .catch((error) => {
         console.log('error', error)
@@ -209,7 +222,7 @@ const BannersModal = ({
     getRequest(`category?isPagination=false`)
       .then((res) => {
         const responseData = res?.data?.data
-        console.log("Category", responseData)
+        console.log('Category', responseData)
         setAllCategories(responseData?.categories)
       })
       .catch((error) => {
@@ -313,9 +326,9 @@ const BannersModal = ({
           {loading && <small className="text-info">Uploading...</small>}
           {formData.bannerImage && (
             <div className="mt-2">
-              <img 
-                src={formData.bannerImage} 
-                alt="Banner preview" 
+              <img
+                src={formData.bannerImage}
+                alt="Banner preview"
                 style={{ width: '100px', height: '60px', objectFit: 'cover' }}
                 className="rounded"
               />
@@ -336,16 +349,16 @@ const BannersModal = ({
             multiple
           />
           {multiImageLoading && <small className="text-info">Uploading multiple images...</small>}
-          
+
           {formData.bannersImages && formData.bannersImages.length > 0 && (
             <div className="mt-2">
               <div className="row">
                 {formData.bannersImages.map((imageUrl, index) => (
                   <div key={index} className="col-md-3 mb-2">
                     <div className="position-relative">
-                      <img 
-                        src={imageUrl} 
-                        alt={`Banner ${index + 1}`} 
+                      <img
+                        src={imageUrl}
+                        alt={`Banner ${index + 1}`}
                         style={{ width: '100%', height: '60px', objectFit: 'cover' }}
                         className="rounded"
                       />

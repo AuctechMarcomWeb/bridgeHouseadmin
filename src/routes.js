@@ -6,12 +6,14 @@ import Services from './views/Services/Services'
 import Facilities from './views/Facilities/Facilities'
 import Bhk from './views/Bhk/Bhk'
 import Documents from './views/Documents/Documents'
+import Enquiry from './views/Enquiry/Enquiry'
 
 const Dashboard = React.lazy(() => import('./views/dashboard/Dashboard'))
 
 const routes = [
   { path: '/Dashboard', exact: true, name: 'Dashboard', element: Dashboard }, // ✅ use Dashboard here
   { path: '/banner', name: 'Banners ', element: Banners },
+  { path: '/enquiry', name: 'Enquiry ', element: Enquiry },
   { path: '/properties', name: 'Properties', element: Properties },
   { path: '/propertyType', name: 'Category', element: Category },
   { path: '/bhk', name: 'Bhk', element: Bhk },
