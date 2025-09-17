@@ -60,6 +60,12 @@ const useNav = () => {
       to: '/banner',
       icon: <MdOutlineDashboard className="me-3" />,
     },
+    {
+      component: CNavItem,
+      name: 'Enquiry',
+      to: '/enquiry',
+      icon: <MdOutlineDashboard className="me-3" />,
+    },
   ]
 
   return navItems
