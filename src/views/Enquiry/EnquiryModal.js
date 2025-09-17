@@ -17,17 +17,15 @@ const EnquiryModal = ({
     modalData
       ? {
           ...modalData,
-          propertyId:
-            typeof modalData.propertyId === 'object'
-              ? modalData.propertyId._id
-              : modalData.propertyId,
+          property: modalData?.property?._id,
         }
       : {
           name: '',
-          propertyId: '',
+          property: '',
           email: '',
           phone: '',
           message: '',
+          status: 'new', // default value
         },
   )
   const [loading, setLoading] = useState(false)
@@ -37,33 +35,16 @@ const EnquiryModal = ({
   const [errors, setErrors] = useState({})
   console.log('formData', formData)
 
-  useEffect(() => {
-    if (modalData) {
-      setFormData({
-        ...modalData,
-        propertyId:
-          typeof modalData.propertyId === 'object'
-            ? modalData.propertyId._id
-            : modalData.propertyId,
-      })
-    } else {
-      setFormData({
-        name: '',
-        propertyId: '',
-        email: '',
-        phone: '',
-        message: '',
-      })
-    }
-  }, [modalData])
+  //
 
   const handleCancel = () => {
     setFormData({
       name: '',
-      propertyId: '',
+      property: '',
       email: '',
       phone: '',
       message: '',
+      status: '', // default value
     })
     setErrors({})
     setModalData(null)
@@ -71,10 +52,10 @@ const EnquiryModal = ({
   }
 
   const handleChange = (e) => {
-    const { name, value, type, checked } = e.target
+    const { name, value } = e.target
     setFormData({
       ...formData,
-      [name]: type === 'checkbox' ? checked : value,
+      [name]: value,
     })
   }
 
@@ -90,6 +71,18 @@ const EnquiryModal = ({
         console.log('error', error)
       })
   }, [page, limit])
+
+  const validateForm = () => {
+    let newErrors = {}
+    if (!formData.name?.trim()) newErrors.name = 'Name is required'
+    if (!formData.phone?.trim()) newErrors.phone = 'Phone is required'
+    if (!formData.email?.trim()) newErrors.email = 'Email is required'
+    if (!formData.message?.trim()) newErrors.message = 'Message is required'
+    if (!formData.property?.trim()) newErrors.property = 'Property selection is required'
+
+    setErrors(newErrors)
+    return Object.keys(newErrors).length === 0
+  }
 
   const handleSubmit = (e) => {
     e.preventDefault()
@@ -110,7 +103,6 @@ const EnquiryModal = ({
   const handleEdit = (e) => {
     e.preventDefault()
     if (!validateForm()) return
-
     putRequest({ url: `enquiry/${modalData?._id}`, cred: formData })
       .then((res) => {
         toast.success(res?.data?.message || 'Enquiry updated successfully')
@@ -121,18 +113,6 @@ const EnquiryModal = ({
         console.log('error', error)
         toast.error(error?.response?.data?.message)
       })
-  }
-
-  const validateForm = () => {
-    let newErrors = {}
-    if (!formData.name.trim()) newErrors.name = 'Name is required'
-    if (!formData.phone.trim()) newErrors.phone = 'Phone is required'
-    if (!formData.email.trim()) newErrors.Email = 'Email  is required'
-    if (!formData.message.trim()) newErrors.message = 'Message  is required'
-    if (!formData.propertyId.trim()) newErrors.propertyId = 'Property selection is required'
-
-    setErrors(newErrors)
-    return Object.keys(newErrors).length === 0
   }
 
   return (
@@ -174,7 +154,6 @@ const EnquiryModal = ({
           />
           {errors?.phone && <div className="invalid-feedback">{errors.phone}</div>}
         </div>
-
         {/* E-mail */}
         <div className="mb-3">
           <label className="form-label fw-bold">E-mail </label>
@@ -188,7 +167,6 @@ const EnquiryModal = ({
           />
           {errors?.email && <div className="invalid-feedback">{errors.email}</div>}
         </div>
-
         {/* Message */}
         <div className="mb-3">
           <label className="form-label fw-bold">Message </label>
@@ -202,14 +180,13 @@ const EnquiryModal = ({
           />
           {errors?.message && <div className="invalid-feedback">{errors.message}</div>}
         </div>
-
         {/* Property Selection */}
         <div className="mb-3">
           <label className="form-label fw-bold">Property</label>
           <select
-            className={`form-select ${errors.propertyId ? 'is-invalid' : ''}`}
-            name="propertyId"
-            value={formData?.propertyId}
+            className={`form-select ${errors.property ? 'is-invalid' : ''}`}
+            name="property"
+            value={formData?.property}
             onChange={handleChange}
           >
             <option value="">Select Property</option>
@@ -219,31 +196,48 @@ const EnquiryModal = ({
               </option>
             ))}
           </select>
-          {errors.propertyId && <div className="invalid-feedback">{errors.propertyId}</div>}
+          {errors.property && <div className="invalid-feedback">{errors.property}</div>}
         </div>
-
-        {/* Active Status */}
-        {/* <div className="form-check mb-3">
-          <input
-            type="checkbox"
-            className="form-check-input"
-            name="status"
-            checked={formData.status}
-            onChange={handleChange}
-            id="status"
-          />
-          <label className="form-check-label" htmlFor="status">
-            Active
+        {/* Notes */}
+        {modalData && (
+          <div className="mb-3">
+            <label className="form-label fw-bold">Notes</label>
+            <input
+              type="text"
+              className={`form-control ${errors.notes ? 'is-invalid' : ''}`}
+              name="notes"
+              value={formData?.notes || 'N/A'} // default blank if undefined
+              onChange={handleChange}
+              placeholder="Enter notes"
+            />
+            {errors?.notes && <div className="invalid-feedback">{errors.notes}</div>}
+          </div>
+        )}
+        {/* Status */}
+        <div className="mb-3">
+          <label htmlFor="status" className="form-label">
+            Status
           </label>
-        </div> */}
-
+          <select
+            id="status"
+            name="status"
+            className="form-select"
+            value={formData?.status} // default "new"
+            onChange={handleChange}
+          >
+            <option value="new">New</option>
+            <option value="viewed">Viewed</option>
+            <option value="contacted">Contacted</option>
+            <option value="closed">Closed</option>
+          </select>
+        </div>
         {/* Buttons */}
         <div className="d-flex justify-content-end gap-2">
           <button type="button" className="btn btn-secondary" onClick={handleCancel}>
             Cancel
           </button>
           <button type="submit" className="btn btn-primary" disabled={loading}>
-            {loading ? 'Saving...' : 'Save Banner'}
+            {loading ? 'Saving...' : 'Save Enquiry'}
           </button>
         </div>
       </form>
