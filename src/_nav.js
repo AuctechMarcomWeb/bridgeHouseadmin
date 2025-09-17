@@ -66,6 +66,12 @@ const useNav = () => {
       to: '/enquiry',
       icon: <MdOutlineDashboard className="me-3" />,
     },
+    {
+      component: CNavItem,
+      name: 'Subscription',
+      to: '/subscription',
+      icon: <MdOutlineDashboard className="me-3" />,
+    },
   ]
 
   return navItems
