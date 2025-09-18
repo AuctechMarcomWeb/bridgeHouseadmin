@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 /* eslint-disable react/prop-types */
 import { Modal } from 'antd'
 import React, { useState, useEffect } from 'react'
@@ -243,139 +244,144 @@ const BannersModal = ({
         className="needs-validation"
         noValidate
       >
-        {/* Title */}
-        <div className="mb-3">
-          <label className="form-label fw-bold">Title</label>
-          <input
-            type="text"
-            className={`form-control ${errors.title ? 'is-invalid' : ''}`}
-            name="title"
-            value={formData.title}
-            onChange={handleChange}
-            placeholder="Enter banner title"
-          />
-          {errors?.title && <div className="invalid-feedback">{errors.title}</div>}
+        <div className="row">
+          {/* Title */}
+          <div className="col-md-6 mb-3">
+            <label className="form-label fw-bold">Title</label>
+            <input
+              type="text"
+              className={`form-control ${errors.title ? 'is-invalid' : ''}`}
+              name="title"
+              value={formData.title}
+              onChange={handleChange}
+              placeholder="Enter banner title"
+            />
+            {errors?.title && <div className="invalid-feedback">{errors.title}</div>}
+          </div>
+          {/* Property Selection */}
+          <div className="col-md-6 mb-3">
+            <label className="form-label fw-bold">Property</label>
+            <select
+              className={`form-select ${errors.propertyId ? 'is-invalid' : ''}`}
+              name="propertyId"
+              value={formData.propertyId}
+              onChange={handleChange}
+            >
+              <option value="">Select Property</option>
+              {allProperties?.map((property) => (
+                <option key={property._id} value={property._id}>
+                  {property.name || property.title}
+                </option>
+              ))}
+            </select>
+            {errors.propertyId && <div className="invalid-feedback">{errors.propertyId}</div>}
+          </div>
         </div>
 
-        {/* Property Selection */}
-        <div className="mb-3">
-          <label className="form-label fw-bold">Property</label>
-          <select
-            className={`form-select ${errors.propertyId ? 'is-invalid' : ''}`}
-            name="propertyId"
-            value={formData.propertyId}
-            onChange={handleChange}
-          >
-            <option value="">Select Property</option>
-            {allProperties?.map((property) => (
-              <option key={property._id} value={property._id}>
-                {property.name || property.title}
-              </option>
-            ))}
-          </select>
-          {errors.propertyId && <div className="invalid-feedback">{errors.propertyId}</div>}
+        <div className="row">
+          {/* Category Selection */}
+          <div className="col-md-6 mb-3">
+            <label className="form-label fw-bold">Category</label>
+            <select
+              className={`form-select ${errors.categoryId ? 'is-invalid' : ''}`}
+              name="categoryId"
+              value={formData.categoryId}
+              onChange={handleChange}
+            >
+              <option value="">Select Category</option>
+              {allCategories?.map((category) => (
+                <option key={category._id} value={category._id}>
+                  {category.name || category.title}
+                </option>
+              ))}
+            </select>
+            {errors.categoryId && <div className="invalid-feedback">{errors.categoryId}</div>}
+          </div>
+
+          {/* Banner Type */}
+          <div className="col-md-6 mb-3">
+            <label className="form-label fw-bold">Banner Type</label>
+            <select
+              className={`form-select ${errors.bannerType ? 'is-invalid' : ''}`}
+              name="bannerType"
+              value={formData.bannerType}
+              onChange={handleChange}
+            >
+              <option value="">Select Banner Type</option>
+              <option value="leftside">leftside</option>
+              <option value="rightside">rightside</option>
+              <option value="top">top</option>
+              <option value="bottom">bottom</option>
+            </select>
+            {errors.bannerType && <div className="invalid-feedback">{errors.bannerType}</div>}
+          </div>
         </div>
 
-        {/* Category Selection */}
-        <div className="mb-3">
-          <label className="form-label fw-bold">Category</label>
-          <select
-            className={`form-select ${errors.categoryId ? 'is-invalid' : ''}`}
-            name="categoryId"
-            value={formData.categoryId}
-            onChange={handleChange}
-          >
-            <option value="">Select Category</option>
-            {allCategories?.map((category) => (
-              <option key={category._id} value={category._id}>
-                {category.name || category.title}
-              </option>
-            ))}
-          </select>
-          {errors.categoryId && <div className="invalid-feedback">{errors.categoryId}</div>}
-        </div>
-
-        {/* Banner Type */}
-        <div className="mb-3">
-          <label className="form-label fw-bold">Banner Type</label>
-          <select
-            className={`form-select ${errors.bannerType ? 'is-invalid' : ''}`}
-            name="bannerType"
-            value={formData.bannerType}
-            onChange={handleChange}
-          >
-            <option value="">Select Banner Type</option>
-            <option value="leftside">leftside</option>
-            <option value="rightside">rightside</option>
-            <option value="top">top</option>
-            <option value="bottom">bottom</option>
-          </select>
-          {errors.bannerType && <div className="invalid-feedback">{errors.bannerType}</div>}
-        </div>
-
-        {/* Main Banner Image */}
-        <div className="mb-3">
-          <label className="form-label fw-bold">Main Banner Image</label>
-          <input
-            type="file"
-            className={`form-control ${errors?.bannerImage ? 'is-invalid' : ''}`}
-            name="bannerImage"
-            onChange={handleChangeBannerImage}
-            accept="image/*"
-          />
-          {loading && <small className="text-info">Uploading...</small>}
-          {formData.bannerImage && (
-            <div className="mt-2">
-              <img
-                src={formData.bannerImage}
-                alt="Banner preview"
-                style={{ width: '100px', height: '60px', objectFit: 'cover' }}
-                className="rounded"
-              />
-            </div>
-          )}
-          {errors.bannerImage && <div className="invalid-feedback">{errors.bannerImage}</div>}
-        </div>
-
-        {/* Multiple Banner Images */}
-        <div className="mb-3">
-          <label className="form-label fw-bold">Additional Banner Images (Optional)</label>
-          <input
-            type="file"
-            className="form-control"
-            name="bannersImages"
-            onChange={handleChangeMultipleBannerImages}
-            accept="image/*"
-            multiple
-          />
-          {multiImageLoading && <small className="text-info">Uploading multiple images...</small>}
-
-          {formData.bannersImages && formData.bannersImages.length > 0 && (
-            <div className="mt-2">
-              <div className="row">
-                {formData.bannersImages.map((imageUrl, index) => (
-                  <div key={index} className="col-md-3 mb-2">
-                    <div className="position-relative">
-                      <img
-                        src={imageUrl}
-                        alt={`Banner ${index + 1}`}
-                        style={{ width: '100%', height: '60px', objectFit: 'cover' }}
-                        className="rounded"
-                      />
-                      <button
-                        type="button"
-                        className="btn btn-danger btn-sm position-absolute top-0 end-0"
-                        style={{ fontSize: '10px', padding: '2px 6px' }}
-                        onClick={() => removeBannerImage(index)}
-                      >
-                        ×
-                      </button>
-                    </div>
-                  </div>
-                ))}
+        <div className="row">
+          {/* Main Banner Image */}
+          <div className="col-md-6 mb-3">
+            <label className="form-label fw-bold">Main Banner Image</label>
+            <input
+              type="file"
+              className={`form-control ${errors?.bannerImage ? 'is-invalid' : ''}`}
+              name="bannerImage"
+              onChange={handleChangeBannerImage}
+              accept="image/*"
+            />
+            {loading && <small className="text-info">Uploading...</small>}
+            {formData.bannerImage && (
+              <div className="mt-2">
+                <img
+                  src={formData.bannerImage}
+                  alt="Banner preview"
+                  style={{ width: '100px', height: '60px', objectFit: 'cover' }}
+                  className="rounded"
+                />
               </div>
-            </div>
-          )}
+            )}
+            {errors.bannerImage && <div className="invalid-feedback">{errors.bannerImage}</div>}
+          </div>
+
+          {/* Multiple Banner Images */}
+          <div className="col-md-6 mb-3">
+            <label className="form-label fw-bold">Additional Banner Images (Optional)</label>
+            <input
+              type="file"
+              className="form-control"
+              name="bannersImages"
+              onChange={handleChangeMultipleBannerImages}
+              accept="image/*"
+              multiple
+            />
+            {multiImageLoading && <small className="text-info">Uploading multiple images...</small>}
+
+            {formData.bannersImages && formData.bannersImages.length > 0 && (
+              <div className="mt-2">
+                <div className="row">
+                  {formData.bannersImages.map((imageUrl, index) => (
+                    <div key={index} className="col-md-3 mb-2">
+                      <div className="position-relative">
+                        <img
+                          src={imageUrl}
+                          alt={`Banner ${index + 1}`}
+                          style={{ width: '100%', height: '60px', objectFit: 'cover' }}
+                          className="rounded"
+                        />
+                        <button
+                          type="button"
+                          className="btn btn-danger btn-sm position-absolute top-0 end-0"
+                          style={{ fontSize: '10px', padding: '2px 6px' }}
+                          onClick={() => removeBannerImage(index)}
+                        >
+                          ×
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
         </div>
 
         {/* Active Status */}
