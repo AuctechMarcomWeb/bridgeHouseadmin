@@ -155,16 +155,17 @@ const Subscription = () => {
                     <td className="px-6 py-4 whitespace-nowrap font-medium text-gray-900">
                       {item?.name}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap">{item?.description || '—'}</td>
-                    <td className="px-6 py-4 whitespace-nowrap capitalize">{item?.type || '—'}</td>
-                    <td className="px-6 py-4 whitespace-nowrap">{item?.price || '0'}</td>
-                    <td className="px-6 py-4 whitespace-nowrap">{item?.currency || '—'}</td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       {item?.PropertyListingLimit || '0'}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       {item?.verifiedListingLimit || '0'}
                     </td>
+                    <td className="px-6 py-4 whitespace-nowrap capitalize">{item?.type || '—'}</td>
+                    <td className="px-6 py-4 whitespace-nowrap">{item?.price || '0'}</td>
+                    <td className="px-6 py-4 whitespace-nowrap">{item?.currency || '—'}</td>
+                    <td className="px-6 py-4 whitespace-nowrap">{item?.description || '—'}</td>
+
                     {/* <td className="px-6 py-4 whitespace-nowrap">
                       {item?.isActive ? (
                         <span className="px-2 py-1 text-xs font-medium bg-green-100 text-green-800 rounded-full">
