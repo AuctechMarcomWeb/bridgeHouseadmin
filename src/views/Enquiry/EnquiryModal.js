@@ -128,109 +128,119 @@ const EnquiryModal = ({
         className="needs-validation"
         noValidate
       >
-        {/* Name */}
-        <div className="mb-3">
-          <label className="form-label fw-bold">Name</label>
-          <input
-            type="text"
-            className={`form-control ${errors.name ? 'is-invalid' : ''}`}
-            name="name"
-            value={formData?.name}
-            onChange={handleChange}
-            placeholder="Enter name"
-          />
-          {errors?.name && <div className="invalid-feedback">{errors.name}</div>}
-        </div>
-        {/* Phone */}
-        <div className="mb-3">
-          <label className="form-label fw-bold">Phone</label>
-          <input
-            type="number"
-            className={`form-control ${errors.phone ? 'is-invalid' : ''}`}
-            name="phone"
-            value={formData?.phone}
-            onChange={handleChange}
-            placeholder="Enter phone"
-          />
-          {errors?.phone && <div className="invalid-feedback">{errors.phone}</div>}
-        </div>
-        {/* E-mail */}
-        <div className="mb-3">
-          <label className="form-label fw-bold">E-mail </label>
-          <input
-            type="email"
-            className={`form-control ${errors.email ? 'is-invalid' : ''}`}
-            name="email"
-            value={formData?.email}
-            onChange={handleChange}
-            placeholder="Enter email"
-          />
-          {errors?.email && <div className="invalid-feedback">{errors.email}</div>}
-        </div>
-        {/* Message */}
-        <div className="mb-3">
-          <label className="form-label fw-bold">Message </label>
-          <input
-            type="message"
-            className={`form-control ${errors.message ? 'is-invalid' : ''}`}
-            name="message"
-            value={formData?.message}
-            onChange={handleChange}
-            placeholder="Enter message"
-          />
-          {errors?.message && <div className="invalid-feedback">{errors.message}</div>}
-        </div>
-        {/* Property Selection */}
-        <div className="mb-3">
-          <label className="form-label fw-bold">Property</label>
-          <select
-            className={`form-select ${errors.property ? 'is-invalid' : ''}`}
-            name="property"
-            value={formData?.property}
-            onChange={handleChange}
-          >
-            <option value="">Select Property</option>
-            {allProperties?.map((property) => (
-              <option key={property._id} value={property._id}>
-                {property.name || property.title}
-              </option>
-            ))}
-          </select>
-          {errors.property && <div className="invalid-feedback">{errors.property}</div>}
-        </div>
-        {/* Notes */}
-        {modalData && (
-          <div className="mb-3">
-            <label className="form-label fw-bold">Notes</label>
+        <div className="row">
+          {/* Name */}
+          <div className="col-md-6 mb-3">
+            <label className="form-label fw-bold">Name</label>
             <input
               type="text"
-              className={`form-control ${errors.notes ? 'is-invalid' : ''}`}
-              name="notes"
-              value={formData?.notes || 'N/A'} // default blank if undefined
+              className={`form-control ${errors.name ? 'is-invalid' : ''}`}
+              name="name"
+              value={formData?.name}
               onChange={handleChange}
-              placeholder="Enter notes"
+              placeholder="Enter name"
             />
-            {errors?.notes && <div className="invalid-feedback">{errors.notes}</div>}
+            {errors?.name && <div className="invalid-feedback">{errors.name}</div>}
           </div>
-        )}
-        {/* Status */}
-        <div className="mb-3">
-          <label htmlFor="status" className="form-label">
-            Status
-          </label>
-          <select
-            id="status"
-            name="status"
-            className="form-select"
-            value={formData?.status} // default "new"
-            onChange={handleChange}
-          >
-            <option value="new">New</option>
-            <option value="viewed">Viewed</option>
-            <option value="contacted">Contacted</option>
-            <option value="closed">Closed</option>
-          </select>
+          {/* Phone */}
+          <div className="col-md-6 mb-3">
+            <label className="form-label fw-bold">Phone</label>
+            <input
+              type="number"
+              className={`form-control ${errors.phone ? 'is-invalid' : ''}`}
+              name="phone"
+              value={formData?.phone}
+              onChange={handleChange}
+              placeholder="Enter phone"
+            />
+            {errors?.phone && <div className="invalid-feedback">{errors.phone}</div>}
+          </div>
         </div>
+
+        <div className="row">
+          {/* E-mail */}
+          <div className="col-md-6 mb-3">
+            <label className="form-label fw-bold">E-mail </label>
+            <input
+              type="email"
+              className={`form-control ${errors.email ? 'is-invalid' : ''}`}
+              name="email"
+              value={formData?.email}
+              onChange={handleChange}
+              placeholder="Enter email"
+            />
+            {errors?.email && <div className="invalid-feedback">{errors.email}</div>}
+          </div>
+          {/* Message */}
+          <div className="col-md-6 mb-3">
+            <label className="form-label fw-bold">Message </label>
+            <input
+              type="message"
+              className={`form-control ${errors.message ? 'is-invalid' : ''}`}
+              name="message"
+              value={formData?.message}
+              onChange={handleChange}
+              placeholder="Enter message"
+            />
+            {errors?.message && <div className="invalid-feedback">{errors.message}</div>}
+          </div>
+        </div>
+
+        <div className="row">
+          {/* Property Selection */}
+          <div className="col-md-6 mb-3">
+            <label className="form-label fw-bold">Property</label>
+            <select
+              className={`form-select ${errors.property ? 'is-invalid' : ''}`}
+              name="property"
+              value={formData?.property}
+              onChange={handleChange}
+            >
+              <option value="">Select Property</option>
+              {allProperties?.map((property) => (
+                <option key={property._id} value={property._id}>
+                  {property.name || property.title}
+                </option>
+              ))}
+            </select>
+            {errors.property && <div className="invalid-feedback">{errors.property}</div>}
+          </div>
+          {/* Notes */}
+          {modalData && (
+            <div className="col-md-6 mb-3">
+              <label className="form-label fw-bold">Notes</label>
+              <input
+                type="text"
+                className={`form-control ${errors.notes ? 'is-invalid' : ''}`}
+                name="notes"
+                value={formData?.notes || 'N/A'} // default blank if undefined
+                onChange={handleChange}
+                placeholder="Enter notes"
+              />
+              {errors?.notes && <div className="invalid-feedback">{errors.notes}</div>}
+            </div>
+          )}
+
+          {/* Status */}
+          <div className=" col-md-6 mb-3">
+            <label htmlFor="status" className="form-label">
+              Status
+            </label>
+            <select
+              id="status"
+              name="status"
+              className="form-select"
+              value={formData?.status} // default "new"
+              onChange={handleChange}
+            >
+              <option value="new">New</option>
+              <option value="viewed">Viewed</option>
+              <option value="contacted">Contacted</option>
+              <option value="closed">Closed</option>
+            </select>
+          </div>
+        </div>
+
         {/* Buttons */}
         <div className="d-flex justify-content-end gap-2">
           <button type="button" className="btn btn-secondary" onClick={handleCancel}>

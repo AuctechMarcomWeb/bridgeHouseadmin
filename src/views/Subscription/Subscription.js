@@ -16,46 +16,47 @@ const Subscription = () => {
   const [loading, setLoading] = useState(false)
   const [updateStatus, setUpdateStatus] = useState(false)
   const [isModalOpen, setIsModalOpen] = useState(false)
-  // Modal states
+
+  // delete modal state
   const [showDeleteModal, setShowDeleteModal] = useState(false)
   const [selectedItem, setSelectedItem] = useState(null)
-  // ✅ Fetch Banners with Pagination + Search
+
+  // ✅ Fetch subscription packages with pagination + search
   useEffect(() => {
     setLoading(true)
     getRequest(`subscription-packages?search=${searchTerm}&page=${page}&limit=${limit}`)
       .then((res) => {
         const responseData = res?.data?.data
-        setData(responseData || [])
-        console.log('subscription responseData', responseData)
-        setTotal(responseData?.totalBanners || 0)
+        // API is expected to return {subscriptions:[], total: number}
+        setData(responseData?.packages || [])
+        setTotal(responseData?.total || 0)
       })
       .catch((error) => {
-        console.log('error', error)
-        toast.error('Failed to fetch banners')
+        console.error('Fetch error', error)
+        toast.error('Failed to fetch subscription packages')
       })
-      .finally(() => {
-        setLoading(false)
-      })
+      .finally(() => setLoading(false))
   }, [page, limit, searchTerm, updateStatus])
 
   // ✅ Delete handler
   const confirmDelete = () => {
-    deleteRequest(`banner/${selectedItem?._id}`)
+    if (!selectedItem?._id) return
+    deleteRequest(`subscription-packages/${selectedItem._id}`)
       .then((res) => {
-        toast.success(res?.data?.message || 'Banner deleted successfully')
+        toast.success(res?.data?.message || 'Subscription deleted successfully')
         setSelectedItem(null)
         setUpdateStatus((prev) => !prev)
         setShowDeleteModal(false)
       })
       .catch((error) => {
-        console.log('error', error)
-        toast.error('Failed to delete banner')
+        console.error('delete error', error)
+        toast.error(error?.response?.data?.message || 'Failed to delete subscription')
       })
   }
 
   return (
     <div className="bg-white">
-      {/* Delete Modal */}
+      {/* Delete Confirmation Modal */}
       {showDeleteModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4 shadow-xl">
@@ -64,7 +65,7 @@ const Subscription = () => {
               <h3 className="text-lg font-semibold text-gray-900">Confirm Delete</h3>
             </div>
             <p className="text-gray-600 mb-6">
-              Are you sure you want to delete <strong>{selectedItem?.title}</strong>? This action
+              Are you sure you want to delete <strong>{selectedItem?.name}</strong>? This action
               cannot be undone.
             </p>
             <div className="flex justify-end space-x-3">
@@ -88,11 +89,11 @@ const Subscription = () => {
       {/* Header */}
       <div className="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
         <div>
-          <h2 className="text-2xl font-bold text-gray-900">Subscription</h2>
-          <p className="text-gray-600 mt-1">Manage banner advertisements and promotional content</p>
+          <h2 className="text-2xl font-bold text-gray-900">Subscriptions</h2>
+          <p className="text-gray-600 mt-1">Manage your subscription plans and limits</p>
         </div>
         <div className="flex items-center space-x-3">
-          <ExportButton data={data} fileName="Banners.xlsx" sheetName="Banners" />
+          <ExportButton data={data} fileName="Subscriptions.xlsx" sheetName="Subscriptions" />
           <button
             onClick={() => {
               setSelectedItem(null)
@@ -100,7 +101,7 @@ const Subscription = () => {
             }}
             className="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 flex items-center transition-colors"
           >
-            <Plus className="w-4 h-4 mr-2" /> Add Banner
+            <Plus className="w-4 h-4 mr-2" /> Add Subscription
           </button>
         </div>
       </div>
@@ -111,7 +112,7 @@ const Subscription = () => {
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4" />
           <input
             type="text"
-            placeholder="Search banners..."
+            placeholder="Search subscriptions..."
             value={searchTerm}
             onChange={(e) => {
               setSearchTerm(e.target.value)
@@ -126,7 +127,7 @@ const Subscription = () => {
       {loading && (
         <div className="flex justify-center items-center py-12">
           <Loader2 className="w-8 h-8 animate-spin text-blue-500" />
-          <span className="ml-2 text-gray-600">Loading banners...</span>
+          <span className="ml-2 text-gray-600">Loading subscriptions...</span>
         </div>
       )}
 
@@ -136,51 +137,35 @@ const Subscription = () => {
           <table className="w-full">
             <thead className="bg-gray-50">
               <tr>
-                <th className="px-6 py-3">Title</th>
-                <th className="px-6 py-3">Image</th>
-                <th className="px-6 py-3">Banner Type</th>
-                <th className="px-6 py-3">Category</th>
-                <th className="px-6 py-3">Property</th>
-                <th className="px-6 py-3">Property Code</th>
-                <th className="px-6 py-3">Status</th>
+                <th className="px-6 py-3">Name</th>
+                <th className="px-6 py-3">Description</th>
+                <th className="px-6 py-3">Type</th>
+                <th className="px-6 py-3">Price</th>
+                <th className="px-6 py-3">Currency</th>
+                <th className="px-6 py-3">Property Limit</th>
+                <th className="px-6 py-3">Verified Limit</th>
+                {/* <th className="px-6 py-3">Status</th> */}
                 <th className="px-6 py-3">Actions</th>
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
               {data?.length > 0 ? (
                 data.map((item) => (
-                  <tr key={item?._id} className="hover:bg-gray-50 transition-colors">
+                  <tr key={item._id} className="hover:bg-gray-50 transition-colors">
+                    <td className="px-6 py-4 whitespace-nowrap font-medium text-gray-900">
+                      {item?.name}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">{item?.description || '—'}</td>
+                    <td className="px-6 py-4 whitespace-nowrap capitalize">{item?.type || '—'}</td>
+                    <td className="px-6 py-4 whitespace-nowrap">{item?.price || '0'}</td>
+                    <td className="px-6 py-4 whitespace-nowrap">{item?.currency || '—'}</td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm font-medium text-gray-900">{item?.title}</div>
+                      {item?.PropertyListingLimit || '0'}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <img
-                        src={item?.bannerImage}
-                        alt={item?.title}
-                        className="w-10 h-10 rounded-full object-cover"
-                      />
+                      {item?.verifiedListingLimit || '0'}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <span className="px-2 py-1 text-xs font-medium bg-purple-100 text-purple-800 rounded-full capitalize">
-                        {item?.bannerType || 'Standard'}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm text-gray-900">{item?.categoryId?.name || 'N/A'}</div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm text-gray-900">
-                        <p className="p-0 m-0">
-                          {item?.propertyId?.name || 'N/A'}({item?.propertyId?.propertyType})
-                        </p>
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm text-gray-900">
-                        <p className="p-0 m-0">{item?.propertyId?.propertyCode || 'N/A'}</p>
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
+                    {/* <td className="px-6 py-4 whitespace-nowrap">
                       {item?.isActive ? (
                         <span className="px-2 py-1 text-xs font-medium bg-green-100 text-green-800 rounded-full">
                           Active
@@ -190,7 +175,7 @@ const Subscription = () => {
                           Inactive
                         </span>
                       )}
-                    </td>
+                    </td> */}
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="flex gap-2">
                         <button
@@ -199,7 +184,7 @@ const Subscription = () => {
                             setIsModalOpen(true)
                           }}
                           className="text-blue-600 hover:text-blue-800 p-1 rounded-md hover:bg-blue-50 transition-colors"
-                          title="Edit banner"
+                          title="Edit subscription"
                         >
                           <Edit className="w-4 h-4" />
                         </button>
@@ -209,7 +194,7 @@ const Subscription = () => {
                             setShowDeleteModal(true)
                           }}
                           className="text-red-600 hover:text-red-800 p-1 rounded-md hover:bg-red-50 transition-colors"
-                          title="Delete banner"
+                          title="Delete subscription"
                         >
                           <Trash2 className="w-4 h-4" />
                         </button>
@@ -219,12 +204,12 @@ const Subscription = () => {
                 ))
               ) : (
                 <tr>
-                  <td colSpan="6" className="px-6 py-12 text-center">
+                  <td colSpan="9" className="px-6 py-12 text-center">
                     <div className="text-gray-500">
                       <Search className="w-12 h-12 mx-auto mb-4 text-gray-300" />
-                      <p className="text-lg font-medium">No Subcription found</p>
+                      <p className="text-lg font-medium">No Subscriptions Found</p>
                       <p className="text-sm">
-                        Try adjusting your search criteria or add a new banner.
+                        Try adjusting your search or add a new subscription plan.
                       </p>
                     </div>
                   </td>
@@ -248,13 +233,12 @@ const Subscription = () => {
               total={total}
               onChange={(newPage) => setPage(newPage)}
               showSizeChanger={false}
-              showQuickJumper={false}
             />
           </div>
         </div>
       )}
 
-      {/* Banners Modal */}
+      {/* Subscription Modal */}
       {isModalOpen && (
         <SubscriptionModal
           setUpdateStatus={setUpdateStatus}
