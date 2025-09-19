@@ -138,12 +138,12 @@ const Subscription = () => {
             <thead className="bg-gray-50">
               <tr>
                 <th className="px-6 py-3">Name</th>
-                <th className="px-6 py-3">Description</th>
+                <th className="px-6 py-3">Property Limit</th>
+                <th className="px-6 py-3">Verified Limit</th>
                 <th className="px-6 py-3">Type</th>
                 <th className="px-6 py-3">Price</th>
                 <th className="px-6 py-3">Currency</th>
-                <th className="px-6 py-3">Property Limit</th>
-                <th className="px-6 py-3">Verified Limit</th>
+                <th className="px-6 py-3">Description</th>
                 {/* <th className="px-6 py-3">Status</th> */}
                 <th className="px-6 py-3">Actions</th>
               </tr>
