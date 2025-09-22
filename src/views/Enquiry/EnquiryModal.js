@@ -18,6 +18,8 @@ const EnquiryModal = ({
       ? {
           ...modalData,
           property: modalData?.property?._id,
+          notes: modalData?.notes || '',
+          status: modalData?.status || 'new',
         }
       : {
           name: '',
@@ -139,6 +141,7 @@ const EnquiryModal = ({
               value={formData?.name}
               onChange={handleChange}
               placeholder="Enter name"
+              disabled={!!modalData} // Disable in edit mode
             />
             {errors?.name && <div className="invalid-feedback">{errors.name}</div>}
           </div>
@@ -152,6 +155,7 @@ const EnquiryModal = ({
               value={formData?.phone}
               onChange={handleChange}
               placeholder="Enter phone"
+              disabled={!!modalData} // Disable in edit mode
             />
             {errors?.phone && <div className="invalid-feedback">{errors.phone}</div>}
           </div>
@@ -168,6 +172,7 @@ const EnquiryModal = ({
               value={formData?.email}
               onChange={handleChange}
               placeholder="Enter email"
+              disabled={!!modalData} // Disable in edit mode
             />
             {errors?.email && <div className="invalid-feedback">{errors.email}</div>}
           </div>
@@ -181,6 +186,7 @@ const EnquiryModal = ({
               value={formData?.message}
               onChange={handleChange}
               placeholder="Enter message"
+              disabled={!!modalData} // Disable in edit mode
             />
             {errors?.message && <div className="invalid-feedback">{errors.message}</div>}
           </div>
@@ -195,6 +201,7 @@ const EnquiryModal = ({
               name="property"
               value={formData?.property}
               onChange={handleChange}
+              disabled={!!modalData} // Disable in edit mode
             >
               <option value="">Select Property</option>
               {allProperties?.map((property) => (
@@ -213,7 +220,7 @@ const EnquiryModal = ({
                 type="text"
                 className={`form-control ${errors.notes ? 'is-invalid' : ''}`}
                 name="notes"
-                value={formData?.notes || 'N/A'} // default blank if undefined
+                value={formData?.notes || ''} // default blank if undefined
                 onChange={handleChange}
                 placeholder="Enter notes"
               />
