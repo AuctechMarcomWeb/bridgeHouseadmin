@@ -8,6 +8,7 @@ import Bhk from './views/Bhk/Bhk'
 import Documents from './views/Documents/Documents'
 import Enquiry from './views/Enquiry/Enquiry'
 import Subscription from './views/Subscription/Subscription'
+import Contacts from './views/Contacts/Contacts'
 
 const Dashboard = React.lazy(() => import('./views/dashboard/Dashboard'))
 
@@ -16,6 +17,7 @@ const routes = [
   { path: '/banner', name: 'Banners ', element: Banners },
   { path: '/enquiry', name: 'Enquiry ', element: Enquiry },
   { path: '/subscription', name: 'Subscription', element: Subscription },
+  { path: '/contacts', name: 'Contacts', element: Contacts },
 
   { path: '/properties', name: 'Properties', element: Properties },
   { path: '/propertyType', name: 'Category', element: Category },

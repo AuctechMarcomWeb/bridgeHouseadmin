@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 import { Modal, Select } from 'antd'
 import React, { useState, useContext, useEffect } from 'react'
 import toast from 'react-hot-toast'
@@ -199,7 +200,7 @@ const PropertiesModal = ({
   //       },
   //     }))
   //   } else {
-      
+
   //     setFormData((prev) => ({
   //       ...prev,
   //       [name]: type === 'checkbox' ? checked : value,
@@ -207,46 +208,41 @@ const PropertiesModal = ({
   //   }
   // }
 
-
   const handleChange = (e) => {
-  const { name, value, type, checked, dataset } = e.target;
+    const { name, value, type, checked, dataset } = e.target
 
-  if (dataset.nested) {
-    // ✅ Update nested object (unchanged)
-    const nestedKey = dataset.nested;
-    setFormData((prev) => ({
-      ...prev,
-      [nestedKey]: {
-        ...prev[nestedKey],
-        [name]: type === "checkbox" ? checked : value,
-      },
-    }));
-  } else {
-    // ✅ Update main object + auto-calc totalSqft
-    setFormData((prev) => {
-      const updatedData = {
+    if (dataset.nested) {
+      // ✅ Update nested object (unchanged)
+      const nestedKey = dataset.nested
+      setFormData((prev) => ({
         ...prev,
-        [name]: type === "checkbox" ? checked : value,
-      };
+        [nestedKey]: {
+          ...prev[nestedKey],
+          [name]: type === 'checkbox' ? checked : value,
+        },
+      }))
+    } else {
+      // ✅ Update main object + auto-calc totalSqft
+      setFormData((prev) => {
+        const updatedData = {
+          ...prev,
+          [name]: type === 'checkbox' ? checked : value,
+        }
 
-      // Auto-calculate totalSqft only when height or width changes
-      if (name === "height" || name === "width") {
-        const height =
-          name === "height" ? value : updatedData.height || prev.height || 0;
-        const width =
-          name === "width" ? value : updatedData.width || prev.width || 0;
+        // Auto-calculate totalSqft only when height or width changes
+        if (name === 'height' || name === 'width') {
+          const height = name === 'height' ? value : updatedData.height || prev.height || 0
+          const width = name === 'width' ? value : updatedData.width || prev.width || 0
 
-        const totalSqft =
-          parseFloat(height || 0) * parseFloat(width || 0);
+          const totalSqft = parseFloat(height || 0) * parseFloat(width || 0)
 
-        updatedData.totalSqft = isNaN(totalSqft) ? "" : totalSqft.toFixed(2);
-      }
+          updatedData.totalSqft = isNaN(totalSqft) ? '' : totalSqft.toFixed(2)
+        }
 
-      return updatedData;
-    });
+        return updatedData
+      })
+    }
   }
-};
-
 
   const handleChangeImage = (e) => {
     const files = Array.from(e.target.files) // ✅ Convert FileList to array
@@ -409,7 +405,7 @@ const PropertiesModal = ({
 
   return (
     <Modal
-      title={modalData ? `Edit Property` : `Add Property`}
+      title={isEditMode ? `Edit Property` : `Add Property`}
       open={isModalOpen}
       footer={null}
       onCancel={handleCancel}
