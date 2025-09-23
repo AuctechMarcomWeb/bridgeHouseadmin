@@ -14,6 +14,8 @@ const PropertiesModal = ({
   isModalOpen,
   setIsModalOpen,
 }) => {
+  const isEditMode = !!modalData
+
   const { user, setUser } = useContext(AppContext)
 
   console.log('modalData===', modalData)
