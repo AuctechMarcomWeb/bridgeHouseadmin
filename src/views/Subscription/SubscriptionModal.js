@@ -131,7 +131,7 @@ const SubscriptionModal = ({
               value={formData.name}
               onChange={handleChange}
               placeholder="Enter subscription name"
-              disabled={!!modalData} // Disable in edit mode
+              //disabled={!!modalData} // Disable in edit mode
             />
             {errors.name && <div className="invalid-feedback">{errors.name}</div>}
           </div>
@@ -145,7 +145,7 @@ const SubscriptionModal = ({
               onChange={handleChange}
               placeholder="Enter description"
               rows="1"
-              disabled={!!modalData} // disable in edit mode
+              //disabled={!!modalData} // disable in edit mode
             />
             {errors.description && <div className="invalid-feedback">{errors.description}</div>}
           </div>
@@ -161,7 +161,7 @@ const SubscriptionModal = ({
               className="form-select"
               value={formData?.type} // default "new"
               onChange={handleChange}
-              disabled={!!modalData} // disable in edit mode
+              // disabled={!!modalData} // disable in edit mode
             >
               <option value="Select">Select Type</option>
               <option value="PropertyListing">PropertyListing</option>
@@ -196,7 +196,7 @@ const SubscriptionModal = ({
               value={formData.currency}
               onChange={handleChange}
               placeholder="e.g. INR, USD"
-              disabled={!!modalData} // disable in edit mode
+              // disabled={!!modalData} // disable in edit mode
             />
             {errors.currency && <div className="invalid-feedback">{errors.currency}</div>}
           </div>
@@ -211,7 +211,7 @@ const SubscriptionModal = ({
               value={formData?.PropertyListingLimit}
               onChange={handleChange}
               placeholder="Enter property listing limit"
-              disabled={!!modalData} // disable in edit mode
+              // disabled={!!modalData} // disable in edit mode
             />
             {errors.PropertyListingLimit && (
               <div className="invalid-feedback">{errors.PropertyListingLimit}</div>
