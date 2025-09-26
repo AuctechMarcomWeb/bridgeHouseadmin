@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 import React, { useState, useEffect } from 'react'
 import { Search, Plus, Edit, Trash2, AlertTriangle, MapPin, IndianRupee } from 'lucide-react'
 import ExportButton from '../ExportButton'
@@ -7,7 +8,7 @@ import { Pagination } from 'antd'
 import PropertiesModal from './PropertiesModal'
 import { AppContext } from '../../Context/AppContext'
 import { MdVerified } from 'react-icons/md'
-import { SiMercadopago } from "react-icons/si";
+import { SiMercadopago } from 'react-icons/si'
 const Properties = () => {
   const [searchTerm, setSearchTerm] = useState('')
   const [data, setData] = useState([])
@@ -172,7 +173,16 @@ const Properties = () => {
               console.log('item', item)
 
               return (
-                <tr key={item._id} className="hover:bg-gray-50">
+                <tr
+                  key={item._id}
+                  className={`${
+                    item?.approvalStatus === 'Published'
+                      ? 'bg-green-200 hover:bg-green-100'
+                      : item?.approvalStatus === 'Rejected'
+                        ? 'bg-red-200 hover:bg-red-100'
+                        : 'hover:bg-gray-50'
+                  }`}
+                >
                   {/* Property Details */}
                   <td className="px-6 py-4">
                     <div className="flex flex-col">
@@ -193,11 +203,8 @@ const Properties = () => {
 
                   {/* Property Type */}
                   <td className="px-6 py-4">
-                    <span className="">
-                      {item?.propertyType || 'N/A'}
-                    </span>
+                    <span className="">{item?.propertyType || 'N/A'}</span>
                   </td>
-
 
                   <td className="px-6 py-4">
                     <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
@@ -205,20 +212,18 @@ const Properties = () => {
                     </span>
                   </td>
                   <td className="px-6 py-4">
-                    {item?.isAdopted ? <SiMercadopago  className='fs-4' /> 
-                  :  
-                    <span className="">
-                      Not Adopted
-                    </span>
-                  }
+                    {item?.isAdopted ? (
+                      <SiMercadopago className="fs-4" />
+                    ) : (
+                      <span className="">Not Adopted</span>
+                    )}
                   </td>
                   <td className="px-6 py-4">
-                    {item?.isVerified ? <MdVerified className='fs-4' /> 
-                  :  
-                    <span className="">
-                      Not Verified
-                    </span>
-                  }
+                    {item?.isVerified ? (
+                      <MdVerified className="fs-4" />
+                    ) : (
+                      <span className="">Not Verified</span>
+                    )}
                   </td>
 
                   {/* Location */}
@@ -272,9 +277,8 @@ const Properties = () => {
                   </td>
 
                   {/* Actions */}
-                  <td className="px-6 py-4">
+                  {/* <td className="px-6 py-4">
                     <div className="flex gap-2">
-                
                       {item?.approvalStatus == 'Pending' ? (
                         <>
                           <button
@@ -317,6 +321,50 @@ const Properties = () => {
                       >
                         <Edit className="w-4 h-4" />
                       </button>
+                      <button
+                        onClick={() => {
+                          setSelectedItem(item)
+                          setShowDeleteModal(true)
+                        }}
+                        className="text-red-600 hover:text-red-800 p-1"
+                        title="Delete property"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    </div>
+                  </td> */}
+
+                  <td className="px-6 py-4">
+                    <div className="flex gap-2">
+                      <button
+                        onClick={() => approveData(item, 'Published')}
+                        className="btn btn-primary p-1"
+                        title="Approve property"
+                        disabled={item?.approvalStatus === 'Published'}
+                      >
+                        Approve
+                      </button>
+
+                      <button
+                        onClick={() => approveData(item, 'Rejected')}
+                        className="btn btn-primary p-1"
+                        title="Reject property"
+                        disabled={item?.approvalStatus === 'Rejected'}
+                      >
+                        Reject
+                      </button>
+
+                      <button
+                        onClick={() => {
+                          setSelectedItem(item)
+                          setIsModalOpen(true)
+                        }}
+                        className="text-blue-600 hover:text-blue-800 p-1"
+                        title="Edit property"
+                      >
+                        <Edit className="w-4 h-4" />
+                      </button>
+
                       <button
                         onClick={() => {
                           setSelectedItem(item)
