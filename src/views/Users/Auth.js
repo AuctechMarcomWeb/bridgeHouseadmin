@@ -1,16 +1,16 @@
 /* eslint-disable prettier/prettier */
 import React, { useState, useEffect } from 'react'
-import { Search, Plus, Edit, Trash2, AlertTriangle, Contact } from 'lucide-react'
+import { Search, Plus, Edit, Trash2, AlertTriangle } from 'lucide-react'
 import ExportButton from '../ExportButton'
 import { deleteRequest, getRequest } from '../../Helpers'
 import toast from 'react-hot-toast'
 import { Empty, Pagination, Spin } from 'antd'
-import ContactsModal from './ContactsModal'
 
-const Contacts = () => {
+const Auth = () => {
   const [searchTerm, setSearchTerm] = useState('')
   const [data, setData] = useState([])
   const [total, setTotal] = useState(0)
+  const [sortBy, setSortBy] = useState('recent')
   const [page, setPage] = useState(1)
   const [limit] = useState(10)
   const [updateStatus, setUpdateStatus] = useState(false)
@@ -20,26 +20,26 @@ const Contacts = () => {
   const [selectedItem, setSelectedItem] = useState(null)
   const [loading, setLoading] = useState(false)
 
-  //  FetchContact with Pagination + Search
+  //Fetch Property Type with Pagination + Search
   useEffect(() => {
     setLoading(true)
-    getRequest(`bridgeHouseConatct?search=${searchTerm}&page=${page}&limit=${limit}`)
+    getRequest(`auth/getAllUsers?search=${searchTerm}&page=${page}&limit=${limit}&sortBy=${sortBy}`)
       .then((res) => {
         const responseData = res?.data?.data
-        setData(responseData?.contacts || [])
-        setTotal(responseData?.totalContacts || 0)
+        console.log(res?.data?.data?.users)
+
+        setData(responseData?.users || [])
+        setTotal(responseData?.total || 0)
       })
       .catch((error) => {
         console.log('error', error)
       })
-      .finally(() => {
-        setLoading(false)
-      })
-  }, [page, limit, searchTerm, updateStatus])
+      .finally(() => setLoading(false))
+  }, [page, limit, searchTerm, sortBy, updateStatus])
 
-  // ✅ Delete handler
+  //  Delete handler
   const confirmDelete = () => {
-    deleteRequest(`bridgeHouseConatct/${selectedItem?._id}`)
+    deleteRequest(`auth/delete${selectedItem?._id}`)
       .then((res) => {
         toast.success(res?.data?.message)
         setSelectedItem(null)
@@ -85,19 +85,19 @@ const Contacts = () => {
       {/* Header */}
       <div className="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
         <div>
-          <h2 className="text-2xl font-bold text-gray-900">Contact</h2>
-          <p className="text-gray-600 mt-1">Manage Contact</p>
+          <h2 className="text-2xl font-bold text-gray-900">Users</h2>
+          <p className="text-gray-600 mt-1">Manage Users</p>
         </div>
         <div className="flex items-center space-x-3">
           <ExportButton data={data} fileName="Property Type.xlsx" sheetName="Property Type" />
-          <button
+          {/* <button
             onClick={() => {
               setIsModalOpen(true)
             }}
             className="bg-green-600 text-white px-4 py-2 hover:bg-green-700 flex items-center"
           >
-            <Plus className="w-4 h-4 mr-2" /> Add Contact
-          </button>
+            <Plus className="w-4 h-4 mr-2" /> Add Bridge House Details
+          </button> */}
         </div>
       </div>
 
@@ -121,15 +121,15 @@ const Contacts = () => {
       {/* Table */}
       <div className="overflow-x-auto">
         {loading ? (
-          // ✅ Loader while fetching banners
+          // Loader when fetching data
           <div className="flex flex-col justify-center items-center py-20">
             <Spin size="large" />
-            <div className="mt-4 text-blue-500 font-medium text-center">Loading Contacts...</div>
+            <div className="mt-4 text-blue-500 font-medium text-center">Loading Users...</div>
           </div>
         ) : !data || data.length === 0 ? (
-          // ✅ Empty state when no banners found
+          // Empty state when no data found
           <div className="flex justify-center items-center py-20">
-            <Empty description="No cotacts found" />
+            <Empty description="No records found" />
           </div>
         ) : (
           <>
@@ -138,40 +138,39 @@ const Contacts = () => {
                 <tr>
                   <th className="px-6 py-3">Sr. No.</th>
                   <th className="px-6 py-3">Name</th>
-                  <th className="px-6 py-3">Email</th>
                   <th className="px-6 py-3">Phone</th>
+                  <th className="px-6 py-3">E-mail</th>
+                  <th className="px-6 py-3">Gender</th>
+                  <th className="px-6 py-3">Dob</th>
+                  <th className="px-6 py-3">Profile</th>
+                  <th className="px-6 py-3">AccountType</th>
                   <th className="px-6 py-3">Address</th>
-                  <th className="px-6 py-3">Notes</th>
-                  <th className="px-6 py-3">Actions</th>
+                  {/* <th className="px-6 py-3">Actions</th> */}
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
-                {data?.map((item, index) => (
+                {data.map((item, index) => (
                   <tr key={item._id}>
                     <td className="px-6 py-4 text-sm text-gray-700">
                       {(page - 1) * limit + (index + 1)}
                     </td>
                     <td className="px-6 py-4">{item?.name}</td>
-                    <td className="px-6 py-4">{item?.email}</td>
                     <td className="px-6 py-4">{item?.phone}</td>
+                    <td className="px-6 py-4">{item?.email}</td>
+                    <td className="px-6 py-4">{item?.gender}</td>
+                    <td className="px-6 py-4">{item?.dob}</td>
+
+                    <td className="px-6 py-4">
+                      <img
+                        src={item?.profilepic}
+                        alt="gallery"
+                        className="w-10 h-10 rounded-full object-cover"
+                      />
+                    </td>
+                    <td className="px-6 py-4">{item?.accountType}</td>
                     <td className="px-6 py-4">{item?.address}</td>
-                    <td className="px-6 py-4">{item?.notes}</td>
-                    {/* <td className="px-6 py-4">
-                  <img
-                    src={item?.email}
-                    alt="category"
-                    className="w-10 h-10 rounded-full object-cover"
-                  />
-                </td> */}
-                    {/* <td className="px-6 py-4">
-                  {item?.isActive ? (
-                    <span className="px-2 py-1 text-xs bg-blue-100 text-blue-800">Active</span>
-                  ) : (
-                    <span className="px-2 py-1 text-xs bg-red-100 text-red-800">Inactive</span>
-                  )}
-                </td> */}
-                    <td className="px-6 py-4 flex gap-2">
-                      <button
+                    {/* <td className="px-6 py-4 flex gap-2">
+                       <button
                         onClick={() => {
                           setSelectedItem(item)
                           setIsModalOpen(true)
@@ -179,7 +178,7 @@ const Contacts = () => {
                         className="text-blue-600 hover:text-blue-800"
                       >
                         <Edit className="w-4 h-4" />
-                      </button>
+                      </button> 
                       <button
                         onClick={() => {
                           setSelectedItem(item)
@@ -189,13 +188,13 @@ const Contacts = () => {
                       >
                         <Trash2 className="w-4 h-4" />
                       </button>
-                    </td>
+                    </td> */}
                   </tr>
                 ))}
               </tbody>
             </table>
 
-            {/* ✅ Pagination */}
+            {/* Pagination (only show if there’s data) */}
             {data.length > 0 && (
               <div className="flex justify-end py-4">
                 <Pagination
@@ -210,8 +209,9 @@ const Contacts = () => {
           </>
         )}
       </div>
+
       {isModalOpen && (
-        <ContactsModal
+        <BridgeHouseDetailsModal
           setUpdateStatus={setUpdateStatus}
           setModalData={setSelectedItem}
           modalData={selectedItem}
@@ -223,4 +223,4 @@ const Contacts = () => {
   )
 }
 
-export default Contacts
+export default Auth

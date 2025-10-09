@@ -3,7 +3,7 @@ import { Search, Plus, Edit, Trash2, AlertTriangle, Loader2 } from 'lucide-react
 import ExportButton from '../ExportButton'
 import { deleteRequest, getRequest } from '../../Helpers'
 import toast from 'react-hot-toast'
-import { Pagination } from 'antd'
+import { Empty, Pagination, Spin } from 'antd'
 import BannersModal from './BannersModal'
 
 const Banners = () => {
@@ -11,7 +11,7 @@ const Banners = () => {
   const [data, setData] = useState([])
   const [total, setTotal] = useState(0)
   const [page, setPage] = useState(1)
-  const [limit] = useState(10)
+  const [limit, setLimit] = useState(10)
   const [loading, setLoading] = useState(false)
   const [updateStatus, setUpdateStatus] = useState(false)
   const [isModalOpen, setIsModalOpen] = useState(false)
@@ -26,7 +26,7 @@ const Banners = () => {
       .then((res) => {
         const responseData = res?.data?.data
         setData(responseData?.banners || [])
-        console.log("Banner responseData", responseData)
+        console.log('Banner responseData', responseData)
         setTotal(responseData?.totalBanners || 0)
       })
       .catch((error) => {
@@ -36,7 +36,6 @@ const Banners = () => {
       .finally(() => {
         setLoading(false)
       })
-      
   }, [page, limit, searchTerm, updateStatus])
 
   // ✅ Delete handler
@@ -47,7 +46,7 @@ const Banners = () => {
         setSelectedItem(null)
         setUpdateStatus((prev) => !prev)
         setShowDeleteModal(false)
-      })  
+      })
       .catch((error) => {
         console.log('error', error)
         toast.error('Failed to delete banner')
@@ -56,7 +55,11 @@ const Banners = () => {
 
   // Helper function to get banner image
   const getBannerImage = (item) => {
-    if (item?.bannersImages && Array.isArray(item?.bannersImages) && item?.bannersImages?.length > 0) {
+    if (
+      item?.bannersImages &&
+      Array.isArray(item?.bannersImages) &&
+      item?.bannersImages?.length > 0
+    ) {
       return item?.bannersImages[0]
     }
     return item?.bannerImage || '/placeholder-image.jpg'
@@ -73,8 +76,8 @@ const Banners = () => {
               <h3 className="text-lg font-semibold text-gray-900">Confirm Delete</h3>
             </div>
             <p className="text-gray-600 mb-6">
-              Are you sure you want to delete <strong>{selectedItem?.title}</strong>?
-              This action cannot be undone.
+              Are you sure you want to delete <strong>{selectedItem?.title}</strong>? This action
+              cannot be undone.
             </p>
             <div className="flex justify-end space-x-3">
               <button
@@ -131,81 +134,87 @@ const Banners = () => {
         </div>
       </div>
 
-      {/* Loading State */}
-      {loading && (
-        <div className="flex justify-center items-center py-12">
-          <Loader2 className="w-8 h-8 animate-spin text-blue-500" />
-          <span className="ml-2 text-gray-600">Loading banners...</span>
-        </div>
-      )}
-
       {/* Table */}
-      {!loading && (
-        <div className="overflow-x-auto">
-          <table className="w-full">
-            <thead className="bg-gray-50">
-              <tr>
-                <th className="px-6 py-3">
-                  Title
-                </th>
-                <th className="px-6 py-3">
-                  Image
-                </th>
-                <th className="px-6 py-3">
-                  Banner Type
-                </th>
-                <th className="px-6 py-3">
-                  Category
-                </th>
-                <th className="px-6 py-3">
-                  Property
-                </th>
-                <th className="px-6 py-3">
-                  Property Code
-                </th>
-                <th className="px-6 py-3">
-                  Status
-                </th>
-                <th className="px-6 py-3">
-                  Actions
-                </th>
-              </tr>
-            </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
-              {data?.length > 0 ? (
-                data.map((item) => (
+      <div className="overflow-x-auto">
+        {loading ? (
+          // ✅ Loader while fetching banners
+          <div className="flex flex-col justify-center items-center py-20">
+            <Spin size="large" />
+            <div className="mt-4 text-blue-500 font-medium text-center">Loading Banners...</div>
+          </div>
+        ) : !data || data.length === 0 ? (
+          // ✅ Empty state when no banners found
+          <div className="flex justify-center items-center py-20">
+            <Empty description="No banners found" />
+          </div>
+        ) : (
+          <>
+            <table className="w-full">
+              <thead className="bg-gray-50">
+                <tr>
+                  <th className="px-6 py-3">Sr. No.</th>
+                  <th className="px-6 py-3">Title</th>
+                  <th className="px-6 py-3">Image</th>
+                  <th className="px-6 py-3">Banner Type</th>
+                  <th className="px-6 py-3">Category</th>
+                  <th className="px-6 py-3">Property</th>
+                  <th className="px-6 py-3">Property Code</th>
+                  <th className="px-6 py-3">Status</th>
+                  <th className="px-6 py-3">Actions</th>
+                </tr>
+              </thead>
+
+              <tbody className="bg-white divide-y divide-gray-200">
+                {data.map((item, index) => (
                   <tr key={item?._id} className="hover:bg-gray-50 transition-colors">
+                    {/* Sr. No. */}
+                    <td className="px-6 py-4 text-sm text-gray-700">
+                      {(page - 1) * limit + (index + 1)}
+                    </td>
+
+                    {/* Title */}
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="text-sm font-medium text-gray-900">{item?.title}</div>
                     </td>
+
+                    {/* Image */}
                     <td className="px-6 py-4 whitespace-nowrap">
                       <img
                         src={item?.bannerImage}
-                        alt={item?.title }
-                           className="w-10 h-10 rounded-full object-cover"
-                        
+                        alt={item?.title}
+                        className="w-10 h-10 rounded-full object-cover"
                       />
                     </td>
+
+                    {/* Banner Type */}
                     <td className="px-6 py-4 whitespace-nowrap">
                       <span className="px-2 py-1 text-xs font-medium bg-purple-100 text-purple-800 rounded-full capitalize">
                         {item?.bannerType || 'Standard'}
                       </span>
                     </td>
+
+                    {/* Category */}
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="text-sm text-gray-900">{item?.categoryId?.name || 'N/A'}</div>
+                    </td>
+
+                    {/* Property */}
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="text-sm text-gray-900">
-                        {item?.categoryId?.name || 'N/A'} 
+                        <p className="p-0 m-0">
+                          {item?.propertyId?.name || 'N/A'} ({item?.propertyId?.propertyType})
+                        </p>
                       </div>
                     </td>
+
+                    {/* Property Code */}
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="text-sm text-gray-900">
-                        <p className='p-0 m-0'>{item?.propertyId?.name || 'N/A'}({item?.propertyId?.propertyType})</p>
+                        {item?.propertyId?.propertyCode || 'N/A'}
                       </div>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm text-gray-900">
-                        <p className='p-0 m-0'>{item?.propertyId?.propertyCode || 'N/A'}</p>
-                      </div>
-                    </td>
+
+                    {/* Status */}
                     <td className="px-6 py-4 whitespace-nowrap">
                       {item?.isActive ? (
                         <span className="px-2 py-1 text-xs font-medium bg-green-100 text-green-800 rounded-full">
@@ -217,13 +226,15 @@ const Banners = () => {
                         </span>
                       )}
                     </td>
+
+                    {/* Actions */}
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="flex gap-2">
-                        <button 
+                        <button
                           onClick={() => {
                             setSelectedItem(item)
                             setIsModalOpen(true)
-                          }} 
+                          }}
                           className="text-blue-600 hover:text-blue-800 p-1 rounded-md hover:bg-blue-50 transition-colors"
                           title="Edit banner"
                         >
@@ -242,50 +253,45 @@ const Banners = () => {
                       </div>
                     </td>
                   </tr>
-                ))
-              ) : (
-                <tr>
-                  <td colSpan="6" className="px-6 py-12 text-center">
-                    <div className="text-gray-500">
-                      <Search className="w-12 h-12 mx-auto mb-4 text-gray-300" />
-                      <p className="text-lg font-medium">No banners found</p>
-                      <p className="text-sm">Try adjusting your search criteria or add a new banner.</p>
-                    </div>
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
-        </div>
-      )}
+                ))}
+              </tbody>
+            </table>
 
-      {/* Pagination */}
-      {!loading && data?.length > 0 && (
-        <div className="px-6 py-4 border-t border-gray-200">
-          <div className="flex items-center justify-between">
-            <div className="text-sm text-gray-700">
-              Showing {((page - 1) * limit) + 1} to {Math.min(page * limit, total)} of {total} results
-            </div>
-            <Pagination
-              current={page}
-              pageSize={limit}
-              total={total}
-              onChange={(newPage) => setPage(newPage)}
-              showSizeChanger={false}
-              showQuickJumper={false}
-            />
-          </div>
-        </div>
-      )}
+            {/* ✅ Pagination */}
+            {data.length > 0 && (
+              <div className="px-6 py-4 border-t border-gray-200">
+                <div className="flex items-center justify-between">
+                  <div className="text-sm text-gray-700">
+                    Showing {(page - 1) * limit + 1} to {Math.min(page * limit, total)} of {total}{' '}
+                    results
+                  </div>
+                  <Pagination
+                    current={page}
+                    pageSize={limit}
+                    total={total}
+                    onChange={(newPage) => setPage(newPage)}
+                    showSizeChanger={true}
+                    onShowSizeChange={(current, size) => {
+                      setLimit(size)
+                      setPage(1)
+                    }}
+                    showQuickJumper
+                  />
+                </div>
+              </div>
+            )}
+          </>
+        )}
+      </div>
 
       {/* Banners Modal */}
       {isModalOpen && (
-        <BannersModal 
-          setUpdateStatus={setUpdateStatus} 
-          setModalData={setSelectedItem} 
-          modalData={selectedItem}  
-          isModalOpen={isModalOpen} 
-          setIsModalOpen={setIsModalOpen} 
+        <BannersModal
+          setUpdateStatus={setUpdateStatus}
+          setModalData={setSelectedItem}
+          modalData={selectedItem}
+          isModalOpen={isModalOpen}
+          setIsModalOpen={setIsModalOpen}
         />
       )}
     </div>

@@ -12,7 +12,7 @@ const CategoryModal = ({
 }) => {
   const [formData, setFormData] = useState({
     name: '',
-    gallery: [], // changed from single image to gallery
+    gallery: [],
     isActive: true,
   })
   const [loading, setLoading] = useState(false)

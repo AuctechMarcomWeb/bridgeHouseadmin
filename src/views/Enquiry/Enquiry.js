@@ -4,7 +4,7 @@ import { Search, Plus, Edit, Trash2, AlertTriangle, Loader2 } from 'lucide-react
 import ExportButton from '../ExportButton'
 import { deleteRequest, getRequest } from '../../Helpers'
 import toast from 'react-hot-toast'
-import { Pagination } from 'antd'
+import { Empty, Pagination, Spin } from 'antd'
 import EnquiryModal from './EnquiryModal'
 
 const Enquiry = () => {
@@ -12,7 +12,7 @@ const Enquiry = () => {
   const [data, setData] = useState([])
   const [total, setTotal] = useState(0)
   const [page, setPage] = useState(1)
-  const [limit] = useState(10)
+  const [limit, setLimit] = useState(10)
   const [loading, setLoading] = useState(false)
   const [updateStatus, setUpdateStatus] = useState(false)
   const [isModalOpen, setIsModalOpen] = useState(false)
@@ -123,34 +123,42 @@ const Enquiry = () => {
         </div>
       </div>
 
-      {/* Loading State */}
-      {loading && (
-        <div className="flex justify-center items-center py-12">
-          <Loader2 className="w-8 h-8 animate-spin text-blue-500" />
-          <span className="ml-2 text-gray-600">Loading banners...</span>
-        </div>
-      )}
-
       {/* Table */}
-      {!loading && (
-        <div className="overflow-x-auto">
-          <table className="w-full">
-            <thead className="bg-gray-50">
-              <tr>
-                <th className="px-6 py-3">Name</th>
-                <th className="px-6 py-3">Phone</th>
-                <th className="px-6 py-3">E-Mail</th>
-                <th className="px-6 py-3">Message</th>
-                <th className="px-6 py-3">Property</th>
-                <th className="px-6 py-3">Property Code</th>
-                <th className="px-6 py-3">Status</th>
-                <th className="px-6 py-3">Actions</th>
-              </tr>
-            </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
-              {data?.length > 0 ? (
-                data.map((item) => (
+      <div className="overflow-x-auto">
+        {loading ? (
+          // ✅ Loader while fetching banners
+          <div className="flex flex-col justify-center items-center py-20">
+            <Spin size="large" />
+            <div className="mt-4 text-blue-500 font-medium text-center">Loading Enquiries...</div>
+          </div>
+        ) : !data || data.length === 0 ? (
+          // ✅ Empty state when no banners found
+          <div className="flex justify-center items-center py-20">
+            <Empty description="No enquiries found" />
+          </div>
+        ) : (
+          <>
+            <table className="w-full">
+              <thead className="bg-gray-50">
+                <tr>
+                  <th className="px-6 py-3">Sr. No.</th>
+                  <th className="px-6 py-3">Name</th>
+                  <th className="px-6 py-3">Phone</th>
+                  <th className="px-6 py-3">E-Mail</th>
+                  <th className="px-6 py-3">Message</th>
+                  <th className="px-6 py-3">Property</th>
+                  <th className="px-6 py-3">Property Code</th>
+                  <th className="px-6 py-3">Status</th>
+                  <th className="px-6 py-3">Actions</th>
+                </tr>
+              </thead>
+              <tbody className="bg-white divide-y divide-gray-200">
+                {data.map((item, index) => (
                   <tr key={item?._id} className="hover:bg-gray-50 transition-colors">
+                    <td className="px-6 py-4 text-sm text-gray-700">
+                      {(page - 1) * limit + (index + 1)}
+                    </td>
+
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="text-sm font-medium text-gray-900">{item?.name}</div>
                     </td>
@@ -210,43 +218,36 @@ const Enquiry = () => {
                       </div>
                     </td>
                   </tr>
-                ))
-              ) : (
-                <tr>
-                  <td colSpan="6" className="px-6 py-12 text-center">
-                    <div className="text-gray-500">
-                      <Search className="w-12 h-12 mx-auto mb-4 text-gray-300" />
-                      <p className="text-lg font-medium">No banners found</p>
-                      <p className="text-sm">
-                        Try adjusting your search criteria or add a new banner.
-                      </p>
-                    </div>
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
-        </div>
-      )}
+                ))}
+              </tbody>
+            </table>
 
-      {/* Pagination */}
-      {!loading && data?.length > 0 && (
-        <div className="px-6 py-4 border-t border-gray-200">
-          <div className="flex items-center justify-between">
-            <div className="text-sm text-gray-700">
-              Showing {(page - 1) * limit + 1} to {Math.min(page * limit, total)} of {total} results
-            </div>
-            <Pagination
-              current={page}
-              pageSize={limit}
-              total={total}
-              onChange={(newPage) => setPage(newPage)}
-              showSizeChanger={false}
-              showQuickJumper={false}
-            />
-          </div>
-        </div>
-      )}
+            {/* Pagination */}
+            {data?.length > 0 && (
+              <div className="px-6 py-4 border-t border-gray-200">
+                <div className="flex items-center justify-between">
+                  <div className="text-sm text-gray-700">
+                    Showing {(page - 1) * limit + 1} to {Math.min(page * limit, total)} of {total}{' '}
+                    results
+                  </div>
+                  <Pagination
+                    current={page}
+                    pageSize={limit}
+                    total={total}
+                    onChange={(newPage) => setPage(newPage)}
+                    showSizeChanger={true}
+                    onShowSizeChange={(current, size) => {
+                      setLimit(size)
+                      setPage(1)
+                    }}
+                    showQuickJumper
+                  />
+                </div>
+              </div>
+            )}
+          </>
+        )}
+      </div>
 
       {/* Enquiry Modal */}
       {isModalOpen && (

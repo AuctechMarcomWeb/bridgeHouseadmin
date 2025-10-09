@@ -118,6 +118,7 @@ const Category = () => {
         <table className="w-full">
           <thead>
             <tr>
+              <th className="px-6 py-3">Sr. No.</th>
               <th className="px-6 py-3">Name</th>
               <th className="px-6 py-3">Image</th>
               <th className="px-6 py-3">Active</th>
@@ -125,8 +126,11 @@ const Category = () => {
             </tr>
           </thead>
           <tbody className="bg-white divide-y divide-gray-200">
-            {data?.map((item) => (
+            {data?.map((item, index) => (
               <tr key={item._id}>
+                <td className="px-6 py-4 text-sm text-gray-700">
+                  {(page - 1) * limit + (index + 1)}
+                </td>
                 <td className="px-6 py-4">{item?.name}</td>
                 <td className="px-6 py-4">
                   <img

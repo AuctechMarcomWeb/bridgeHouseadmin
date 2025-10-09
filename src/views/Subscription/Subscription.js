@@ -4,7 +4,7 @@ import { Search, Plus, Edit, Trash2, AlertTriangle, Loader2 } from 'lucide-react
 import ExportButton from '../ExportButton'
 import { deleteRequest, getRequest } from '../../Helpers'
 import toast from 'react-hot-toast'
-import { Pagination } from 'antd'
+import { Empty, Pagination, Spin } from 'antd'
 import SubscriptionModal from './SubscriptionModal'
 
 const Subscription = () => {
@@ -123,35 +123,43 @@ const Subscription = () => {
         </div>
       </div>
 
-      {/* Loading State */}
-      {loading && (
-        <div className="flex justify-center items-center py-12">
-          <Loader2 className="w-8 h-8 animate-spin text-blue-500" />
-          <span className="ml-2 text-gray-600">Loading subscriptions...</span>
-        </div>
-      )}
-
       {/* Table */}
-      {!loading && (
-        <div className="overflow-x-auto">
-          <table className="w-full">
-            <thead className="bg-gray-50">
-              <tr>
-                <th className="px-6 py-3">Name</th>
-                <th className="px-6 py-3">Property Limit</th>
-                <th className="px-6 py-3">Verified Limit</th>
-                <th className="px-6 py-3">Type</th>
-                <th className="px-6 py-3">Price</th>
-                <th className="px-6 py-3">Currency</th>
-                <th className="px-6 py-3">Description</th>
-                {/* <th className="px-6 py-3">Status</th> */}
-                <th className="px-6 py-3">Actions</th>
-              </tr>
-            </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
-              {data?.length > 0 ? (
-                data.map((item) => (
+      <div className="overflow-x-auto">
+        {loading ? (
+          <div className="flex flex-col justify-center items-center py-20">
+            <Spin size="large" />
+            <div className="mt-4 text-blue-500 font-medium text-center">
+              Loading subscriptions...
+            </div>
+          </div>
+        ) : !data || data.length === 0 ? (
+          <div className="flex justify-center items-center py-20">
+            <Empty description="No subscriptions found" />
+          </div>
+        ) : (
+          <>
+            <table className="w-full">
+              <thead className="bg-gray-50">
+                <tr>
+                  <th className="px-6 py-3">Sr. No.</th>
+                  <th className="px-6 py-3">Name</th>
+                  <th className="px-6 py-3">Property Limit</th>
+                  <th className="px-6 py-3">Verified Limit</th>
+                  <th className="px-6 py-3">Type</th>
+                  <th className="px-6 py-3">Price</th>
+                  <th className="px-6 py-3">Currency</th>
+                  <th className="px-6 py-3">Description</th>
+                  {/* <th className="px-6 py-3">Status</th> */}
+                  <th className="px-6 py-3">Actions</th>
+                </tr>
+              </thead>
+              <tbody className="bg-white divide-y divide-gray-200">
+                {data.map((item, index) => (
                   <tr key={item._id} className="hover:bg-gray-50 transition-colors">
+                    <td className="px-6 py-4 text-sm text-gray-700">
+                      {(page - 1) * limit + (index + 1)}
+                    </td>
+
                     <td className="px-6 py-4 whitespace-nowrap font-medium text-gray-900">
                       {item?.name}
                     </td>
@@ -202,42 +210,31 @@ const Subscription = () => {
                       </div>
                     </td>
                   </tr>
-                ))
-              ) : (
-                <tr>
-                  <td colSpan="9" className="px-6 py-12 text-center">
-                    <div className="text-gray-500">
-                      <Search className="w-12 h-12 mx-auto mb-4 text-gray-300" />
-                      <p className="text-lg font-medium">No Subscriptions Found</p>
-                      <p className="text-sm">
-                        Try adjusting your search or add a new subscription plan.
-                      </p>
-                    </div>
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
-        </div>
-      )}
+                ))}
+              </tbody>
+            </table>
 
-      {/* Pagination */}
-      {!loading && data?.length > 0 && (
-        <div className="px-6 py-4 border-t border-gray-200">
-          <div className="flex items-center justify-between">
-            <div className="text-sm text-gray-700">
-              Showing {(page - 1) * limit + 1} to {Math.min(page * limit, total)} of {total} results
-            </div>
-            <Pagination
-              current={page}
-              pageSize={limit}
-              total={total}
-              onChange={(newPage) => setPage(newPage)}
-              showSizeChanger={false}
-            />
-          </div>
-        </div>
-      )}
+            {/* Pagination */}
+            {data?.length > 0 && (
+              <div className="px-6 py-4 border-t border-gray-200">
+                <div className="flex items-center justify-between">
+                  <div className="text-sm text-gray-700">
+                    Showing {(page - 1) * limit + 1} to {Math.min(page * limit, total)} of {total}{' '}
+                    results
+                  </div>
+                  <Pagination
+                    current={page}
+                    pageSize={limit}
+                    total={total}
+                    onChange={(newPage) => setPage(newPage)}
+                    showSizeChanger={false}
+                  />
+                </div>
+              </div>
+            )}
+          </>
+        )}
+      </div>
 
       {/* Subscription Modal */}
       {isModalOpen && (
