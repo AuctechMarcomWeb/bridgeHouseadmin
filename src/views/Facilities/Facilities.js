@@ -1,6 +1,3 @@
-
-
-
 import React, { useState, useEffect } from 'react'
 import { Search, Plus, Edit, Trash2, AlertTriangle } from 'lucide-react'
 import ExportButton from '../ExportButton'
@@ -121,16 +118,20 @@ const Facilities = () => {
         <table className="w-full">
           <thead>
             <tr>
+              <th className="px-6 py-3">Sr. No.</th>
               <th className="px-6 py-3">Name</th>
               <th className="px-6 py-3">Active</th>
               <th className="px-6 py-3">Actions</th>
             </tr>
           </thead>
           <tbody className="bg-white divide-y divide-gray-200">
-            {data?.map((item) => (
+            {data?.map((item, index) => (
               <tr key={item._id}>
+                <td className="px-6 py-4 text-sm text-gray-700">
+                  {(page - 1) * limit + (index + 1)}
+                </td>
                 <td className="px-6 py-4">{item?.name}</td>
-             
+
                 <td className="px-6 py-4">
                   {item?.isActive ? (
                     <span className="px-2 py-1 text-xs bg-blue-100 text-blue-800">Active</span>

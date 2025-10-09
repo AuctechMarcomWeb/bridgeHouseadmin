@@ -493,73 +493,92 @@ const PropertiesModal = ({
 
             <hr className="m-0 p-0 my-3" />
 
-            <label className="form-label fw-bold">Property Details </label>
-            <div className="col-md-6">
-              <label className="form-label fw-bold">Area </label>
-              <input
-                type="text"
-                className="form-control"
-                name="area"
-                data-nested="propertyDetails" // ✅ specify nested object
-                value={formData?.propertyDetails?.area}
-                onChange={handleChange}
-              />
-            </div>
-            <div className="col-md-6">
-              <label className="form-label fw-bold">Bedrooms </label>
-              <input
-                type="text"
-                className="form-control"
-                name="bedrooms"
-                data-nested="propertyDetails" // ✅ specify nested object
-                value={formData?.propertyDetails?.bedrooms}
-                onChange={handleChange}
-              />
-            </div>
-            <div className="col-md-6">
-              <label className="form-label fw-bold"> Bathrooms </label>
-              <input
-                type="text"
-                className="form-control"
-                name="bathrooms"
-                data-nested="propertyDetails" // ✅ specify nested object
-                value={formData?.propertyDetails?.bathrooms}
-                onChange={handleChange}
-              />
-            </div>
-            <div className="col-md-6">
-              <label className="form-label fw-bold">Floors </label>
-              <input
-                type="text"
-                className="form-control"
-                name="floors"
-                data-nested="propertyDetails" // ✅ specify nested object
-                value={formData?.propertyDetails?.floors}
-                onChange={handleChange}
-              />
-            </div>
-            <div className="col-md-6">
-              <label className="form-label fw-bold">Facing </label>
-              <input
-                type="text"
-                className="form-control"
-                name="facing"
-                data-nested="propertyDetails" // ✅ specify nested object
-                value={formData?.propertyDetails?.facing}
-                onChange={handleChange}
-              />
-            </div>
-            <div className="col-md-6">
-              <label className="form-label fw-bold">BuiltYear </label>
-              <input
-                type="text"
-                className="form-control"
-                name="builtYear"
-                data-nested="propertyDetails" // ✅ specify nested object
-                value={formData?.propertyDetails?.builtYear}
-                onChange={handleChange}
-              />
-            </div>
+            {/* Property Details */}
+            {formData?.propertyType !== 'Plot' && (
+              <>
+                <label className="form-label fw-bold d-block mb-2">Property Details</label>
+
+                <div className="row">
+                  {/* Area */}
+                  <div className="col-md-6">
+                    <label className="form-label fw-bold">Area</label>
+                    <input
+                      type="text"
+                      className="form-control"
+                      name="area"
+                      data-nested="propertyDetails"
+                      value={formData?.propertyDetails?.area || ''}
+                      onChange={handleChange}
+                    />
+                  </div>
+
+                  {/* Bedrooms */}
+                  <div className="col-md-6">
+                    <label className="form-label fw-bold">Bedrooms</label>
+                    <input
+                      type="text"
+                      className="form-control"
+                      name="bedrooms"
+                      data-nested="propertyDetails"
+                      value={formData?.propertyDetails?.bedrooms || ''}
+                      onChange={handleChange}
+                    />
+                  </div>
+
+                  {/* Bathrooms */}
+                  <div className="col-md-6">
+                    <label className="form-label fw-bold">Bathrooms</label>
+                    <input
+                      type="text"
+                      className="form-control"
+                      name="bathrooms"
+                      data-nested="propertyDetails"
+                      value={formData?.propertyDetails?.bathrooms || ''}
+                      onChange={handleChange}
+                    />
+                  </div>
+
+                  {/* Floors */}
+                  <div className="col-md-6">
+                    <label className="form-label fw-bold">Floors</label>
+                    <input
+                      type="text"
+                      className="form-control"
+                      name="floors"
+                      data-nested="propertyDetails"
+                      value={formData?.propertyDetails?.floors || ''}
+                      onChange={handleChange}
+                    />
+                  </div>
+
+                  {/* Facing */}
+                  <div className="col-md-6">
+                    <label className="form-label fw-bold">Facing</label>
+                    <input
+                      type="text"
+                      className="form-control"
+                      name="facing"
+                      data-nested="propertyDetails"
+                      value={formData?.propertyDetails?.facing || ''}
+                      onChange={handleChange}
+                    />
+                  </div>
+
+                  {/* Built Year */}
+                  <div className="col-md-6">
+                    <label className="form-label fw-bold">Built Year</label>
+                    <input
+                      type="text"
+                      className="form-control"
+                      name="builtYear"
+                      data-nested="propertyDetails"
+                      value={formData?.propertyDetails?.builtYear || ''}
+                      onChange={handleChange}
+                    />
+                  </div>
+                </div>
+              </>
+            )}
 
             <hr className="m-0 p-0 my-3" />
 
@@ -596,51 +615,54 @@ const PropertiesModal = ({
             </div>
 
             {/* Facilities */}
+            {formData?.propertyType !== 'Plot' && (
+              <div className="col-md-6">
+                <label className="form-label fw-bold">Facilities *</label>
 
-            <div className="col-md-6">
-              <label className="form-label fw-bold">Facilities *</label>
-
-              <Select
-                value={formData?.facilities}
-                mode="tags"
-                size="large"
-                style={{ width: '100%' }}
-                placeholder="Enter/Select Your Facilities"
-                onChange={(value) => {
-                  setFormData({
-                    ...formData,
-                    facilities: value,
-                  })
-                }}
-                options={facilites?.map((service) => ({
-                  label: service?.name,
-                  value: service?.name,
-                }))}
-              />
-            </div>
+                <Select
+                  value={formData?.facilities}
+                  mode="tags"
+                  size="large"
+                  style={{ width: '100%' }}
+                  placeholder="Enter/Select Your Facilities"
+                  onChange={(value) => {
+                    setFormData({
+                      ...formData,
+                      facilities: value,
+                    })
+                  }}
+                  options={facilites?.map((service) => ({
+                    label: service?.name,
+                    value: service?.name,
+                  }))}
+                />
+              </div>
+            )}
 
             {/* Services */}
-            <div className="col-md-6">
-              <label className="form-label fw-bold">Services *</label>
+            {formData?.propertyType !== 'Plot' && (
+              <div className="col-md-6">
+                <label className="form-label fw-bold">Services *</label>
 
-              <Select
-                value={formData?.services}
-                mode="tags"
-                size="large"
-                style={{ width: '100%' }}
-                placeholder="Enter/Select Your Services"
-                onChange={(value) => {
-                  setFormData({
-                    ...formData,
-                    services: value,
-                  })
-                }}
-                options={services?.map((service) => ({
-                  label: service?.name,
-                  value: service?.name,
-                }))}
-              />
-            </div>
+                <Select
+                  value={formData?.services}
+                  mode="tags"
+                  size="large"
+                  style={{ width: '100%' }}
+                  placeholder="Enter/Select Your Services"
+                  onChange={(value) => {
+                    setFormData({
+                      ...formData,
+                      services: value,
+                    })
+                  }}
+                  options={services?.map((service) => ({
+                    label: service?.name,
+                    value: service?.name,
+                  }))}
+                />
+              </div>
+            )}
 
             {/* Property Images */}
             <div className="col-md-6">
@@ -706,7 +728,7 @@ const PropertiesModal = ({
             )}
 
             <hr className="m-0 p-0 my-3" />
-            <label className="form-label fw-bold">Project Dimension </label>
+            {/* <label className="form-label fw-bold">Project Dimension </label>
             <div className="col-md-6">
               <label className="form-label fw-bold">Height (ft)</label>
               <input
@@ -739,7 +761,7 @@ const PropertiesModal = ({
                 required
                 onChange={handleChange}
               />
-            </div>
+            </div> */}
 
             <hr className="m-0 p-0 my-3" />
 

@@ -11,6 +11,12 @@ const useNav = () => {
       icon: <MdOutlineDashboard className="me-3" />,
     },
     {
+      component: CNavItem,
+      name: 'Users',
+      to: '/users',
+      icon: <MdOutlineDashboard className="me-3" />,
+    },
+    {
       component: CNavGroup,
       name: 'Masters',
       to: '/Customer-Profile',
@@ -77,6 +83,24 @@ const useNav = () => {
       component: CNavItem,
       name: 'Contacts',
       to: '/contacts',
+      icon: <MdOutlineDashboard className="me-3" />,
+    },
+    {
+      component: CNavItem,
+      name: 'Gallery',
+      to: '/gallery',
+      icon: <MdOutlineDashboard className="me-3" />,
+    },
+    {
+      component: CNavItem,
+      name: 'Testimonials',
+      to: '/testimonials',
+      icon: <MdOutlineDashboard className="me-3" />,
+    },
+    {
+      component: CNavItem,
+      name: 'Bridge House Details',
+      to: '/bridgehouse-details',
       icon: <MdOutlineDashboard className="me-3" />,
     },
   ]

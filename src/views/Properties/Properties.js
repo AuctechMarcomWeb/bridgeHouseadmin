@@ -4,7 +4,7 @@ import { Search, Plus, Edit, Trash2, AlertTriangle, MapPin, IndianRupee } from '
 import ExportButton from '../ExportButton'
 import { deleteRequest, getRequest, putRequest } from '../../Helpers'
 import toast from 'react-hot-toast'
-import { Pagination } from 'antd'
+import { Empty, Pagination, Spin } from 'antd'
 import PropertiesModal from './PropertiesModal'
 import { AppContext } from '../../Context/AppContext'
 import { MdVerified } from 'react-icons/md'
@@ -14,18 +14,21 @@ const Properties = () => {
   const [data, setData] = useState([])
   const [total, setTotal] = useState(0)
   const [page, setPage] = useState(1)
-  const [limit] = useState(10)
+  const [limit, setLimit] = useState(10)
   const [updateStatus, setUpdateStatus] = useState(false)
   const [isModalOpen, setIsModalOpen] = useState(false)
   // Modal states
   const [showDeleteModal, setShowDeleteModal] = useState(false)
   const [approvalStatus, setApprovalStatus] = useState('')
   const [selectedItem, setSelectedItem] = useState(null)
+  const [loading, setLoading] = useState(false)
+
   const googleApiKey = import.meta.env.VITE_GOOGLE_API
 
   // ✅ Fetch Properties with Pagination + Search
 
   useEffect(() => {
+    setLoading(true)
     getRequest(
       `properties?search=${searchTerm}&page=${page}&limit=${limit}&approvalStatus=${approvalStatus}`,
     )
@@ -38,6 +41,7 @@ const Properties = () => {
       .catch((error) => {
         console.log('error', error)
       })
+      .finally(() => setLoading(false))
   }, [page, limit, searchTerm, updateStatus])
 
   // ✅ Delete handler
@@ -57,6 +61,7 @@ const Properties = () => {
 
   const approveData = (data, status) => {
     console.log('approveData', data)
+    setLoading(true)
     putRequest({
       url: `properties/${data?._id}`,
       cred: {
@@ -72,6 +77,7 @@ const Properties = () => {
         console.log('error', error)
         toast.error(error?.response?.data?.message)
       })
+      .finally(() => setLoading(false))
   }
 
   // Format price for display
@@ -154,262 +160,228 @@ const Properties = () => {
 
       {/* Table */}
       <div className="overflow-x-auto">
-        <table className="w-full">
-          <thead>
-            <tr className="bg-gray-50">
-              <th className="px-6 py-3">Property</th>
-              <th className="px-6 py-3">Type</th>
-              <th className="px-6 py-3">Approval Status</th>
-              <th className="px-6 py-3">Addopted Status</th>
-              <th className="px-6 py-3">Verifyed Status</th>
-              <th className="px-6 py-3">Location</th>
-              <th className="px-6 py-3">Price</th>
-              <th className="px-6 py-3">Gallery</th>
-              <th className="px-6 py-3">Actions</th>
-            </tr>
-          </thead>
-          <tbody className="bg-white divide-y divide-gray-200">
-            {data?.map((item, index) => {
-              console.log('item', item)
+        {loading ? (
+          // ✅ Loader State
+          <div className="flex flex-col justify-center items-center py-20">
+            <Spin size="large" />
+            <div className="mt-4 text-blue-500 font-medium text-center">Loading Properties...</div>
+          </div>
+        ) : !data || data.length === 0 ? (
+          // ✅ Empty State
+          <div className="flex justify-center items-center py-20">
+            <Empty description="No properties found" />
+          </div>
+        ) : (
+          <>
+            <table className="w-full">
+              <thead>
+                <tr className="bg-gray-50">
+                  <th className="px-6 py-3">Sr. No.</th>
+                  <th className="px-6 py-3">Property</th>
+                  <th className="px-6 py-3">Type</th>
+                  <th className="px-6 py-3">Approval Status</th>
+                  <th className="px-6 py-3">Adopted Status</th>
+                  <th className="px-6 py-3">Verified Status</th>
+                  <th className="px-6 py-3">Location</th>
+                  <th className="px-6 py-3">Price</th>
+                  <th className="px-6 py-3">Gallery</th>
+                  <th className="px-6 py-3">Actions</th>
+                </tr>
+              </thead>
 
-              return (
-                <tr
-                  key={item._id}
-                  className={`${
-                    item?.approvalStatus === 'Published'
-                      ? 'bg-green-200 hover:bg-green-100'
-                      : item?.approvalStatus === 'Rejected'
-                        ? 'bg-red-200 hover:bg-red-100'
-                        : 'hover:bg-gray-50'
-                  }`}
-                >
-                  {/* Property Details */}
-                  <td className="px-6 py-4">
-                    <div className="flex flex-col">
-                      <div className="text-sm font-medium text-gray-900">{item?.name}</div>
-                      <div className="text-sm text-gray-500 truncate" style={{ maxWidth: '200px' }}>
-                        {item?.address}
-                      </div>
-                      {item?.description && (
+              <tbody className="bg-white divide-y divide-gray-200">
+                {data.map((item, index) => (
+                  <tr
+                    key={item._id}
+                    className={`${
+                      item?.approvalStatus === 'Published'
+                        ? 'bg-green-200 hover:bg-green-100'
+                        : item?.approvalStatus === 'Rejected'
+                          ? 'bg-red-200 hover:bg-red-100'
+                          : 'hover:bg-gray-50'
+                    }`}
+                  >
+                    {/* Serial No */}
+                    <td className="px-6 py-4 text-sm text-gray-700">
+                      {(page - 1) * limit + (index + 1)}
+                    </td>
+
+                    {/* Property Details */}
+                    <td className="px-6 py-4">
+                      <div className="flex flex-col">
+                        <div className="text-sm font-medium text-gray-900">{item?.name}</div>
                         <div
-                          className="text-xs text-gray-400 truncate mt-1"
+                          className="text-sm text-gray-500 truncate"
                           style={{ maxWidth: '200px' }}
                         >
-                          {item.description}
+                          {item?.address}
                         </div>
-                      )}
-                    </div>
-                  </td>
-
-                  {/* Property Type */}
-                  <td className="px-6 py-4">
-                    <span className="">{item?.propertyType || 'N/A'}</span>
-                  </td>
-
-                  <td className="px-6 py-4">
-                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                      {item?.approvalStatus || 'N/A'}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4">
-                    {item?.isAdopted ? (
-                      <SiMercadopago className="fs-4" />
-                    ) : (
-                      <span className="">Not Adopted</span>
-                    )}
-                  </td>
-                  <td className="px-6 py-4">
-                    {item?.isVerified ? (
-                      <MdVerified className="fs-4" />
-                    ) : (
-                      <span className="">Not Verified</span>
-                    )}
-                  </td>
-
-                  {/* Location */}
-                  <td className="px-6 py-4">
-                    <div className="flex items-center text-sm text-gray-500">
-                      <MapPin className="w-4 h-4 mr-1" />
-                      <div>
-                        {item?.location?.coordinates
-                          ? item?.address?.split(' ').slice(0, 5).join(' ')
-                          : 'No coordinates'}
-                      </div>
-                    </div>
-                  </td>
-
-                  {/* Price */}
-                  <td className="px-6 py-4">
-                    <div className="flex flex-col">
-                      <div className="text-sm font-medium text-gray-900 flex items-center">
-                        <IndianRupee className="w-3 h-3 mr-1" />
-                        {formatPrice(item?.sellingPrice)}
-                      </div>
-                      {item?.actualPrice && item?.actualPrice !== item?.sellingPrice && (
-                        <div className="text-xs text-gray-500 line-through flex items-center">
-                          <IndianRupee className="w-3 h-3 mr-1" />
-                          {formatPrice(item?.actualPrice)}
-                        </div>
-                      )}
-                    </div>
-                  </td>
-
-                  {/* Gallery */}
-                  <td className="px-6 py-4">
-                    <div className="flex -space-x-2 overflow-hidden">
-                      {item?.gallery?.slice(0, 3).map((imageUrl, index) => (
-                        <img
-                          key={index}
-                          src={imageUrl}
-                          alt={`Gallery ${index + 1}`}
-                          className="inline-block w-8 h-8 rounded-full border-2 border-white object-cover"
-                        />
-                      ))}
-                      {item?.gallery?.length > 3 && (
-                        <span className="flex items-center justify-center w-8 h-8 rounded-full bg-gray-200 border-2 border-white text-xs font-medium text-gray-500">
-                          +{item.gallery.length - 3}
-                        </span>
-                      )}
-                      {(!item?.gallery || item?.gallery?.length === 0) && (
-                        <span className="text-xs text-gray-400">No images</span>
-                      )}
-                    </div>
-                  </td>
-
-                  {/* Actions */}
-                  {/* <td className="px-6 py-4">
-                    <div className="flex gap-2">
-                      {item?.approvalStatus == 'Pending' ? (
-                        <>
-                          <button
-                            onClick={() => approveData(item, 'Published')}
-                            className=" btn btn-primary  p-1"
-                            title="Edit property"
+                        {item?.description && (
+                          <div
+                            className="text-xs text-gray-400 truncate mt-1"
+                            style={{ maxWidth: '200px' }}
                           >
-                            Approve
-                          </button>
-                          <button
-                            onClick={() => approveData(item, 'Rejected')}
-                            className=" btn btn-primary  p-1"
-                            title="Edit property"
-                          >
-                            Reject
-                          </button>
-                        </>
+                            {item.description}
+                          </div>
+                        )}
+                      </div>
+                    </td>
+
+                    {/* Property Type */}
+                    <td className="px-6 py-4">{item?.propertyType || 'N/A'}</td>
+
+                    {/* Approval Status */}
+                    <td className="px-6 py-4">
+                      <span
+                        className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                          item?.approvalStatus === 'Published'
+                            ? 'bg-green-100 text-green-800'
+                            : item?.approvalStatus === 'Rejected'
+                              ? 'bg-red-100 text-red-800'
+                              : 'bg-blue-100 text-blue-800'
+                        }`}
+                      >
+                        {item?.approvalStatus || 'N/A'}
+                      </span>
+                    </td>
+
+                    {/* Adopted Status */}
+                    <td className="px-6 py-4">
+                      {item?.isAdopted ? (
+                        <SiMercadopago className="fs-4 text-green-600" />
                       ) : (
-                        ''
+                        <span className="text-gray-500 text-sm">Not Adopted</span>
                       )}
-                      {item?.approvalStatus == 'Rejected' ? (
+                    </td>
+
+                    {/* Verified Status */}
+                    <td className="px-6 py-4">
+                      {item?.isVerified ? (
+                        <MdVerified className="fs-4 text-blue-600" />
+                      ) : (
+                        <span className="text-gray-500 text-sm">Not Verified</span>
+                      )}
+                    </td>
+
+                    {/* Location */}
+                    <td className="px-6 py-4">
+                      <div className="flex items-center text-sm text-gray-500">
+                        <MapPin className="w-4 h-4 mr-1" />
+                        <div>
+                          {item?.location?.coordinates
+                            ? item?.address?.split(' ').slice(0, 5).join(' ')
+                            : 'No coordinates'}
+                        </div>
+                      </div>
+                    </td>
+
+                    {/* Price */}
+                    <td className="px-6 py-4">
+                      <div className="flex flex-col">
+                        <div className="text-sm font-medium text-gray-900 flex items-center">
+                          <IndianRupee className="w-3 h-3 mr-1" />
+                          {formatPrice(item?.sellingPrice)}
+                        </div>
+                        {item?.actualPrice && item?.actualPrice !== item?.sellingPrice && (
+                          <div className="text-xs text-gray-500 line-through flex items-center">
+                            <IndianRupee className="w-3 h-3 mr-1" />
+                            {formatPrice(item?.actualPrice)}
+                          </div>
+                        )}
+                      </div>
+                    </td>
+
+                    {/* Gallery */}
+                    <td className="px-6 py-4">
+                      <div className="flex -space-x-2 overflow-hidden">
+                        {item?.gallery?.slice(0, 3).map((imageUrl, i) => (
+                          <img
+                            key={i}
+                            src={imageUrl}
+                            alt={`Gallery ${i + 1}`}
+                            className="inline-block w-8 h-8 rounded-full border-2 border-white object-cover"
+                          />
+                        ))}
+                        {item?.gallery?.length > 3 && (
+                          <span className="flex items-center justify-center w-8 h-8 rounded-full bg-gray-200 border-2 border-white text-xs font-medium text-gray-500">
+                            +{item.gallery.length - 3}
+                          </span>
+                        )}
+                        {(!item?.gallery || item?.gallery?.length === 0) && (
+                          <span className="text-xs text-gray-400">No images</span>
+                        )}
+                      </div>
+                    </td>
+
+                    {/* Actions */}
+                    <td className="px-6 py-4">
+                      <div className="flex gap-2">
                         <button
                           onClick={() => approveData(item, 'Published')}
-                          className=" btn btn-primary  p-1"
-                          title="Edit property"
+                          className="btn btn-primary p-1"
+                          title="Approve property"
+                          disabled={item?.approvalStatus === 'Published'}
                         >
                           Approve
                         </button>
-                      ) : (
-                        ''
-                      )}
+                        <button
+                          onClick={() => approveData(item, 'Rejected')}
+                          className="btn btn-primary p-1"
+                          title="Reject property"
+                          disabled={item?.approvalStatus === 'Rejected'}
+                        >
+                          Reject
+                        </button>
+                        <button
+                          onClick={() => {
+                            setSelectedItem(item)
+                            setIsModalOpen(true)
+                          }}
+                          className="text-blue-600 hover:text-blue-800 p-1"
+                          title="Edit property"
+                        >
+                          <Edit className="w-4 h-4" />
+                        </button>
+                        <button
+                          onClick={() => {
+                            setSelectedItem(item)
+                            setShowDeleteModal(true)
+                          }}
+                          className="text-red-600 hover:text-red-800 p-1"
+                          title="Delete property"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
 
-                      <button
-                        onClick={() => {
-                          setSelectedItem(item)
-                          setIsModalOpen(true)
-                        }}
-                        className="text-blue-600 hover:text-blue-800 p-1"
-                        title="Edit property"
-                      >
-                        <Edit className="w-4 h-4" />
-                      </button>
-                      <button
-                        onClick={() => {
-                          setSelectedItem(item)
-                          setShowDeleteModal(true)
-                        }}
-                        className="text-red-600 hover:text-red-800 p-1"
-                        title="Delete property"
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </button>
-                    </div>
-                  </td> */}
-
-                  <td className="px-6 py-4">
-                    <div className="flex gap-2">
-                      <button
-                        onClick={() => approveData(item, 'Published')}
-                        className="btn btn-primary p-1"
-                        title="Approve property"
-                        disabled={item?.approvalStatus === 'Published'}
-                      >
-                        Approve
-                      </button>
-
-                      <button
-                        onClick={() => approveData(item, 'Rejected')}
-                        className="btn btn-primary p-1"
-                        title="Reject property"
-                        disabled={item?.approvalStatus === 'Rejected'}
-                      >
-                        Reject
-                      </button>
-
-                      <button
-                        onClick={() => {
-                          setSelectedItem(item)
-                          setIsModalOpen(true)
-                        }}
-                        className="text-blue-600 hover:text-blue-800 p-1"
-                        title="Edit property"
-                      >
-                        <Edit className="w-4 h-4" />
-                      </button>
-
-                      <button
-                        onClick={() => {
-                          setSelectedItem(item)
-                          setShowDeleteModal(true)
-                        }}
-                        className="text-red-600 hover:text-red-800 p-1"
-                        title="Delete property"
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              )
-            })}
-
-            {/* Empty State */}
-            {data?.length === 0 && (
-              <tr>
-                <td colSpan="7" className="px-6 py-12 text-center">
-                  <div className="text-gray-500">
-                    <div className="text-lg mb-2">No properties found</div>
-                    <div className="text-sm">Add your first property to get started</div>
-                  </div>
-                </td>
-              </tr>
+            {/* ✅ Pagination */}
+            {data.length > 0 && (
+              <div className="flex justify-between items-center px-6 py-4 border-t border-gray-200">
+                <div className="text-sm text-gray-700">
+                  Showing {data?.length > 0 ? (page - 1) * limit + 1 : 0} to{' '}
+                  {Math.min(page * limit, total)} of {total} properties
+                </div>
+                <Pagination
+                  current={page}
+                  pageSize={limit}
+                  total={total}
+                  onChange={(newPage) => setPage(newPage)}
+                  showSizeChanger={true}
+                  onShowSizeChange={(current, size) => {
+                    setLimit(size)
+                    setPage(1)
+                  }}
+                  showQuickJumper
+                />
+              </div>
             )}
-          </tbody>
-        </table>
-      </div>
-
-      {/* ✅ Pagination */}
-      <div className="flex justify-between items-center px-6 py-4 border-t border-gray-200">
-        <div className="text-sm text-gray-700">
-          Showing {data?.length > 0 ? (page - 1) * limit + 1 : 0} to {Math.min(page * limit, total)}{' '}
-          of {total} properties
-        </div>
-        <Pagination
-          current={page}
-          pageSize={limit}
-          total={total}
-          onChange={(newPage) => setPage(newPage)}
-          showSizeChanger={false}
-          showQuickJumper
-        />
+          </>
+        )}
       </div>
 
       {/* Properties Modal */}

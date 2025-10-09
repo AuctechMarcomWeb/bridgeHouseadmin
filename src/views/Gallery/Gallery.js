@@ -1,13 +1,15 @@
 /* eslint-disable prettier/prettier */
 import React, { useState, useEffect } from 'react'
-import { Search, Plus, Edit, Trash2, AlertTriangle, Contact } from 'lucide-react'
+import { Search, Plus, Edit, Trash2, AlertTriangle } from 'lucide-react'
 import ExportButton from '../ExportButton'
 import { deleteRequest, getRequest } from '../../Helpers'
 import toast from 'react-hot-toast'
 import { Empty, Pagination, Spin } from 'antd'
-import ContactsModal from './ContactsModal'
+import axios from 'axios'
+import GalleryModal from './GalleryModal'
+import { faL } from '@fortawesome/free-solid-svg-icons'
 
-const Contacts = () => {
+const Gallery = () => {
   const [searchTerm, setSearchTerm] = useState('')
   const [data, setData] = useState([])
   const [total, setTotal] = useState(0)
@@ -19,27 +21,24 @@ const Contacts = () => {
   const [showDeleteModal, setShowDeleteModal] = useState(false)
   const [selectedItem, setSelectedItem] = useState(null)
   const [loading, setLoading] = useState(false)
-
-  //  FetchContact with Pagination + Search
+  // ✅ Fetch Property Type with Pagination + Search
   useEffect(() => {
     setLoading(true)
-    getRequest(`bridgeHouseConatct?search=${searchTerm}&page=${page}&limit=${limit}`)
+    getRequest(`gallery?search=${searchTerm}&page=${page}&limit=${limit}`)
       .then((res) => {
         const responseData = res?.data?.data
-        setData(responseData?.contacts || [])
-        setTotal(responseData?.totalContacts || 0)
+        setData(responseData?.gallery || [])
+        setTotal(responseData?.totalGallery || 0)
       })
       .catch((error) => {
         console.log('error', error)
       })
-      .finally(() => {
-        setLoading(false)
-      })
+      .finally(() => setLoading(false))
   }, [page, limit, searchTerm, updateStatus])
 
   // ✅ Delete handler
   const confirmDelete = () => {
-    deleteRequest(`bridgeHouseConatct/${selectedItem?._id}`)
+    deleteRequest(`gallery/${selectedItem?._id}`)
       .then((res) => {
         toast.success(res?.data?.message)
         setSelectedItem(null)
@@ -85,8 +84,8 @@ const Contacts = () => {
       {/* Header */}
       <div className="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
         <div>
-          <h2 className="text-2xl font-bold text-gray-900">Contact</h2>
-          <p className="text-gray-600 mt-1">Manage Contact</p>
+          <h2 className="text-2xl font-bold text-gray-900">Gallery</h2>
+          <p className="text-gray-600 mt-1">Manage Gallery</p>
         </div>
         <div className="flex items-center space-x-3">
           <ExportButton data={data} fileName="Property Type.xlsx" sheetName="Property Type" />
@@ -96,7 +95,7 @@ const Contacts = () => {
             }}
             className="bg-green-600 text-white px-4 py-2 hover:bg-green-700 flex items-center"
           >
-            <Plus className="w-4 h-4 mr-2" /> Add Contact
+            <Plus className="w-4 h-4 mr-2" /> Add Gallery
           </button>
         </div>
       </div>
@@ -121,55 +120,49 @@ const Contacts = () => {
       {/* Table */}
       <div className="overflow-x-auto">
         {loading ? (
-          // ✅ Loader while fetching banners
+          // Loader when fetching data
           <div className="flex flex-col justify-center items-center py-20">
             <Spin size="large" />
-            <div className="mt-4 text-blue-500 font-medium text-center">Loading Contacts...</div>
+            <div className="mt-4 text-blue-500 font-medium text-center">Loading Gallery...</div>
           </div>
         ) : !data || data.length === 0 ? (
-          // ✅ Empty state when no banners found
+          // Empty state when no data found
           <div className="flex justify-center items-center py-20">
-            <Empty description="No cotacts found" />
+            <Empty description="No records found" />
           </div>
         ) : (
           <>
             <table className="w-full">
               <thead>
                 <tr>
-                  <th className="px-6 py-3">Sr. No.</th>
-                  <th className="px-6 py-3">Name</th>
-                  <th className="px-6 py-3">Email</th>
-                  <th className="px-6 py-3">Phone</th>
-                  <th className="px-6 py-3">Address</th>
-                  <th className="px-6 py-3">Notes</th>
+                  <th className="px-6 py-3">Title</th>
+                  <th className="px-6 py-3">Image</th>
+                  <th className="px-6 py-3">Active</th>
                   <th className="px-6 py-3">Actions</th>
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
-                {data?.map((item, index) => (
+                {data.map((item, index) => (
                   <tr key={item._id}>
                     <td className="px-6 py-4 text-sm text-gray-700">
                       {(page - 1) * limit + (index + 1)}
                     </td>
-                    <td className="px-6 py-4">{item?.name}</td>
-                    <td className="px-6 py-4">{item?.email}</td>
-                    <td className="px-6 py-4">{item?.phone}</td>
-                    <td className="px-6 py-4">{item?.address}</td>
-                    <td className="px-6 py-4">{item?.notes}</td>
-                    {/* <td className="px-6 py-4">
-                  <img
-                    src={item?.email}
-                    alt="category"
-                    className="w-10 h-10 rounded-full object-cover"
-                  />
-                </td> */}
-                    {/* <td className="px-6 py-4">
-                  {item?.isActive ? (
-                    <span className="px-2 py-1 text-xs bg-blue-100 text-blue-800">Active</span>
-                  ) : (
-                    <span className="px-2 py-1 text-xs bg-red-100 text-red-800">Inactive</span>
-                  )}
-                </td> */}
+
+                    <td className="px-6 py-4">{item?.title}</td>
+                    <td className="px-6 py-4">
+                      <img
+                        src={item?.url}
+                        alt="gallery"
+                        className="w-10 h-10 rounded-full object-cover"
+                      />
+                    </td>
+                    <td className="px-6 py-4">
+                      {item?.isActive ? (
+                        <span className="px-2 py-1 text-xs bg-blue-100 text-blue-800">Active</span>
+                      ) : (
+                        <span className="px-2 py-1 text-xs bg-red-100 text-red-800">Inactive</span>
+                      )}
+                    </td>
                     <td className="px-6 py-4 flex gap-2">
                       <button
                         onClick={() => {
@@ -195,7 +188,7 @@ const Contacts = () => {
               </tbody>
             </table>
 
-            {/* ✅ Pagination */}
+            {/* Pagination (only show if there’s data) */}
             {data.length > 0 && (
               <div className="flex justify-end py-4">
                 <Pagination
@@ -210,8 +203,9 @@ const Contacts = () => {
           </>
         )}
       </div>
+
       {isModalOpen && (
-        <ContactsModal
+        <GalleryModal
           setUpdateStatus={setUpdateStatus}
           setModalData={setSelectedItem}
           modalData={selectedItem}
@@ -223,4 +217,4 @@ const Contacts = () => {
   )
 }
 
-export default Contacts
+export default Gallery
