@@ -78,18 +78,18 @@ const Services = () => {
       )}
 
       {/* Header */}
-      <div className="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
+      <div className="px-4 sm:px-6 py-4 border-b border-gray-200 flex flex-col sm:flex-row justify-between sm:items-center gap-3">
         <div>
-          <h2 className="text-2xl font-bold text-gray-900">Services</h2>
-          <p className="text-gray-600 mt-1">Manage Services</p>
+          <h2 className="text-xl sm:text-2xl font-bold text-gray-900">Services</h2>
+          <p className="text-gray-600 text-sm sm:text-base">Manage Services</p>
         </div>
-        <div className="flex items-center space-x-3">
+        <div className="flex flex-wrap items-center gap-2 sm:gap-3">
           <ExportButton data={data} fileName="Services.xlsx" sheetName="Services" />
           <button
             onClick={() => {
               setIsModalOpen(true)
             }}
-            className="bg-green-600 text-white px-4 py-2 hover:bg-green-700 flex items-center"
+            className="bg-green-600 text-white px-3 sm:px-4 py-2 hover:bg-green-700 flex items-center justify-center rounded-md text-sm sm:text-base w-full sm:w-auto"
           >
             <Plus className="w-4 h-4 mr-2" /> Add Services
           </button>
