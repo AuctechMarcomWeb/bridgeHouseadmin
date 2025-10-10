@@ -1,3 +1,4 @@
+/* eslint-disable react/jsx-no-undef */
 /* eslint-disable prettier/prettier */
 import React, { useState, useEffect } from 'react'
 import { Search, Plus, Edit, Trash2, AlertTriangle } from 'lucide-react'
@@ -12,7 +13,7 @@ const Auth = () => {
   const [total, setTotal] = useState(0)
   const [sortBy, setSortBy] = useState('recent')
   const [page, setPage] = useState(1)
-  const [limit] = useState(10)
+  const [limit, setLimit] = useState(10)
   const [updateStatus, setUpdateStatus] = useState(false)
   const [isModalOpen, setIsModalOpen] = useState(false)
   // Modal states
@@ -202,7 +203,12 @@ const Auth = () => {
                   pageSize={limit}
                   total={total}
                   onChange={(newPage) => setPage(newPage)}
-                  showSizeChanger={false}
+                  showSizeChanger={true}
+                  onShowSizeChange={(current, size) => {
+                    setLimit(size)
+                    setPage(1)
+                  }}
+                  showQuickJumper
                 />
               </div>
             )}
