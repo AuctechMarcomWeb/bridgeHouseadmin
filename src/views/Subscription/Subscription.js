@@ -29,7 +29,7 @@ const Subscription = () => {
         const responseData = res?.data?.data
         // API is expected to return {subscriptions:[], total: number}
         setData(responseData?.packages || [])
-        setTotal(responseData?.total || 0)
+        setTotal(responseData?.totalPackages || 0)
       })
       .catch((error) => {
         console.error('Fetch error', error)
