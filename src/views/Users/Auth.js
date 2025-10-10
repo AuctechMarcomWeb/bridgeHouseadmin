@@ -84,12 +84,13 @@ const Auth = () => {
       )}
 
       {/* Header */}
-      <div className="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
+      <div className="px-4 sm:px-6 py-4 border-b border-gray-200 flex flex-col sm:flex-row justify-between sm:items-center gap-3">
         <div>
-          <h2 className="text-2xl font-bold text-gray-900">Users</h2>
-          <p className="text-gray-600 mt-1">Manage Users</p>
+          <h2 className="text-xl sm:text-2xl font-bold text-gray-900">Users</h2>
+          <p className="text-gray-600 text-sm sm:text-base">Manage Users</p>
         </div>
-        <div className="flex items-center space-x-3">
+        <div className="flex flex-wrap items-center gap-2 sm:gap-3">
+          {' '}
           <ExportButton data={data} fileName="Property Type.xlsx" sheetName="Property Type" />
           {/* <button
             onClick={() => {

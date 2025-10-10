@@ -1,6 +1,16 @@
 /* eslint-disable prettier/prettier */
 import React, { useState, useEffect } from 'react'
-import { Search, Plus, Edit, Trash2, AlertTriangle, MapPin, IndianRupee } from 'lucide-react'
+import {
+  Search,
+  Plus,
+  Edit,
+  Trash2,
+  AlertTriangle,
+  MapPin,
+  IndianRupee,
+  CheckCircle,
+  XCircle,
+} from 'lucide-react'
 import ExportButton from '../ExportButton'
 import { deleteRequest, getRequest, putRequest } from '../../Helpers'
 import toast from 'react-hot-toast'
@@ -70,6 +80,43 @@ const Properties = () => {
     })
       .then((res) => {
         console.log('res', res?.data)
+        setUpdateStatus((prev) => !prev)
+        toast.success(res?.data?.message)
+      })
+      .catch((error) => {
+        console.log('error', error)
+        toast.error(error?.response?.data?.message)
+      })
+      .finally(() => setLoading(false))
+  }
+  // ✅ Property Verify Karne ka Function
+  const verifyProperty = (data) => {
+    setLoading(true)
+    putRequest({
+      url: `properties/${data?._id}`,
+      cred: { isVerified: true },
+    })
+      .then((res) => {
+        console.log('Verified:', res?.data)
+        setUpdateStatus((prev) => !prev)
+        toast.success(res?.data?.message)
+      })
+      .catch((error) => {
+        console.log('error', error)
+        toast.error(error?.response?.data?.message)
+      })
+      .finally(() => setLoading(false))
+  }
+
+  // ✅ Property Adopt Karne ka Function
+  const adoptProperty = (data) => {
+    setLoading(true)
+    putRequest({
+      url: `properties/${data?._id}`,
+      cred: { isAdopted: true },
+    })
+      .then((res) => {
+        console.log('Adopted:', res?.data)
         setUpdateStatus((prev) => !prev)
         toast.success(res?.data?.message)
       })
@@ -246,27 +293,42 @@ const Properties = () => {
                     </td>
 
                     {/* Adopted Status */}
-                    <td className="px-6 py-4">
+                    {/* <td className="px-6 py-4">
                       {item?.isAdopted ? (
                         <SiMercadopago className="fs-4 text-green-600" />
                       ) : (
                         <span className="text-gray-500 text-sm">Not Adopted</span>
+                      )}
+                    </td> */}
+                    <td className="px-6 py-4">
+                      {item?.isAdopted ? (
+                        <span className="bg-green-100 text-green-800 px-2 py-0.5 rounded-full text-xs font-medium">
+                          Adopted
+                        </span>
+                      ) : (
+                        <span className="bg-red-100 text-red-800 px-2 py-0.5 rounded-full text-xs font-medium">
+                          Not Adopted
+                        </span>
                       )}
                     </td>
 
                     {/* Verified Status */}
                     <td className="px-6 py-4">
                       {item?.isVerified ? (
-                        <MdVerified className="fs-4 text-blue-600" />
+                        <span className="bg-green-100 text-green-800 px-2 py-0.5 rounded-full text-xs font-medium">
+                          Verified{' '}
+                        </span>
                       ) : (
-                        <span className="text-gray-500 text-sm">Not Verified</span>
+                        <span className="bg-red-100 text-red-800 px-2 py-0.5 rounded-full text-xs font-medium">
+                          Not Verified
+                        </span>
                       )}
                     </td>
 
                     {/* Location */}
                     <td className="px-6 py-4">
                       <div className="flex items-center text-sm text-gray-500">
-                        <MapPin className="w-4 h-4 mr-1" />
+                        {/* <MapPin className="w-4 h-4 mr-1" /> */}
                         <div>
                           {item?.location?.coordinates
                             ? item?.address?.split(' ').slice(0, 5).join(' ')
@@ -316,22 +378,60 @@ const Properties = () => {
                     {/* Actions */}
                     <td className="px-6 py-4">
                       <div className="flex gap-2">
+                        {/* Adopted Button */}
+                        <button
+                          onClick={() => adoptProperty(item)}
+                          disabled={item?.isAdopted === true}
+                          className={`p-1 ${
+                            item?.approvalStatus === 'Rejected'
+                              ? 'text-gray-400 cursor-not-allowed' // disabled style
+                              : 'text-orange-600 hover:text-blue-800 p-1' // active style
+                          }`}
+                        >
+                          <SiMercadopago className="fs-4" />
+                        </button>
+
+                        {/* Verified Button */}
+                        <button
+                          onClick={() => verifyProperty(item)}
+                          disabled={item?.isVerified === true}
+                          className={`p-1 ${
+                            item?.approvalStatus === 'Rejected'
+                              ? 'text-gray-400 cursor-not-allowed' // disabled style
+                              : 'text-blue-600 hover:text-blue-800 p-1' // active style
+                          }`}
+                        >
+                          <MdVerified className="fs-4 " />
+                        </button>
+
+                        {/* Published Button */}
                         <button
                           onClick={() => approveData(item, 'Published')}
-                          className="btn btn-primary p-1"
-                          title="Approve property"
                           disabled={item?.approvalStatus === 'Published'}
+                          className={`p-1 ${
+                            item?.approvalStatus === 'Rejected'
+                              ? 'text-gray-400 cursor-not-allowed' // disabled style
+                              : 'text-green-600 hover:text-blue-800 p-1' // active style
+                          }`}
+                          title="Approve property"
                         >
-                          Approve
+                          <CheckCircle className="w-4 h-4" />
                         </button>
+
+                        {/* Rejected Button */}
                         <button
                           onClick={() => approveData(item, 'Rejected')}
-                          className="btn btn-primary p-1"
-                          title="Reject property"
                           disabled={item?.approvalStatus === 'Rejected'}
+                          className={`p-1 ${
+                            item?.approvalStatus === 'Rejected'
+                              ? 'text-gray-400 cursor-not-allowed' // disabled style
+                              : 'text-red-600 hover:text-blue-800' // active style
+                          }`}
+                          title="Reject property"
                         >
-                          Reject
+                          <XCircle className="w-4 h-4" />
                         </button>
+
                         <button
                           onClick={() => {
                             setSelectedItem(item)
