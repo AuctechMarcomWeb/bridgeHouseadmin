@@ -87,18 +87,22 @@ const Subscription = () => {
       )}
 
       {/* Header */}
-     <div className="px-4 sm:px-6 py-4 border-b border-gray-200 flex flex-col sm:flex-row justify-between sm:items-center gap-3">
+      <div className="px-4 sm:px-6 py-4 border-b border-gray-200 flex flex-col sm:flex-row justify-between sm:items-center gap-3">
         <div>
-           <h2 className="text-xl sm:text-2xl font-bold text-gray-900">Subscriptions</h2>
-          <p className="text-gray-600 text-sm sm:text-base">Manage your subscription plans and limits</p>
+          <h2 className="text-xl sm:text-2xl font-bold text-gray-900">Subscriptions</h2>
+          <p className="text-gray-600 text-sm sm:text-base">
+            Manage your subscription plans and limits
+          </p>
         </div>
-<div className="flex flex-wrap items-center gap-2 sm:gap-3">          <ExportButton data={data} fileName="Subscriptions.xlsx" sheetName="Subscriptions" />
+        <div className="flex flex-wrap items-center gap-2 sm:gap-3">
+          {' '}
+          <ExportButton data={data} fileName="Subscriptions.xlsx" sheetName="Subscriptions" />
           <button
             onClick={() => {
               setSelectedItem(null)
               setIsModalOpen(true)
             }}
-             className="bg-green-600 text-white px-3 sm:px-4 py-2 hover:bg-green-700 flex items-center justify-center rounded-md text-sm sm:text-base w-full sm:w-auto"
+            className="bg-green-600 text-white px-3 sm:px-4 py-2 hover:bg-green-700 flex items-center justify-center rounded-md text-sm sm:text-base w-full sm:w-auto"
           >
             <Plus className="w-4 h-4 mr-2" /> Add Subscription
           </button>
@@ -171,7 +175,7 @@ const Subscription = () => {
                     <td className="px-6 py-4 whitespace-nowrap capitalize">{item?.type || '—'}</td>
                     <td className="px-6 py-4 whitespace-nowrap">{item?.price || '0'}</td>
                     <td className="px-6 py-4 whitespace-nowrap">{item?.currency || '—'}</td>
-                    <td className="px-6 py-4 whitespace-nowrap">{item?.description || '—'}</td>
+                    <td className="px-6 py-4 word-nowrap">{item?.description || '—'}</td>
 
                     {/* <td className="px-6 py-4 whitespace-nowrap">
                       {item?.isActive ? (
