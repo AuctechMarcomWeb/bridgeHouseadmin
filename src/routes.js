@@ -17,7 +17,7 @@ import Auth from './views/Users/Auth'
 const Dashboard = React.lazy(() => import('./views/dashboard/Dashboard'))
 
 const routes = [
-  { path: '/Dashboard', exact: true, name: 'Dashboard', element: Dashboard }, // use Dashboard here
+  { path: '/Dashboard', exact: true, name: 'Dashboard', element: Dashboard },
   { path: '/banner', name: 'Banners ', element: Banners },
   { path: '/enquiry', name: 'Enquiry ', element: Enquiry },
   { path: '/subscription', name: 'Subscription', element: Subscription },

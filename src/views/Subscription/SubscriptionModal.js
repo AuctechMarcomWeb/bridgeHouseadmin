@@ -1,6 +1,5 @@
 /* eslint-disable prettier/prettier */
 /* eslint-disable react/prop-types */
-/* eslint-disable react/jsx-no-undef */
 
 import { Modal } from 'antd'
 import React, { useState, useEffect } from 'react'
@@ -14,22 +13,42 @@ const SubscriptionModal = ({
   isModalOpen,
   setIsModalOpen,
 }) => {
-  const [formData, setFormData] = useState(
-    modalData
-      ? { ...modalData }
-      : {
-          name: '',
-          description: '',
-          type: '',
-          price: '',
-          currency: '',
-          PropertyListingLimit: '',
-          verifiedListingLimit: '',
-        },
-  )
+  const [formData, setFormData] = useState({
+    name: '',
+    description: '',
+    type: '',
+    price: '',
+    currency: '',
+    PropertyListingLimit: '',
+    verifiedListingLimit: '',
+  })
   const [loading, setLoading] = useState(false)
   const [errors, setErrors] = useState({})
-  console.log('formData', formData)
+
+  // ✅ Prefill form when editing
+  useEffect(() => {
+    if (modalData) {
+      setFormData({
+        name: modalData.name || '',
+        description: modalData.description || '',
+        type: modalData.type || '',
+        price: modalData.price || '',
+        currency: modalData.currency || '',
+        PropertyListingLimit: modalData.PropertyListingLimit || '',
+        verifiedListingLimit: modalData.verifiedListingLimit || '',
+      })
+    } else {
+      setFormData({
+        name: '',
+        description: '',
+        type: '',
+        price: '',
+        currency: '',
+        PropertyListingLimit: '',
+        verifiedListingLimit: '',
+      })
+    }
+  }, [modalData])
 
   const handleCancel = () => {
     setFormData({
@@ -48,10 +67,10 @@ const SubscriptionModal = ({
 
   const handleChange = (e) => {
     const { name, value } = e.target
-    setFormData({
-      ...formData,
+    setFormData((prev) => ({
+      ...prev,
       [name]: value,
-    })
+    }))
   }
 
   const validateForm = () => {
@@ -69,6 +88,7 @@ const SubscriptionModal = ({
     return Object.keys(newErrors).length === 0
   }
 
+  // ✅ Add new subscription
   const handleSubmit = (e) => {
     e.preventDefault()
     if (!validateForm()) return
@@ -86,15 +106,12 @@ const SubscriptionModal = ({
       .finally(() => setLoading(false))
   }
 
+  // ✅ Edit existing subscription (all fields editable)
   const handleEdit = (e) => {
     e.preventDefault()
+    if (!validateForm()) return
     setLoading(true)
-    // Only send the editable fields in edit mode
-    const updatedData = {
-      price: formData.price,
-      PropertyListingLimit: formData.PropertyListingLimit,
-    }
-    putRequest({ url: `subscription-packages/${modalData?._id}`, cred: updatedData })
+    putRequest({ url: `subscription-packages/${modalData?._id}`, cred: formData })
       .then((res) => {
         toast.success(res?.data?.message || 'Subscription updated successfully')
         setUpdateStatus((prev) => !prev)
@@ -109,7 +126,7 @@ const SubscriptionModal = ({
 
   return (
     <Modal
-      title={modalData ? `Edit Subscription` : `Add Subscription`}
+      title={modalData ? 'Edit Subscription' : 'Add Subscription'}
       open={isModalOpen}
       footer={null}
       onCancel={handleCancel}
@@ -128,26 +145,27 @@ const SubscriptionModal = ({
               type="text"
               className={`form-control ${errors.name ? 'is-invalid' : ''}`}
               name="name"
-              value={formData.name}
+              value={formData?.name}
               onChange={handleChange}
               placeholder="Enter subscription name"
-              //disabled={!!modalData} // Disable in edit mode
             />
-            {errors.name && <div className="invalid-feedback">{errors.name}</div>}
+            {errors.name && <div className="invalid-feedback">{errors?.name}</div>}
           </div>
+
           {/* Description */}
           <div className="col-md-6 mb-3">
             <label className="form-label fw-bold">Description</label>
             <textarea
               className={`form-control ${errors.description ? 'is-invalid' : ''}`}
               name="description"
-              value={formData.description}
+              value={formData?.description}
               onChange={handleChange}
               placeholder="Enter description"
               rows="1"
-              //disabled={!!modalData} // disable in edit mode
             />
-            {errors.description && <div className="invalid-feedback">{errors.description}</div>}
+            {errors.description && (
+              <div className="invalid-feedback">{errors?.description}</div>
+            )}
           </div>
         </div>
 
@@ -158,16 +176,15 @@ const SubscriptionModal = ({
             <select
               id="type"
               name="type"
-              className="form-select"
-              value={formData?.type} // default "new"
+              className={`form-select ${errors.type ? 'is-invalid' : ''}`}
+              value={formData?.type}
               onChange={handleChange}
-              // disabled={!!modalData} // disable in edit mode
             >
-              <option value="Select">Select Type</option>
+              <option value="">Select Type</option>
               <option value="PropertyListing">PropertyListing</option>
               <option value="VerifiedListing">VerifiedListing</option>
             </select>
-            {errors.type && <div className="invalid-feedback">{errors.type}</div>}
+            {errors.type && <div className="invalid-feedback">{errors?.type}</div>}
           </div>
 
           {/* Price */}
@@ -177,11 +194,11 @@ const SubscriptionModal = ({
               type="number"
               className={`form-control ${errors.price ? 'is-invalid' : ''}`}
               name="price"
-              value={formData.price}
+              value={formData?.price || 0}
               onChange={handleChange}
               placeholder="Enter price"
             />
-            {errors.price && <div className="invalid-feedback">{errors.price}</div>}
+            {errors.price && <div className="invalid-feedback">{errors?.price}</div>}
           </div>
         </div>
 
@@ -193,12 +210,13 @@ const SubscriptionModal = ({
               type="text"
               className={`form-control ${errors.currency ? 'is-invalid' : ''}`}
               name="currency"
-              value={formData.currency}
+              value={formData?.currency}
               onChange={handleChange}
               placeholder="e.g. INR, USD"
-              // disabled={!!modalData} // disable in edit mode
             />
-            {errors.currency && <div className="invalid-feedback">{errors.currency}</div>}
+            {errors.currency && (
+              <div className="invalid-feedback">{errors?.currency}</div>
+            )}
           </div>
 
           {/* Property Listing Limit */}
@@ -206,15 +224,16 @@ const SubscriptionModal = ({
             <label className="form-label fw-bold">Property Listing Limit</label>
             <input
               type="number"
-              className={`form-control ${errors.PropertyListingLimit ? 'is-invalid' : ''}`}
+              className={`form-control ${
+                errors.PropertyListingLimit ? 'is-invalid' : ''
+              }`}
               name="PropertyListingLimit"
-              value={formData?.PropertyListingLimit}
+              value={formData?.PropertyListingLimit || 0}
               onChange={handleChange}
               placeholder="Enter property listing limit"
-              // disabled={!!modalData} // disable in edit mode
             />
             {errors.PropertyListingLimit && (
-              <div className="invalid-feedback">{errors.PropertyListingLimit}</div>
+              <div className="invalid-feedback">{errors?.PropertyListingLimit}</div>
             )}
           </div>
         </div>
@@ -224,14 +243,16 @@ const SubscriptionModal = ({
           <label className="form-label fw-bold">Verified Listing Limit</label>
           <input
             type="number"
-            className={`form-control ${errors.verifiedListingLimit ? 'is-invalid' : ''}`}
+            className={`form-control ${
+              errors.verifiedListingLimit ? 'is-invalid' : ''
+            }`}
             name="verifiedListingLimit"
-            value={formData?.verifiedListingLimit}
+            value={formData?.verifiedListingLimit || 0}
             onChange={handleChange}
             placeholder="Enter verified listing limit"
           />
           {errors.verifiedListingLimit && (
-            <div className="invalid-feedback">{errors.verifiedListingLimit}</div>
+            <div className="invalid-feedback">{errors?.verifiedListingLimit}</div>
           )}
         </div>
 
@@ -241,7 +262,11 @@ const SubscriptionModal = ({
             Cancel
           </button>
           <button type="submit" className="btn btn-primary" disabled={loading}>
-            {loading ? 'Saving...' : modalData ? 'Update Subscription' : 'Save Subscription'}
+            {loading
+              ? 'Saving...'
+              : modalData
+              ? 'Update Subscription'
+              : 'Save Subscription'}
           </button>
         </div>
       </form>
