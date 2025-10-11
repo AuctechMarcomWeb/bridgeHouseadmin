@@ -156,21 +156,21 @@ const Auth = () => {
                     <td className="px-6 py-4 text-sm text-gray-700">
                       {(page - 1) * limit + (index + 1)}
                     </td>
-                    <td className="px-6 py-4">{item?.name}</td>
-                    <td className="px-6 py-4">{item?.phone}</td>
-                    <td className="px-6 py-4">{item?.email}</td>
-                    <td className="px-6 py-4">{item?.gender}</td>
-                    <td className="px-6 py-4">{item?.dob}</td>
+                    <td className="px-6 py-4">{item?.name || 'N/A'}</td>
+                    <td className="px-6 py-4">{item?.phone || 'N/A'}</td>
+                    <td className="px-6 py-4">{item?.email || 'N/A'}</td>
+                    <td className="px-6 py-4">{item?.gender || 'N/A'}</td>
+                    <td className="px-6 py-4">{item?.dob || 'N/A'}</td>
 
                     <td className="px-6 py-4">
                       <img
-                        src={item?.profilepic}
+                        src={item?.profilepic || 'N/A'}
                         alt="gallery"
                         className="w-10 h-10 rounded-full object-cover"
                       />
                     </td>
-                    <td className="px-6 py-4">{item?.accountType}</td>
-                    <td className="px-6 py-4">{item?.address}</td>
+                    <td className="px-6 py-4">{item?.accountType || 'NA'}</td>
+                    <td className="px-6 py-4">{item?.address || 'NA'}</td>
                     {/* <td className="px-6 py-4 flex gap-2">
                        <button
                         onClick={() => {
