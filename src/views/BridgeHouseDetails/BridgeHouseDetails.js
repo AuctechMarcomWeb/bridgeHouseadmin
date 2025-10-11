@@ -89,7 +89,7 @@ const BridgeHouseDetails = () => {
       <div className="px-4 sm:px-6 py-4 border-b border-gray-200 flex flex-col sm:flex-row justify-between sm:items-center gap-3">
         {' '}
         <div>
-          <h2 className="text-xl sm:text-2xl font-bold text-gray-900"> House Details</h2>
+          <h2 className="text-xl sm:text-2xl font-bold text-gray-900">Bridge House Details</h2>
           <p className="text-gray-600 text-sm sm:text-base">Manage Bridge House Details</p>
         </div>
         <div className="flex flex-wrap items-center gap-2 sm:gap-3">
@@ -170,7 +170,7 @@ const BridgeHouseDetails = () => {
                         className="w-10 h-10 rounded-full object-cover"
                       />
                     </td>
-                    <td className="px-6 py-4">{item?.notes}</td>
+                    <td className="px-6 py-4 word-nowrap">{item?.notes}</td>
                     <td className="px-6 py-4">
                       {item?.status ? (
                         <span className="px-2 py-1 text-xs bg-blue-100 text-blue-800">Active</span>
