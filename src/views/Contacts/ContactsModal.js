@@ -32,9 +32,7 @@ const ContactsModal = ({
     const { name, value, type, checked } = e.target
 
     let newValue = value
-    if (name === 'phone') {
-      newValue = validateMobile(value) // only digits, max 10 chars
-    }
+
     setFormData({
       ...formData,
       [name]: type === 'checkbox' ? checked : value,
@@ -119,12 +117,17 @@ const ContactsModal = ({
             <div className="col-md-6 mb-3">
               <label className="form-label fw-bold">Phone</label>
               <input
-                type="number"
+                type="text"
                 className="form-control"
                 name="phone"
-                maxLength={10}
                 value={formData.phone}
-                onChange={handleChange}
+                onChange={(e) => {
+                  const value = e.target.value
+                  // Allow only numbers and up to 10 digits
+                  if (/^\d{0,10}$/.test(value)) {
+                    setFormData({ ...formData, phone: value })
+                  }
+                }}
                 placeholder="Enter phone..."
                 required
                 disabled={isEditMode}
