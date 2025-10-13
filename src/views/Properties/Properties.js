@@ -459,8 +459,12 @@ const Properties = () => {
               </tbody>
             </table>
 
-            {/* ✅ Pagination */}
-            {data.length > 0 && (
+            
+          </>
+        )}
+      </div>
+      {/* ✅ Pagination */}
+            {!loading && data.length > 0 && (
               <div className="flex justify-between items-center px-6 py-4 border-t border-gray-200">
                 <div className="text-sm text-gray-700">
                   Showing {data?.length > 0 ? (page - 1) * limit + 1 : 0} to{' '}
@@ -480,9 +484,6 @@ const Properties = () => {
                 />
               </div>
             )}
-          </>
-        )}
-      </div>
 
       {/* Properties Modal */}
       {isModalOpen && (

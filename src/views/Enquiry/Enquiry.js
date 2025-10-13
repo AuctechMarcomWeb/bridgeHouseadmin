@@ -1,11 +1,12 @@
 /* eslint-disable prettier/prettier */
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useContext } from 'react'
 import { Search, Plus, Edit, Trash2, AlertTriangle, Loader2 } from 'lucide-react'
 import ExportButton from '../ExportButton'
 import { deleteRequest, getRequest } from '../../Helpers'
 import toast from 'react-hot-toast'
 import { Empty, Pagination, Spin } from 'antd'
 import EnquiryModal from './EnquiryModal'
+import { AppContext } from '../../Context/AppContext'
 
 const Enquiry = () => {
   const [searchTerm, setSearchTerm] = useState('')
@@ -19,11 +20,12 @@ const Enquiry = () => {
   // Modal states
   const [showDeleteModal, setShowDeleteModal] = useState(false)
   const [selectedItem, setSelectedItem] = useState(null)
+  const { user, setUser } = useContext(AppContext)
 
   // ✅ Fetch Banners with Pagination + Search
   useEffect(() => {
     setLoading(true)
-    getRequest(`enquiry?search=${searchTerm}&page=${page}&limit=${limit}`)
+    getRequest(`enquiry?search=${searchTerm}&page=${page}&limit=${limit}&addedBy=${user?._id}`)
       .then((res) => {
         const responseData = res?.data?.data
         setData(responseData?.enquiries || [])
@@ -37,7 +39,7 @@ const Enquiry = () => {
       .finally(() => {
         setLoading(false)
       })
-  }, [page, limit, searchTerm, updateStatus])
+  }, [page, limit, searchTerm, updateStatus,user?._id])
 
   // ✅ Delete handler
   const confirmDelete = () => {
@@ -50,7 +52,7 @@ const Enquiry = () => {
       })
       .catch((error) => {
         console.log('error', error)
-        toast.error('Failed to delete banner')
+        toast.error('Failed to delete enquiry')
       })
   }
 
@@ -223,8 +225,12 @@ const Enquiry = () => {
               </tbody>
             </table>
 
+
+          </>
+        )}
+      </div>
             {/* Pagination */}
-            {data?.length > 0 && (
+            {!loading && data?.length > 0 && (
               <div className="px-6 py-4 border-t border-gray-200">
                 <div className="flex items-center justify-between">
                   <div className="text-sm text-gray-700">
@@ -246,9 +252,6 @@ const Enquiry = () => {
                 </div>
               </div>
             )}
-          </>
-        )}
-      </div>
 
       {/* Enquiry Modal */}
       {isModalOpen && (

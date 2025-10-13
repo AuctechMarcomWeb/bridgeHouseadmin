@@ -195,8 +195,12 @@ const Contacts = () => {
               </tbody>
             </table>
 
-            {/* ✅ Pagination */}
-            {data?.length > 0 && (
+           
+          </>
+        )}
+      </div>
+       {/* ✅ Pagination */}
+            {!loading && data?.length > 0 && (
               <div className="px-6 py-4 border-t border-gray-200">
                 <div className="flex items-center justify-between">
                   <div className="text-sm text-gray-700">
@@ -218,9 +222,6 @@ const Contacts = () => {
                 </div>
               </div>
             )}
-          </>
-        )}
-      </div>
       {isModalOpen && (
         <ContactsModal
           setUpdateStatus={setUpdateStatus}

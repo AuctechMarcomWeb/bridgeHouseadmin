@@ -153,7 +153,13 @@ const EnquiryModal = ({
               className={`form-control ${errors.phone ? 'is-invalid' : ''}`}
               name="phone"
               value={formData?.phone}
-              onChange={handleChange}
+              onChange={(e) => {
+                const value = e.target.value
+                // Allow only numbers and up to 10 digits
+                if (/^\d{0,10}$/.test(value)) {
+                  setFormData({ ...formData, phone: value })
+                }
+              }}
               placeholder="Enter phone"
               disabled={!!modalData} // Disable in edit mode
             />

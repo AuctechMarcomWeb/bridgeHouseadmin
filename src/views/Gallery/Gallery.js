@@ -187,33 +187,31 @@ const Gallery = () => {
                 ))}
               </tbody>
             </table>
-
-            {/* Pagination (only show if there’s data) */}
-            {data?.length > 0 && (
-              <div className="px-6 py-4 border-t border-gray-200">
-                <div className="flex items-center justify-between">
-                  <div className="text-sm text-gray-700">
-                    Showing {(page - 1) * limit + 1} to {Math.min(page * limit, total)} of {total}{' '}
-                    results
-                  </div>
-                  <Pagination
-                    current={page}
-                    pageSize={limit}
-                    total={total}
-                    onChange={(newPage) => setPage(newPage)}
-                    showSizeChanger={true}
-                    onShowSizeChange={(current, size) => {
-                      setLimit(size)
-                      setPage(1)
-                    }}
-                    showQuickJumper
-                  />
-                </div>
-              </div>
-            )}
           </>
         )}
       </div>
+      {/* Pagination (only show if there’s data) */}
+      {!loading && data?.length > 0 && (
+        <div className="px-6 py-4 border-t border-gray-200">
+          <div className="flex items-center justify-between">
+            <div className="text-sm text-gray-700">
+              Showing {(page - 1) * limit + 1} to {Math.min(page * limit, total)} of {total} results
+            </div>
+            <Pagination
+              current={page}
+              pageSize={limit}
+              total={total}
+              onChange={(newPage) => setPage(newPage)}
+              showSizeChanger={true}
+              onShowSizeChange={(current, size) => {
+                setLimit(size)
+                setPage(1)
+              }}
+              showQuickJumper
+            />
+          </div>
+        </div>
+      )}
 
       {isModalOpen && (
         <GalleryModal

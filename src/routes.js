@@ -14,6 +14,8 @@ import Testimonials from './views/Testimonials/Testimonials'
 import Gallery from './views/Gallery/Gallery'
 import BridgeHouseDetails from './views/BridgeHouseDetails/BridgeHouseDetails'
 import Auth from './views/Users/Auth'
+import PaymentHistory from './views/PaymentHistory/PaymentHistory'
+
 const Dashboard = React.lazy(() => import('./views/dashboard/Dashboard'))
 
 const routes = [
@@ -32,6 +34,7 @@ const routes = [
   { path: '/gallery', name: 'Gallery', element: Gallery },
   { path: '/bridgehouse-details', name: 'Bridge House Details', element: BridgeHouseDetails },
   { path: '/users', name: 'Users', element: Auth },
+  { path: '/payment-history', name: 'PaymentHistory', element: PaymentHistory },
 ]
 
 export default routes

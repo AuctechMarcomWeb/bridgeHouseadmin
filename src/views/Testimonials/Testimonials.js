@@ -84,7 +84,7 @@ const Testimonials = () => {
       {/* Header */}
       <div className="px-4 sm:px-6 py-4 border-b border-gray-200 flex flex-col sm:flex-row justify-between sm:items-center gap-3">
         <div>
-           <h2 className="text-xl sm:text-2xl font-bold text-gray-900">Testimonials</h2>
+          <h2 className="text-xl sm:text-2xl font-bold text-gray-900">Testimonials</h2>
           <p className="text-gray-600 text-sm sm:text-base">Manage Testimonials</p>
         </div>
         <div className="flex flex-wrap items-center gap-2 sm:gap-3">
@@ -193,33 +193,31 @@ const Testimonials = () => {
                 ))}
               </tbody>
             </table>
-
-            {/* ✅ Pagination (only show if there’s data) */}
-            {data?.length > 0 && (
-              <div className="px-6 py-4 border-t border-gray-200">
-                <div className="flex items-center justify-between">
-                  <div className="text-sm text-gray-700">
-                    Showing {(page - 1) * limit + 1} to {Math.min(page * limit, total)} of {total}{' '}
-                    results
-                  </div>
-                  <Pagination
-                    current={page}
-                    pageSize={limit}
-                    total={total}
-                    onChange={(newPage) => setPage(newPage)}
-                    showSizeChanger={true}
-                    onShowSizeChange={(current, size) => {
-                      setLimit(size)
-                      setPage(1)
-                    }}
-                    showQuickJumper
-                  />
-                </div>
-              </div>
-            )}
           </>
         )}
       </div>
+      {/* ✅ Pagination (only show if there’s data) */}
+      {!loading && data?.length > 0 && (
+        <div className="px-6 py-4 border-t border-gray-200">
+          <div className="flex items-center justify-between">
+            <div className="text-sm text-gray-700">
+              Showing {(page - 1) * limit + 1} to {Math.min(page * limit, total)} of {total} results
+            </div>
+            <Pagination
+              current={page}
+              pageSize={limit}
+              total={total}
+              onChange={(newPage) => setPage(newPage)}
+              showSizeChanger={true}
+              onShowSizeChange={(current, size) => {
+                setLimit(size)
+                setPage(1)
+              }}
+              showQuickJumper
+            />
+          </div>
+        </div>
+      )}
 
       {isModalOpen && (
         <TestimonialsModals

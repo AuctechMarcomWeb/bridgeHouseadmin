@@ -1,7 +1,7 @@
 /* eslint-disable react/jsx-no-undef */
 /* eslint-disable prettier/prettier */
 import React, { useState, useEffect } from 'react'
-import { Search, Plus, Edit, Trash2, AlertTriangle } from 'lucide-react'
+import { Search, Trash2, AlertTriangle } from 'lucide-react'
 import ExportButton from '../ExportButton'
 import { deleteRequest, getRequest } from '../../Helpers'
 import toast from 'react-hot-toast'
@@ -16,42 +16,44 @@ const Auth = () => {
   const [page, setPage] = useState(1)
   const [limit, setLimit] = useState(10)
   const [updateStatus, setUpdateStatus] = useState(false)
-  const [isModalOpen, setIsModalOpen] = useState(false)
-  // Modal states
   const [showDeleteModal, setShowDeleteModal] = useState(false)
   const [selectedItem, setSelectedItem] = useState(null)
   const [loading, setLoading] = useState(false)
+
   const formatDate = (dateString) => {
     return dateString ? moment(dateString).format('DD-MM-YYYY') : 'N/A'
   }
-  //Fetch Property Type with Pagination + Search
+
+  // Fetch Users
   useEffect(() => {
     setLoading(true)
     getRequest(`auth/getAllUsers?search=${searchTerm}&page=${page}&limit=${limit}&sortBy=${sortBy}`)
       .then((res) => {
         const responseData = res?.data?.data
-        console.log(res?.data?.data?.users)
-
         setData(responseData?.users || [])
         setTotal(responseData?.totalUsers || 0)
       })
       .catch((error) => {
-        console.log('error', error)
+        console.error('Fetch error:', error)
+        toast.error('Failed to fetch users')
       })
       .finally(() => setLoading(false))
   }, [page, limit, searchTerm, sortBy, updateStatus])
 
-  //  Delete handler
+  // Delete handler
   const confirmDelete = () => {
-    deleteRequest(`auth/delete${selectedItem?._id}`)
+    if (!selectedItem?._id) return toast.error('No user selected')
+
+    deleteRequest(`auth/delete/${selectedItem?._id}`)
       .then((res) => {
-        toast.success(res?.data?.message)
+        toast.success(res?.data?.message || 'User deleted successfully')
         setSelectedItem(null)
         setUpdateStatus((prev) => !prev)
         setShowDeleteModal(false)
       })
       .catch((error) => {
-        console.log('error', error)
+        console.error('Delete error:', error)
+        toast.error('Failed to delete user')
       })
   }
 
@@ -60,13 +62,14 @@ const Auth = () => {
       {/* Delete Modal */}
       {showDeleteModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white p-6 max-w-md w-full mx-4">
+          <div className="bg-white p-6 max-w-md w-full mx-4 rounded-lg shadow-lg">
             <div className="flex items-center mb-4">
               <AlertTriangle className="w-6 h-6 text-red-500 mr-3" />
               <h3 className="text-lg font-semibold text-gray-900">Confirm Delete</h3>
             </div>
             <p className="text-gray-600 mb-6">
-              Are you sure you want to delete <strong>{selectedItem?.name}</strong>?
+              Are you sure you want to delete{' '}
+              <strong>{selectedItem?.name || 'this user'}</strong>?
             </p>
             <div className="flex justify-end space-x-3">
               <button
@@ -77,7 +80,7 @@ const Auth = () => {
               </button>
               <button
                 onClick={confirmDelete}
-                className="px-6 py-2 bg-red-600 text-white font-medium hover:bg-red-700"
+                className="px-6 py-2 bg-red-600 text-white font-medium hover:bg-red-700 rounded"
               >
                 Delete
               </button>
@@ -93,16 +96,7 @@ const Auth = () => {
           <p className="text-gray-600 text-sm sm:text-base">Manage Users</p>
         </div>
         <div className="flex flex-wrap items-center gap-2 sm:gap-3">
-          {' '}
-          <ExportButton data={data} fileName="Property Type.xlsx" sheetName="Property Type" />
-          {/* <button
-            onClick={() => {
-              setIsModalOpen(true)
-            }}
-            className="bg-green-600 text-white px-4 py-2 hover:bg-green-700 flex items-center"
-          >
-            <Plus className="w-4 h-4 mr-2" /> Add Bridge House Details
-          </button> */}
+          <ExportButton data={data} fileName="Users.xlsx" sheetName="Users" />
         </div>
       </div>
 
@@ -118,7 +112,7 @@ const Auth = () => {
               setSearchTerm(e.target.value)
               setPage(1)
             }}
-            className="pl-10 pr-4 py-2 w-full border border-gray-300 focus:ring-2 focus:ring-blue-500"
+            className="pl-10 pr-4 py-2 w-full border border-gray-300 focus:ring-2 focus:ring-blue-500 rounded-md"
           />
         </div>
       </div>
@@ -126,13 +120,11 @@ const Auth = () => {
       {/* Table */}
       <div className="overflow-x-auto">
         {loading ? (
-          // Loader when fetching data
           <div className="flex flex-col justify-center items-center py-20">
             <Spin size="large" />
             <div className="mt-4 text-blue-500 font-medium text-center">Loading Users...</div>
           </div>
         ) : !data || data.length === 0 ? (
-          // Empty state when no data found
           <div className="flex justify-center items-center py-20">
             <Empty description="No records found" />
           </div>
@@ -148,9 +140,9 @@ const Auth = () => {
                   <th className="px-6 py-3">Gender</th>
                   <th className="px-6 py-3">Dob</th>
                   <th className="px-6 py-3">Profile</th>
-                  <th className="px-6 py-3">AccountType</th>
+                  <th className="px-6 py-3">Account Type</th>
                   <th className="px-6 py-3">Address</th>
-                  {/* <th className="px-6 py-3">Actions</th> */}
+                  <th className="px-6 py-3 text-center">Actions</th>
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
@@ -164,26 +156,20 @@ const Auth = () => {
                     <td className="px-6 py-4">{item?.email || 'N/A'}</td>
                     <td className="px-6 py-4">{item?.gender || 'N/A'}</td>
                     <td className="px-6 py-4">{formatDate(item?.dob)}</td>
-
                     <td className="px-6 py-4">
-                      <img
-                        src={item?.profilepic || 'N/A'}
-                        alt="profilepic"
-                        className="w-10 h-10 rounded-full object-cover"
-                      />
+                      {item?.profilepic ? (
+                        <img
+                          src={item?.profilepic}
+                          alt="profilepic"
+                          className="w-10 h-10 rounded-full object-cover"
+                        />
+                      ) : (
+                        'N/A'
+                      )}
                     </td>
-                    <td className="px-6 py-4">{item?.accountType || 'NA'}</td>
-                    <td className="px-6 py-4">{item?.address || 'NA'}</td>
-                    {/* <td className="px-6 py-4 flex gap-2">
-                       <button
-                        onClick={() => {
-                          setSelectedItem(item)
-                          setIsModalOpen(true)
-                        }}
-                        className="text-blue-600 hover:text-blue-800"
-                      >
-                        <Edit className="w-4 h-4" />
-                      </button> 
+                    <td className="px-6 py-4">{item?.accountType || 'N/A'}</td>
+                    <td className="px-6 py-4">{item?.address || 'N/A'}</td>
+                    <td className="px-6 py-4 text-center">
                       <button
                         onClick={() => {
                           setSelectedItem(item)
@@ -191,16 +177,20 @@ const Auth = () => {
                         }}
                         className="text-red-600 hover:text-red-800"
                       >
-                        <Trash2 className="w-4 h-4" />
+                        <Trash2 className="w-4 h-4 inline-block" />
                       </button>
-                    </td> */}
+                    </td>
                   </tr>
                 ))}
               </tbody>
             </table>
 
-            {/* Pagination (only show if there’s data) */}
-            {data?.length > 0 && (
+           
+          </>
+        )}
+      </div>
+       {/* Pagination */}
+            {!loading && data?.length > 0 && (
               <div className="px-6 py-4 border-t border-gray-200">
                 <div className="flex items-center justify-between">
                   <div className="text-sm text-gray-700">
@@ -212,7 +202,7 @@ const Auth = () => {
                     pageSize={limit}
                     total={total}
                     onChange={(newPage) => setPage(newPage)}
-                    showSizeChanger={true}
+                    showSizeChanger
                     onShowSizeChange={(current, size) => {
                       setLimit(size)
                       setPage(1)
@@ -222,19 +212,6 @@ const Auth = () => {
                 </div>
               </div>
             )}
-          </>
-        )}
-      </div>
-
-      {isModalOpen && (
-        <BridgeHouseDetailsModal
-          setUpdateStatus={setUpdateStatus}
-          setModalData={setSelectedItem}
-          modalData={selectedItem}
-          isModalOpen={isModalOpen}
-          setIsModalOpen={setIsModalOpen}
-        />
-      )}
     </div>
   )
 }
