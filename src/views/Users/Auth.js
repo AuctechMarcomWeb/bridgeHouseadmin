@@ -6,6 +6,7 @@ import ExportButton from '../ExportButton'
 import { deleteRequest, getRequest } from '../../Helpers'
 import toast from 'react-hot-toast'
 import { Empty, Pagination, Spin } from 'antd'
+import moment from 'moment'
 
 const Auth = () => {
   const [searchTerm, setSearchTerm] = useState('')
@@ -20,7 +21,9 @@ const Auth = () => {
   const [showDeleteModal, setShowDeleteModal] = useState(false)
   const [selectedItem, setSelectedItem] = useState(null)
   const [loading, setLoading] = useState(false)
-
+  const formatDate = (dateString) => {
+    return dateString ? moment(dateString).format('DD-MM-YYYY') : 'N/A'
+  }
   //Fetch Property Type with Pagination + Search
   useEffect(() => {
     setLoading(true)
@@ -160,12 +163,12 @@ const Auth = () => {
                     <td className="px-6 py-4">{item?.phone || 'N/A'}</td>
                     <td className="px-6 py-4">{item?.email || 'N/A'}</td>
                     <td className="px-6 py-4">{item?.gender || 'N/A'}</td>
-                    <td className="px-6 py-4">{item?.dob || 'N/A'}</td>
+                    <td className="px-6 py-4">{formatDate(item?.dob)}</td>
 
                     <td className="px-6 py-4">
                       <img
                         src={item?.profilepic || 'N/A'}
-                        alt="gallery"
+                        alt="profilepic"
                         className="w-10 h-10 rounded-full object-cover"
                       />
                     </td>
