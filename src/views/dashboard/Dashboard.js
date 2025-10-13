@@ -11,6 +11,8 @@ import {
   XCircle,
   Clock,
   Package,
+  HeartHandshake,
+  CheckCircle2,
 } from 'lucide-react'
 import { message, Spin } from 'antd'
 import { getRequest } from '../../Helpers'
@@ -35,8 +37,9 @@ export default function Dashboard() {
   // ✅ Show loader while data is loading
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-screen bg-gray-50">
-        <Spin size="large" tip="Loading Dashboard..." />
+      <div className="flex flex-col justify-center items-center py-20">
+        <Spin size="large" />
+        <div className="mt-4 text-blue-500 font-medium text-center">Loading Dashboard...</div>
       </div>
     )
   }
@@ -155,31 +158,43 @@ export default function Dashboard() {
             <div className="space-y-3">
               <PropertyStatusCard
                 status="Verified"
-                count={properties.verifiedProperties}
+                count={properties?.verifiedProperties}
                 icon={CheckCircle}
                 color="text-green-600"
               />
               <PropertyStatusCard
                 status="Pending"
-                count={properties.pendingProperties}
+                count={properties?.pendingProperties}
                 icon={Clock}
                 color="text-yellow-600"
               />
               <PropertyStatusCard
                 status="Booked"
-                count={properties.bookedProperties}
+                count={properties?.bookedProperties}
                 icon={Package}
                 color="text-blue-600"
               />
               <PropertyStatusCard
+                status="Registered"
+                count={properties?.registeredProperties}
+                icon={CheckCircle2}
+                color="text-green-600"
+              />
+              <PropertyStatusCard
+                status="Adopted"
+                count={properties?.isAdoptedProperties}
+                icon={HeartHandshake}
+                color="text-pink-600"
+              />
+              <PropertyStatusCard
                 status="Published"
-                count={properties.publishedProperties}
+                count={properties?.publishedProperties}
                 icon={TrendingUp}
                 color="text-indigo-600"
               />
               <PropertyStatusCard
                 status="Rejected"
-                count={properties.rejectedProperties}
+                count={properties?.isAdoptedProperties}
                 icon={XCircle}
                 color="text-red-600"
               />
@@ -195,23 +210,23 @@ export default function Dashboard() {
               <h2 className="text-xl font-bold text-gray-800">Testimonials & Insights</h2>
             </div>
 
-            <div className="space-y-4">
+            <div className="space-y-2">
               <div className="p-4 bg-gradient-to-r from-pink-50 to-purple-50 rounded-lg">
                 <div className="flex justify-between items-center mb-2">
                   <span className="text-sm font-semibold text-gray-600">Total Testimonials</span>
                   <span className="text-2xl font-bold text-pink-600">
-                    {testimonials.totalTestimonials}
+                    {testimonials?.totalTestimonials}
                   </span>
                 </div>
                 <div className="flex justify-between items-center">
                   <span className="text-sm text-gray-500">Active Testimonials</span>
                   <span className="text-lg font-semibold text-purple-600">
-                    {testimonials.activeTestimonials}
+                    {testimonials?.activeTestimonials}
                   </span>
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-4 mt-4">
+              {/* <div className="grid grid-cols-2 gap-4 mt-4">
                 <div className="p-4 bg-blue-50 rounded-lg text-center">
                   <p className="text-sm text-gray-600 mb-1">Registered</p>
                   <p className="text-2xl font-bold text-blue-600">
@@ -224,7 +239,7 @@ export default function Dashboard() {
                     {properties.isAdoptedProperties}
                   </p>
                 </div>
-              </div>
+              </div> */}
             </div>
           </div>
         </div>

@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 /* eslint-disable react/react-in-jsx-scope */
 import { CNavGroup, CNavItem } from '@coreui/react'
 import { FaRegAddressCard } from 'react-icons/fa'
@@ -101,6 +102,12 @@ const useNav = () => {
       component: CNavItem,
       name: 'Bridge House Details',
       to: '/bridgehouse-details',
+      icon: <MdOutlineDashboard className="me-3" />,
+    },
+    {
+      component: CNavItem,
+      name: 'Payment List',
+      to: '/payment-history',
       icon: <MdOutlineDashboard className="me-3" />,
     },
   ]
