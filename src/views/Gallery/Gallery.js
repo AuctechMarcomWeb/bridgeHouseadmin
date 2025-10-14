@@ -135,6 +135,7 @@ const Gallery = () => {
             <table className="w-full">
               <thead>
                 <tr>
+                  <th className="px-6 py-3">Sr. No.</th>
                   <th className="px-6 py-3">Title</th>
                   <th className="px-6 py-3">Image</th>
                   <th className="px-6 py-3">Active</th>
