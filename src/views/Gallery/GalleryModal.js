@@ -48,6 +48,11 @@ const GalleryModal = ({
       ...prev,
       [name]: type === 'checkbox' ? checked : value,
     }))
+    // ✅ Clear error for that field when user starts typing
+    setErrors((prevErrors) => ({
+      ...prevErrors,
+      [name]: '',
+    }))
   }
 
   // Upload image and update url

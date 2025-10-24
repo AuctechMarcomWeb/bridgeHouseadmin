@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 import { Modal } from 'antd'
 import React, { useState, useEffect } from 'react'
 import toast from 'react-hot-toast'
@@ -44,6 +45,11 @@ const CategoryModal = ({
     setFormData((prev) => ({
       ...prev,
       [name]: type === 'checkbox' ? checked : value,
+    }))
+    // ✅ Clear error for that field when user starts typing
+    setErrors((prevErrors) => ({
+      ...prevErrors,
+      [name]: '',
     }))
   }
 

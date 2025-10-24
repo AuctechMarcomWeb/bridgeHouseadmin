@@ -71,6 +71,11 @@ const SubscriptionModal = ({
       ...prev,
       [name]: value,
     }))
+    // ✅ Clear error for that field when user starts typing
+    setErrors((prevErrors) => ({
+      ...prevErrors,
+      [name]: '',
+    }))
   }
 
   const validateForm = () => {
@@ -163,9 +168,7 @@ const SubscriptionModal = ({
               placeholder="Enter description"
               rows="1"
             />
-            {errors.description && (
-              <div className="invalid-feedback">{errors?.description}</div>
-            )}
+            {errors.description && <div className="invalid-feedback">{errors?.description}</div>}
           </div>
         </div>
 
@@ -214,9 +217,7 @@ const SubscriptionModal = ({
               onChange={handleChange}
               placeholder="e.g. INR, USD"
             />
-            {errors.currency && (
-              <div className="invalid-feedback">{errors?.currency}</div>
-            )}
+            {errors.currency && <div className="invalid-feedback">{errors?.currency}</div>}
           </div>
 
           {/* Property Listing Limit */}
@@ -224,9 +225,7 @@ const SubscriptionModal = ({
             <label className="form-label fw-bold">Property Listing Limit</label>
             <input
               type="number"
-              className={`form-control ${
-                errors.PropertyListingLimit ? 'is-invalid' : ''
-              }`}
+              className={`form-control ${errors.PropertyListingLimit ? 'is-invalid' : ''}`}
               name="PropertyListingLimit"
               value={formData?.PropertyListingLimit || 0}
               onChange={handleChange}
@@ -243,9 +242,7 @@ const SubscriptionModal = ({
           <label className="form-label fw-bold">Verified Listing Limit</label>
           <input
             type="number"
-            className={`form-control ${
-              errors.verifiedListingLimit ? 'is-invalid' : ''
-            }`}
+            className={`form-control ${errors.verifiedListingLimit ? 'is-invalid' : ''}`}
             name="verifiedListingLimit"
             value={formData?.verifiedListingLimit || 0}
             onChange={handleChange}
@@ -262,11 +259,7 @@ const SubscriptionModal = ({
             Cancel
           </button>
           <button type="submit" className="btn btn-primary" disabled={loading}>
-            {loading
-              ? 'Saving...'
-              : modalData
-              ? 'Update Subscription'
-              : 'Save Subscription'}
+            {loading ? 'Saving...' : modalData ? 'Update Subscription' : 'Save Subscription'}
           </button>
         </div>
       </form>
