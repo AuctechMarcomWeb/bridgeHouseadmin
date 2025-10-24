@@ -21,13 +21,20 @@ const Subscription = () => {
   const [showDeleteModal, setShowDeleteModal] = useState(false)
   const [selectedItem, setSelectedItem] = useState(null)
 
-  // ✅ Fetch subscription packages with pagination + search
+  const [expandedAddresses, setExpandedAddresses] = React.useState({})
+
+  const toggleAddress = (id) => {
+    setExpandedAddresses((prev) => ({
+      ...prev,
+      [id]: !prev[id],
+    }))
+  }
+  //  Fetch subscription packages with pagination + search
   useEffect(() => {
     setLoading(true)
     getRequest(`subscription-packages?search=${searchTerm}&page=${page}&limit=${limit}`)
       .then((res) => {
         const responseData = res?.data?.data
-        // API is expected to return {subscriptions:[], total: number}
         setData(responseData?.packages || [])
         setTotal(responseData?.totalPackages || 0)
       })
@@ -175,8 +182,15 @@ const Subscription = () => {
                     <td className="px-6 py-4 whitespace-nowrap capitalize">{item?.type || '—'}</td>
                     <td className="px-6 py-4 whitespace-nowrap">{item?.price || '0'}</td>
                     <td className="px-6 py-4 whitespace-nowrap">{item?.currency || '—'}</td>
-                    <td className="px-6 py-4 word-nowrap">{item?.description || '—'}</td>
-
+                    {/* <td className="px-6 py-4 word-nowrap">{item?.description || '—'}</td> */}
+                    <td
+                      className="px-6 py-4 cursor-pointer"
+                      onClick={() => toggleAddress(item._id)}
+                    >
+                      {expandedAddresses[item._id]
+                        ? item?.description
+                        : item?.description.split(' ').slice(0, 2).join(' ') + '...'}
+                    </td>
                     {/* <td className="px-6 py-4 whitespace-nowrap">
                       {item?.isActive ? (
                         <span className="px-2 py-1 text-xs font-medium bg-green-100 text-green-800 rounded-full">

@@ -257,12 +257,12 @@ const Properties = () => {
                     <td className="px-6 py-4">
                       <div className="flex flex-col">
                         <div className="text-sm font-medium text-gray-900">{item?.name}</div>
-                        <div
+                        {/* <div
                           className="text-sm text-gray-500 truncate"
                           style={{ maxWidth: '200px' }}
                         >
                           {item?.address}
-                        </div>
+                        </div> */}
                         {item?.description && (
                           <div
                             className="text-xs text-gray-400 truncate mt-1"
@@ -331,7 +331,7 @@ const Properties = () => {
                         {/* <MapPin className="w-4 h-4 mr-1" /> */}
                         <div>
                           {item?.location?.coordinates
-                            ? item?.address?.split(' ').slice(0, 5).join(' ')
+                            ? item?.address?.split(' ').slice(0, 2).join(' ')
                             : 'No coordinates'}
                         </div>
                       </div>
@@ -387,6 +387,7 @@ const Properties = () => {
                               ? 'text-gray-400 cursor-not-allowed' // disabled style
                               : 'text-orange-600 hover:text-blue-800 p-1' // active style
                           }`}
+                          title="Adopt property"
                         >
                           <SiMercadopago className="fs-4" />
                         </button>
@@ -400,6 +401,7 @@ const Properties = () => {
                               ? 'text-gray-400 cursor-not-allowed' // disabled style
                               : 'text-blue-600 hover:text-blue-800 p-1' // active style
                           }`}
+                          title="Verify property"
                         >
                           <MdVerified className="fs-4 " />
                         </button>

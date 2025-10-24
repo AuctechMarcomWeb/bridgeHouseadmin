@@ -20,7 +20,14 @@ const Testimonials = () => {
   const [showDeleteModal, setShowDeleteModal] = useState(false)
   const [selectedItem, setSelectedItem] = useState(null)
   const [loading, setLoading] = useState(false)
-
+   const [expandedAddresses, setExpandedAddresses] = React.useState({})
+  
+    const toggleAddress = (id) => {
+      setExpandedAddresses((prev) => ({
+        ...prev,
+        [id]: !prev[id],
+      }))
+    }
   // ✅ Fetch Property Type with Pagination + Search
   useEffect(() => {
     setLoading(true)
@@ -153,7 +160,15 @@ const Testimonials = () => {
                       {(page - 1) * limit + (index + 1)}
                     </td>
                     <td className="px-6 py-4">{item?.title}</td>
-                    <td className="px-6 py-4">{item?.discription}</td>
+                   
+                    <td
+                      className="px-6 py-4 cursor-pointer"
+                      onClick={() => toggleAddress(item._id)}
+                    >
+                      {expandedAddresses[item._id]
+                        ? item?.discription
+                        : item?.discription.split(' ').slice(0, 2).join(' ') + '...'}
+                    </td>
                     <td className="px-6 py-4">{item?.rating}</td>
                     <td className="px-6 py-4">
                       <img
