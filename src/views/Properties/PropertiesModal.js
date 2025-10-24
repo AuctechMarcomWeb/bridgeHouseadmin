@@ -396,7 +396,7 @@ const PropertiesModal = ({
     const optionalFields = {
       Commercial: ['bhk', 'bedrooms', 'nearby'],
       Plot: ['facilities', 'services'],
-      Apartment: ['length', 'width', 'floors'],
+      Apartment: ['floors'],
     }
     return optionalFields[type]?.includes(field)
   }
@@ -516,40 +516,26 @@ const PropertiesModal = ({
 
             <div className="row">
               <div className="col-md-6">
-                <label className="form-label fw-bold">
-                  Length (ft){' '}
-                  {isOptional('length') ? (
-                    <span className="text-muted"> (optional)</span>
-                  ) : (
-                    <span> * </span>
-                  )}
-                </label>
+                <label className="form-label fw-bold">Length (ft) *</label>
                 <input
                   type="text"
                   className="form-control"
                   name="length"
                   data-nested="propertyDetails"
-                  required={isRequired('length')}
                   value={formData?.propertyDetails?.length}
                   onChange={handleChange}
+                  required
                 />
               </div>
 
               <div className="col-md-6">
-                <label className="form-label fw-bold">
-                  Width (ft){' '}
-                  {isOptional('width') ? (
-                    <span className="text-muted"> (optional)</span>
-                  ) : (
-                    <span> * </span>
-                  )}
-                </label>
+                <label className="form-label fw-bold">Width (ft) *</label>
                 <input
                   type="text"
                   className="form-control"
                   name="width"
                   data-nested="propertyDetails"
-                  required={isRequired('width')}
+                  required
                   value={formData?.propertyDetails?.width}
                   onChange={handleChange}
                 />
@@ -587,11 +573,12 @@ const PropertiesModal = ({
                       data-nested="propertyDetails"
                       value={formData?.propertyDetails?.bedrooms || ''}
                       onChange={handleChange}
+                      required={isRequired('bedrooms')}
                     />
                   </div>
                   {/* Bathrooms */}
                   <div className="col-md-6">
-                    <label className="form-label fw-bold">Bathrooms</label>
+                    <label className="form-label fw-bold">Bathrooms *</label>
                     <input
                       type="text"
                       className="form-control"
@@ -606,20 +593,25 @@ const PropertiesModal = ({
                   <div className="col-md-6">
                     <label className="form-label fw-bold">
                       Floors{' '}
-                      {isOptional('floors') && <span className="text-muted"> (optional)</span>}
+                      {isOptional('floors') ? (
+                        <span className="text-muted"> (optional)</span>
+                      ) : (
+                        <span> * </span>
+                      )}
                     </label>
                     <input
                       type="text"
                       className="form-control"
                       name="floors"
                       data-nested="propertyDetails"
+                      required={isRequired(`floors`)}
                       value={formData?.propertyDetails?.floors || ''}
                       onChange={handleChange}
                     />
                   </div>
                   {/* Facing */}
                   <div className="col-md-6">
-                    <label className="form-label fw-bold">Facing</label>
+                    <label className="form-label fw-bold">Facing *</label>
                     <input
                       type="text"
                       className="form-control"
@@ -627,6 +619,7 @@ const PropertiesModal = ({
                       data-nested="propertyDetails"
                       value={formData?.propertyDetails?.facing || ''}
                       onChange={handleChange}
+                      required
                     />
                   </div>
                 </>
@@ -819,7 +812,12 @@ const PropertiesModal = ({
             <div className="col-md-12">
               <label className="form-label">
                 <strong>
-                  Nearby {isOptional('nearby') && <span className="text-muted"> (optional)</span>}
+                  Nearby{' '}
+                  {isOptional('nearby') ? (
+                    <span className="text-muted"> (optional)</span>
+                  ) : (
+                    <span> * </span>
+                  )}
                 </strong>
               </label>
 
@@ -833,16 +831,18 @@ const PropertiesModal = ({
                       value={facility?.name}
                       onChange={(e) => handleNearByChange(e, index)}
                       className="form-control"
+                      required={!isOptional('nearby')}
                     />
                   </div>
                   <div className="col-md-6 m-0 my-2">
-                    <label className="form-label">Description</label>
+                    <label className="form-label">Distance</label>
                     <input
                       type="text"
                       name={`facilityDistance_${index}`}
                       value={facility?.distance}
                       onChange={(e) => handleNearByChange(e, index)}
                       className="form-control"
+                      required={!isOptional('nearby')}
                     />
                   </div>
 
@@ -872,7 +872,7 @@ const PropertiesModal = ({
             {/* Documents */}
             <div className="col-md-12">
               <label className="form-label">
-                <strong>Documents</strong>
+                <strong>Documents *</strong>
               </label>
 
               {formData?.documents?.map((facility, index) => (
@@ -885,6 +885,7 @@ const PropertiesModal = ({
                       value={facility?.name}
                       onChange={(e) => handleDocumentChange(e, index)}
                       className="form-control"
+                      required
                     >
                       <option value="">Select Document</option>
                       {documentsOption}
@@ -898,6 +899,7 @@ const PropertiesModal = ({
                       value={facility?.number}
                       onChange={(e) => handleDocumentChange(e, index)}
                       className="form-control"
+                      required
                     />
                   </div>
                   <div className="col-md-6 m-0 my-2">

@@ -57,6 +57,12 @@ const BridgeHouseDetailsModal = ({
       ...prev,
       [name]: type === 'checkbox' ? checked : newValue,
     }))
+
+    // ✅ Clear error for that field when user starts typing
+    setErrors((prevErrors) => ({
+      ...prevErrors,
+      [name]: '',
+    }))
   }
 
   // Upload profile image
@@ -96,6 +102,7 @@ const BridgeHouseDetailsModal = ({
     if (!formData.name.trim()) newErrors.name = 'Name is required'
     if (!formData.email.trim()) newErrors.email = 'Email is required'
     if (!formData.phone.trim()) newErrors.phone = 'Phone is required'
+    if (!formData.notes.trim()) newErrors.notes = 'Notes is required'
     if (!formData.profile) newErrors.profile = 'Profile image is required'
     setErrors(newErrors)
     return Object.keys(newErrors).length === 0
@@ -200,7 +207,7 @@ const BridgeHouseDetailsModal = ({
           <div className="col-md-6 mb-3">
             <label className="form-label fw-bold">Notes</label>
             <textarea
-              className="form-control"
+              className={`form-control ${errors?.notes ? 'is-invalid' : ''}`}
               name="notes"
               rows="1"
               value={formData?.notes}
@@ -208,6 +215,7 @@ const BridgeHouseDetailsModal = ({
               placeholder="Enter notes"
               required
             />
+            {errors.notes && <div className="invalid-feedback">{errors?.notes}</div>}
           </div>
         </div>
 

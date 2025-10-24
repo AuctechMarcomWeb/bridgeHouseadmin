@@ -1,5 +1,4 @@
-
-
+/* eslint-disable react/prop-types */
 import { Modal } from 'antd'
 import React, { useState } from 'react'
 import toast from 'react-hot-toast'
@@ -12,7 +11,6 @@ const DocumentsModal = ({
   isModalOpen,
   setIsModalOpen,
 }) => {
-
   const [formData, setFormData] = useState(
     modalData
       ? {
@@ -20,7 +18,7 @@ const DocumentsModal = ({
         }
       : {
           name: '',
-          
+
           isActive: true,
         },
   )
@@ -33,7 +31,7 @@ const DocumentsModal = ({
 
   // 🔹 Close modal
   const handleCancel = () => {
-    setFormData({ name: '',  isActive: true })
+    setFormData({ name: '', isActive: true })
     setErrors({})
     setModalData(null)
     setIsModalOpen(false)
@@ -66,6 +64,11 @@ const DocumentsModal = ({
       ...formData,
       [name]: type === 'checkbox' ? checked : value,
     })
+    // ✅ Clear error for that field when user starts typing
+    setErrors((prevErrors) => ({
+      ...prevErrors,
+      [name]: '',
+    }))
   }
 
   // 🔹 Validate form
@@ -92,7 +95,7 @@ const DocumentsModal = ({
         toast.error(error?.response?.data?.message)
       })
   }
-  
+
   const handleSubmit = (e) => {
     e.preventDefault()
     if (!validateForm()) return
@@ -133,8 +136,6 @@ const DocumentsModal = ({
           />
           {errors?.name && <div className="invalid-feedback">{errors.name}</div>}
         </div>
-
-     
 
         {/* Active Status */}
         <div className="form-check mb-3">

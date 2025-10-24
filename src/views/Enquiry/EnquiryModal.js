@@ -1,6 +1,6 @@
+/* eslint-disable prettier/prettier */
 /* eslint-disable react/prop-types */
 /* eslint-disable react/jsx-no-undef */
-/* eslint-disable prettier/prettier */
 import { Modal } from 'antd'
 import React, { useState, useEffect } from 'react'
 import toast from 'react-hot-toast'
@@ -59,6 +59,11 @@ const EnquiryModal = ({
       ...formData,
       [name]: value,
     })
+    // ✅ Clear error for that field when user starts typing
+    setErrors((prevErrors) => ({
+      ...prevErrors,
+      [name]: '',
+    }))
   }
 
   // 🔹 Get Properties details
@@ -159,6 +164,7 @@ const EnquiryModal = ({
                 if (/^\d{0,10}$/.test(value)) {
                   setFormData({ ...formData, phone: value })
                 }
+                setErrors((prev) => ({ ...prev, phone: '' }))
               }}
               placeholder="Enter phone"
               disabled={!!modalData} // Disable in edit mode

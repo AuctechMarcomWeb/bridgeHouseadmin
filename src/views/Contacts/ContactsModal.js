@@ -37,6 +37,11 @@ const ContactsModal = ({
       ...formData,
       [name]: type === 'checkbox' ? checked : value,
     })
+    // ✅ Clear error for that field when user starts typing
+    setErrors((prevErrors) => ({
+      ...prevErrors,
+      [name]: '',
+    }))
   }
 
   const handleEdit = (e) => {
