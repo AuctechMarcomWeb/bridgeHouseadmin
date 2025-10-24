@@ -173,7 +173,12 @@ const Documents = () => {
           pageSize={limit}
           total={total}
           onChange={(newPage) => setPage(newPage)}
-          showSizeChanger={false}
+          showSizeChanger={true}
+          onShowSizeChange={(current, size) => {
+            setLimit(size)
+            setPage(1)
+          }}
+          showQuickJumper
         />
       </div>
 

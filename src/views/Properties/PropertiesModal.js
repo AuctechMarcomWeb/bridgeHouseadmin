@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 /* eslint-disable prettier/prettier */
 import { Modal, Select } from 'antd'
 import React, { useState, useContext, useEffect } from 'react'
@@ -26,10 +27,17 @@ const PropertiesModal = ({
   const [facilites, setFacilites] = useState([])
   const [documents, setDocuments] = useState([])
 
+  const generatePropertyCode = () => {
+    const prefix = 'PROP' // aap chahe to customize kar sakte ho
+    const randomNum = Math.floor(1000 + Math.random() * 9000) // 4 digit random number
+    return `${prefix}-${randomNum}`
+  }
+
   const [formData, setFormData] = useState(
     modalData
       ? {
           ...modalData,
+          propertyCode: generatePropertyCode(),
         }
       : {
           address: '',
@@ -43,6 +51,8 @@ const PropertiesModal = ({
           documents: [],
           description: '',
           propertyDetails: {
+            length: '',
+            width: '',
             area: '',
             bedrooms: '',
             bathrooms: '',
@@ -60,7 +70,7 @@ const PropertiesModal = ({
           services: [],
           nearby: [],
           gallery: [],
-          propertyCode: '',
+          propertyCode: generatePropertyCode(),
         },
   )
 
@@ -164,6 +174,8 @@ const PropertiesModal = ({
       documents: [],
       description: '',
       propertyDetails: {
+        length: '',
+        width: '',
         area: '',
         bedrooms: '',
         bathrooms: '',
@@ -188,66 +200,40 @@ const PropertiesModal = ({
     setIsModalOpen(false)
   }
 
-  // const handleChange = (e) => {
-  //   const { name, value, type, checked, dataset } = e.target
-
-  //   // If data-nested is present, update nested object
-  //   if (dataset.nested) {
-  //     const nestedKey = dataset.nested // e.g., "propertyDetails"
-  //     setFormData((prev) => ({
-  //       ...prev,
-  //       [nestedKey]: {
-  //         ...prev[nestedKey],
-  //         [name]: type === 'checkbox' ? checked : value,
-  //       },
-  //     }))
-  //   } else {
-
-  //     setFormData((prev) => ({
-  //       ...prev,
-  //       [name]: type === 'checkbox' ? checked : value,
-  //     }))
-  //   }
-  // }
-
   const handleChange = (e) => {
     const { name, value, type, checked, dataset } = e.target
 
-    if (dataset.nested) {
-      // ✅ Update nested object (unchanged)
-      const nestedKey = dataset.nested
-      setFormData((prev) => ({
-        ...prev,
-        [nestedKey]: {
+    setFormData((prev) => {
+      let updatedData = { ...prev }
+
+      if (dataset.nested) {
+        const nestedKey = dataset.nested
+        updatedData[nestedKey] = {
           ...prev[nestedKey],
           [name]: type === 'checkbox' ? checked : value,
-        },
-      }))
-    } else {
-      // ✅ Update main object + auto-calc totalSqft
-      setFormData((prev) => {
-        const updatedData = {
-          ...prev,
-          [name]: type === 'checkbox' ? checked : value,
         }
 
-        // Auto-calculate totalSqft only when height or width changes
-        if (name === 'height' || name === 'width') {
-          const height = name === 'height' ? value : updatedData.height || prev.height || 0
-          const width = name === 'width' ? value : updatedData.width || prev.width || 0
+        // Area calculation for nested length/width
+        if (nestedKey === 'propertyDetails' && (name === 'length' || name === 'width')) {
+          const length =
+            name === 'length'
+              ? parseFloat(value || 0)
+              : parseFloat(prev.propertyDetails.length || 0)
+          const width =
+            name === 'width' ? parseFloat(value || 0) : parseFloat(prev.propertyDetails.width || 0)
 
-          const totalSqft = parseFloat(height || 0) * parseFloat(width || 0)
-
-          updatedData.totalSqft = isNaN(totalSqft) ? '' : totalSqft.toFixed(2)
+          updatedData[nestedKey].area = isNaN(length * width) ? '' : (length * width).toFixed(2)
         }
+      } else {
+        updatedData[name] = type === 'checkbox' ? checked : value
+      }
 
-        return updatedData
-      })
-    }
+      return updatedData
+    })
   }
 
   const handleChangeImage = (e) => {
-    const files = Array.from(e.target.files) // ✅ Convert FileList to array
+    const files = Array.from(e.target.files)
 
     files.forEach((file) => {
       fileUpload({
@@ -257,7 +243,7 @@ const PropertiesModal = ({
         .then((res) => {
           setFormData((prev) => ({
             ...prev,
-            gallery: [...(prev.gallery || []), res.data?.data?.imageUrl], // ✅ Push into gallery array
+            gallery: [...(prev.gallery || []), res.data?.data?.imageUrl],
           }))
           console.log('res data pic ', res?.data)
         })
@@ -405,6 +391,20 @@ const PropertiesModal = ({
       })
   }
 
+  const isOptional = (field) => {
+    const type = formData?.propertyType
+    const optionalFields = {
+      Commercial: ['bhk', 'bedrooms', 'nearby'],
+      Plot: ['facilities', 'services'],
+      Apartment: ['length', 'width', 'floors'],
+    }
+    return optionalFields[type]?.includes(field)
+  }
+  // Checks if a field is required
+  const isRequired = (fieldName) => {
+    return !isOptional(fieldName)
+  }
+
   return (
     <Modal
       title={isEditMode ? `Edit Property` : `Add Property`}
@@ -420,19 +420,17 @@ const PropertiesModal = ({
         <form onSubmit={modalData ? handleEdit : handleSubmit} className="needs-validation">
           <div className="row">
             <div className="col-md-6">
-              <div className="mb-3">
-                <label className="form-label fw-bold">Property Name *</label>
-                <input
-                  type="text"
-                  className={`form-control `}
-                  name="name"
-                  required
-                  value={formData?.name}
-                  onChange={handleChange}
-                  placeholder="Enter property name (e.g., Luxury Villa)"
-                />
-              </div>
+              <label className="form-label fw-bold">PropertyCode *</label>
+              <input
+                type="text"
+                className={`form-control ${errors?.propertyCode ? 'is-invalid' : ''}`}
+                name="propertyCode"
+                value={formData?.propertyCode}
+                required
+                onChange={handleChange}
+              />
             </div>
+
             <div className="col-md-6">
               {' '}
               <div className="mb-3">
@@ -448,6 +446,25 @@ const PropertiesModal = ({
                   {typeOption}
                 </select>
               </div>
+            </div>
+
+            <div className="col-md-6">
+              <div className="mb-3">
+                <label className="form-label fw-bold">Property Name *</label>
+                <input
+                  type="text"
+                  className={`form-control `}
+                  name="name"
+                  required
+                  value={formData?.name}
+                  onChange={handleChange}
+                  placeholder="Enter property name (e.g., Luxury Villa)"
+                />
+              </div>
+            </div>
+            <div className="col-md-6">
+              <label className="form-label fw-bold">Address *</label>
+              <LocationSearchInput formData={formData} setFormData={setFormData} />
             </div>
 
             <div className="col-md-6">
@@ -494,27 +511,75 @@ const PropertiesModal = ({
             <hr className="m-0 p-0 my-3" />
 
             {/* Property Details */}
-            {formData?.propertyType !== 'Plot' && (
-              <>
-                <label className="form-label fw-bold d-block mb-2">Property Details</label>
 
-                <div className="row">
-                  {/* Area */}
-                  <div className="col-md-6">
-                    <label className="form-label fw-bold">Area</label>
-                    <input
-                      type="text"
-                      className="form-control"
-                      name="area"
-                      data-nested="propertyDetails"
-                      value={formData?.propertyDetails?.area || ''}
-                      onChange={handleChange}
-                    />
-                  </div>
+            <label className="form-label fw-bold d-block mb-2">Property Details</label>
 
+            <div className="row">
+              <div className="col-md-6">
+                <label className="form-label fw-bold">
+                  Length (ft){' '}
+                  {isOptional('length') ? (
+                    <span className="text-muted"> (optional)</span>
+                  ) : (
+                    <span> * </span>
+                  )}
+                </label>
+                <input
+                  type="text"
+                  className="form-control"
+                  name="length"
+                  data-nested="propertyDetails"
+                  required={isRequired('length')}
+                  value={formData?.propertyDetails?.length}
+                  onChange={handleChange}
+                />
+              </div>
+
+              <div className="col-md-6">
+                <label className="form-label fw-bold">
+                  Width (ft){' '}
+                  {isOptional('width') ? (
+                    <span className="text-muted"> (optional)</span>
+                  ) : (
+                    <span> * </span>
+                  )}
+                </label>
+                <input
+                  type="text"
+                  className="form-control"
+                  name="width"
+                  data-nested="propertyDetails"
+                  required={isRequired('width')}
+                  value={formData?.propertyDetails?.width}
+                  onChange={handleChange}
+                />
+              </div>
+
+              <div className="col-md-6">
+                <label className="form-label fw-bold">Area(Sqft) *</label>
+                <input
+                  type="text"
+                  className="form-control"
+                  name="area"
+                  data-nested="propertyDetails"
+                  value={formData?.propertyDetails?.area || ''}
+                  readOnly // 🔹 prevent typing
+                />
+              </div>
+
+              {formData?.propertyType !== 'Plot' && (
+                <>
                   {/* Bedrooms */}
                   <div className="col-md-6">
-                    <label className="form-label fw-bold">Bedrooms</label>
+                    <label className="form-label fw-bold">
+                      {' '}
+                      Bedrooms{' '}
+                      {isOptional('bedrooms') ? (
+                        <span className="text-muted"> (optional)</span>
+                      ) : (
+                        <span> * </span>
+                      )}
+                    </label>
                     <input
                       type="text"
                       className="form-control"
@@ -524,7 +589,6 @@ const PropertiesModal = ({
                       onChange={handleChange}
                     />
                   </div>
-
                   {/* Bathrooms */}
                   <div className="col-md-6">
                     <label className="form-label fw-bold">Bathrooms</label>
@@ -535,12 +599,15 @@ const PropertiesModal = ({
                       data-nested="propertyDetails"
                       value={formData?.propertyDetails?.bathrooms || ''}
                       onChange={handleChange}
+                      required
                     />
                   </div>
-
                   {/* Floors */}
                   <div className="col-md-6">
-                    <label className="form-label fw-bold">Floors</label>
+                    <label className="form-label fw-bold">
+                      Floors{' '}
+                      {isOptional('floors') && <span className="text-muted"> (optional)</span>}
+                    </label>
                     <input
                       type="text"
                       className="form-control"
@@ -550,7 +617,6 @@ const PropertiesModal = ({
                       onChange={handleChange}
                     />
                   </div>
-
                   {/* Facing */}
                   <div className="col-md-6">
                     <label className="form-label fw-bold">Facing</label>
@@ -563,67 +629,79 @@ const PropertiesModal = ({
                       onChange={handleChange}
                     />
                   </div>
-
-                  {/* Built Year */}
-                  <div className="col-md-6">
-                    <label className="form-label fw-bold">Built Year</label>
-                    <input
-                      type="text"
-                      className="form-control"
-                      name="builtYear"
-                      data-nested="propertyDetails"
-                      value={formData?.propertyDetails?.builtYear || ''}
-                      onChange={handleChange}
-                    />
-                  </div>
-                </div>
-              </>
-            )}
+                </>
+              )}
+              {/* Built Year */}
+              <div className="col-md-6">
+                <label className="form-label fw-bold">
+                  {' '}
+                  Built Year
+                  {isOptional('builtYear') ? (
+                    <span className="text-muted"> (optional)</span>
+                  ) : (
+                    <span> * </span>
+                  )}
+                </label>
+                <input
+                  type="text"
+                  className="form-control"
+                  name="builtYear"
+                  data-nested="propertyDetails"
+                  required={isRequired('builtYear')}
+                  value={formData?.propertyDetails?.builtYear || ''}
+                  onChange={handleChange}
+                />
+              </div>
+            </div>
 
             <hr className="m-0 p-0 my-3" />
 
             {/* ======================= */}
-            <div className="col-md-6">
-              <label className="form-label fw-bold">Address *</label>
-              <LocationSearchInput formData={formData} setFormData={setFormData} />
-            </div>
-            <div className="col-md-6">
-              <label className="form-label fw-bold">PropertyCode *</label>
-              <input
-                type="text"
-                className={`form-control ${errors?.propertyCode ? 'is-invalid' : ''}`}
-                name="propertyCode"
-                value={formData?.propertyCode}
-                required
-                onChange={handleChange}
-              />
-            </div>
-            <div className="col-md-6">
-              {' '}
-              <div className="mb-3">
-                <label className="form-label fw-bold">BHK </label>
-                <select
-                  className={`form-select `}
-                  name="bhk"
-                  value={formData.bhk}
-                  onChange={handleChange}
-                >
-                  <option value="">Select BHK </option>
-                  {bhkOption}
-                </select>
+
+            {formData?.propertyType !== 'Plot' && (
+              <div className="col-md-6">
+                <div className="mb-3">
+                  <label className="form-label fw-bold">
+                    BHK{' '}
+                    {isOptional('bhk') ? (
+                      <span className="text-muted"> (optional)</span>
+                    ) : (
+                      <span> * </span>
+                    )}
+                  </label>
+                  <select
+                    className={`form-select `}
+                    name="bhk"
+                    value={formData.bhk}
+                    required={isRequired('bhk')}
+                    onChange={handleChange}
+                  >
+                    <option value="">Select BHK </option>
+                    {bhkOption}
+                  </select>
+                </div>
               </div>
-            </div>
+            )}
 
             {/* Facilities */}
             {formData?.propertyType !== 'Plot' && (
               <div className="col-md-6">
-                <label className="form-label fw-bold">Facilities *</label>
+                <label className="form-label fw-bold">
+                  {' '}
+                  Facilities{' '}
+                  {isOptional('facilities') ? (
+                    <span className="text-muted"> (optional)</span>
+                  ) : (
+                    <span> * </span>
+                  )}
+                </label>
 
                 <Select
                   value={formData?.facilities}
                   mode="tags"
                   size="large"
                   style={{ width: '100%' }}
+                  required={isRequired('facilities')}
                   placeholder="Enter/Select Your Facilities"
                   onChange={(value) => {
                     setFormData({
@@ -642,13 +720,21 @@ const PropertiesModal = ({
             {/* Services */}
             {formData?.propertyType !== 'Plot' && (
               <div className="col-md-6">
-                <label className="form-label fw-bold">Services *</label>
+                <label className="form-label fw-bold">
+                  Services{' '}
+                  {isOptional('services') ? (
+                    <span className="text-muted"> (optional)</span>
+                  ) : (
+                    <span> * </span>
+                  )}
+                </label>
 
                 <Select
                   value={formData?.services}
                   mode="tags"
                   size="large"
                   style={{ width: '100%' }}
+                  required={isRequired('services')}
                   placeholder="Enter/Select Your Services"
                   onChange={(value) => {
                     setFormData({
@@ -728,47 +814,13 @@ const PropertiesModal = ({
             )}
 
             <hr className="m-0 p-0 my-3" />
-            {/* <label className="form-label fw-bold">Project Dimension </label>
-            <div className="col-md-6">
-              <label className="form-label fw-bold">Height (ft)</label>
-              <input
-                type="text"
-                className={`form-control `}
-                name="height"
-                value={formData?.height}
-                required
-                onChange={handleChange}
-              />
-            </div>
-            <div className="col-md-6">
-              <label className="form-label fw-bold">Width (ft)</label>
-              <input
-                type="text"
-                className={`form-control `}
-                name="width"
-                value={formData?.width}
-                required
-                onChange={handleChange}
-              />
-            </div>
-            <div className="col-md-6">
-              <label className="form-label fw-bold">Total Sqft </label>
-              <input
-                type="text"
-                className={`form-control `}
-                name="totalSqft"
-                value={formData?.totalSqft}
-                required
-                onChange={handleChange}
-              />
-            </div> */}
-
-            <hr className="m-0 p-0 my-3" />
 
             {/* Nearby */}
             <div className="col-md-12">
               <label className="form-label">
-                <strong>Nearby</strong>
+                <strong>
+                  Nearby {isOptional('nearby') && <span className="text-muted"> (optional)</span>}
+                </strong>
               </label>
 
               {formData?.nearby?.map((facility, index) => (
