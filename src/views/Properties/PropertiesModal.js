@@ -28,8 +28,8 @@ const PropertiesModal = ({
   const [documents, setDocuments] = useState([])
 
   const generatePropertyCode = () => {
-    const prefix = 'PROP' // aap chahe to customize kar sakte ho
-    const randomNum = Math.floor(1000 + Math.random() * 9000) // 4 digit random number
+    const prefix = 'PROP'
+    const randomNum = Math.floor(1000 + Math.random() * 9000)
     return `${prefix}-${randomNum}`
   }
 
@@ -682,11 +682,7 @@ const PropertiesModal = ({
                 <label className="form-label fw-bold">
                   {' '}
                   Facilities{' '}
-                  {isOptional('facilities') ? (
-                    <span className="text-muted"> (optional)</span>
-                  ) : (
-                    <span> * </span>
-                  )}
+                  {isOptional('facilities') && <span className="text-muted"> (optional)</span>}
                 </label>
 
                 <Select
@@ -715,11 +711,7 @@ const PropertiesModal = ({
               <div className="col-md-6">
                 <label className="form-label fw-bold">
                   Services{' '}
-                  {isOptional('services') ? (
-                    <span className="text-muted"> (optional)</span>
-                  ) : (
-                    <span> * </span>
-                  )}
+                  {isOptional('services') && <span className="text-muted"> (optional)</span>}
                 </label>
 
                 <Select
@@ -747,6 +739,7 @@ const PropertiesModal = ({
             <div className="col-md-6">
               <label className="form-label fw-bold">Property Images *</label>
               <input
+                key={formData.gallery.length}
                 type="file"
                 className={`form-control `}
                 name="propertyCode"

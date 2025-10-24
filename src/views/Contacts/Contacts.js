@@ -19,6 +19,14 @@ const Contacts = () => {
   const [showDeleteModal, setShowDeleteModal] = useState(false)
   const [selectedItem, setSelectedItem] = useState(null)
   const [loading, setLoading] = useState(false)
+  const [expandedAddresses, setExpandedAddresses] = React.useState({})
+
+  const toggleAddress = (id) => {
+    setExpandedAddresses((prev) => ({
+      ...prev,
+      [id]: !prev[id],
+    }))
+  }
 
   //  FetchContact with Pagination + Search
   useEffect(() => {
@@ -83,10 +91,10 @@ const Contacts = () => {
       )}
 
       {/* Header */}
-    <div className="px-4 sm:px-6 py-4 border-b border-gray-200 flex flex-col sm:flex-row justify-between sm:items-center gap-3">
+      <div className="px-4 sm:px-6 py-4 border-b border-gray-200 flex flex-col sm:flex-row justify-between sm:items-center gap-3">
         <div>
-           <h2 className="text-xl sm:text-2xl font-bold text-gray-900">Contact</h2>
-           <p className="text-gray-600 text-sm sm:text-base">Manage Contact</p>
+          <h2 className="text-xl sm:text-2xl font-bold text-gray-900">Contact</h2>
+          <p className="text-gray-600 text-sm sm:text-base">Manage Contact</p>
         </div>
         <div className="flex flex-wrap items-center gap-2 sm:gap-3">
           <ExportButton data={data} fileName="Property Type.xlsx" sheetName="Property Type" />
@@ -147,30 +155,21 @@ const Contacts = () => {
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
                 {data?.map((item, index) => (
-                  <tr key={item._id}>
-                    <td className="px-6 py-4 text-sm text-gray-700">
-                      {(page - 1) * limit + (index + 1)}
-                    </td>
+                  <tr key={item._id} className="text-center">
+                    <td className="px-6 py-4">{(page - 1) * limit + (index + 1)}</td>
                     <td className="px-6 py-4">{item?.name}</td>
                     <td className="px-6 py-4">{item?.email}</td>
                     <td className="px-6 py-4">{item?.phone}</td>
-                    <td className="px-6 py-4">{item?.address}</td>
+                    <td
+                      className="px-6 py-4 cursor-pointer"
+                      onClick={() => toggleAddress(item._id)}
+                    >
+                      {expandedAddresses[item._id]
+                        ? item?.address
+                        : item?.address.split(' ').slice(0, 4).join(' ') + '...'}
+                    </td>
                     <td className="px-6 py-4">{item?.notes}</td>
-                    {/* <td className="px-6 py-4">
-                  <img
-                    src={item?.email}
-                    alt="category"
-                    className="w-10 h-10 rounded-full object-cover"
-                  />
-                </td> */}
-                    {/* <td className="px-6 py-4">
-                  {item?.isActive ? (
-                    <span className="px-2 py-1 text-xs bg-blue-100 text-blue-800">Active</span>
-                  ) : (
-                    <span className="px-2 py-1 text-xs bg-red-100 text-red-800">Inactive</span>
-                  )}
-                </td> */}
-                    <td className="px-6 py-4 flex gap-2">
+                    <td className="px-6 py-4 flex gap-2 justify-center">
                       <button
                         onClick={() => {
                           setSelectedItem(item)
@@ -194,34 +193,31 @@ const Contacts = () => {
                 ))}
               </tbody>
             </table>
-
-           
           </>
         )}
       </div>
-       {/* ✅ Pagination */}
-            {!loading && data?.length > 0 && (
-              <div className="px-6 py-4 border-t border-gray-200">
-                <div className="flex items-center justify-between">
-                  <div className="text-sm text-gray-700">
-                    Showing {(page - 1) * limit + 1} to {Math.min(page * limit, total)} of {total}{' '}
-                    results
-                  </div>
-                  <Pagination
-                    current={page}
-                    pageSize={limit}
-                    total={total}
-                    onChange={(newPage) => setPage(newPage)}
-                    showSizeChanger={true}
-                    onShowSizeChange={(current, size) => {
-                      setLimit(size)
-                      setPage(1)
-                    }}
-                    showQuickJumper
-                  />
-                </div>
-              </div>
-            )}
+      {/* ✅ Pagination */}
+      {!loading && data?.length > 0 && (
+        <div className="px-6 py-4 border-t border-gray-200">
+          <div className="flex items-center justify-between">
+            <div className="text-sm text-gray-700">
+              Showing {(page - 1) * limit + 1} to {Math.min(page * limit, total)} of {total} results
+            </div>
+            <Pagination
+              current={page}
+              pageSize={limit}
+              total={total}
+              onChange={(newPage) => setPage(newPage)}
+              showSizeChanger={true}
+              onShowSizeChange={(current, size) => {
+                setLimit(size)
+                setPage(1)
+              }}
+              showQuickJumper
+            />
+          </div>
+        </div>
+      )}
       {isModalOpen && (
         <ContactsModal
           setUpdateStatus={setUpdateStatus}
