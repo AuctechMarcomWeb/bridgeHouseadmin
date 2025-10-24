@@ -166,7 +166,7 @@ const Contacts = () => {
                     >
                       {expandedAddresses[item._id]
                         ? item?.address
-                        : item?.address.split(' ').slice(0, 4).join(' ') + '...'}
+                        : item?.address.split(' ').slice(0, 2).join(' ') + '...'}
                     </td>
                     <td className="px-6 py-4">{item?.notes}</td>
                     <td className="px-6 py-4 flex gap-2 justify-center">

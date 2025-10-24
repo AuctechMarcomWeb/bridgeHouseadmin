@@ -21,7 +21,14 @@ const Enquiry = () => {
   const [showDeleteModal, setShowDeleteModal] = useState(false)
   const [selectedItem, setSelectedItem] = useState(null)
   const { user, setUser } = useContext(AppContext)
+const [expandedAddresses, setExpandedAddresses] = React.useState({})
 
+  const toggleAddress = (id) => {
+    setExpandedAddresses((prev) => ({
+      ...prev,
+      [id]: !prev[id],
+    }))
+  }
   // ✅ Fetch Banners with Pagination + Search
   useEffect(() => {
     setLoading(true)
@@ -162,17 +169,21 @@ const Enquiry = () => {
                       {(page - 1) * limit + (index + 1)}
                     </td>
 
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm font-medium text-gray-900">{item?.name}</div>
+                    <td className="px-6 py-4 whitespace-nowrap">{item?.name}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm font-medium text-gray-900">{item?.phone}</div>
+                     {item?.phone}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm font-medium text-gray-900">{item?.email}</div>
+                      {item?.email}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm font-medium text-gray-900">{item?.message}</div>
+                     <td
+                      className="px-6 py-4 cursor-pointer"
+                      onClick={() => toggleAddress(item._id)}
+                    >
+                      {expandedAddresses[item._id]
+                        ? item?.message
+                        : item?.message.split(' ').slice(0, 2).join(' ') + '...'}
                     </td>
 
                     <td className="px-6 py-4 whitespace-nowrap">

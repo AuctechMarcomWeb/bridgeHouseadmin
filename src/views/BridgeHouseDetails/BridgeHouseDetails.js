@@ -22,7 +22,14 @@ const BridgeHouseDetails = () => {
   const [showDeleteModal, setShowDeleteModal] = useState(false)
   const [selectedItem, setSelectedItem] = useState(null)
   const [loading, setLoading] = useState(false)
+ const [expandedAddresses, setExpandedAddresses] = React.useState({})
 
+  const toggleAddress = (id) => {
+    setExpandedAddresses((prev) => ({
+      ...prev,
+      [id]: !prev[id],
+    }))
+  }
   //Fetch Property Type with Pagination + Search
   useEffect(() => {
     setLoading(true)
@@ -170,7 +177,14 @@ const BridgeHouseDetails = () => {
                         className="w-10 h-10 rounded-full object-cover"
                       />
                     </td>
-                    <td className="px-6 py-4 word-nowrap">{item?.notes}</td>
+                     <td
+                      className="px-6 py-4 cursor-pointer"
+                      onClick={() => toggleAddress(item._id)}
+                    >
+                      {expandedAddresses[item._id]
+                        ? item?.notes
+                        : item?.notes.split(' ').slice(0, 2).join(' ') + '...'}
+                    </td>
                     <td className="px-6 py-4">
                       {item?.status ? (
                         <span className="px-2 py-1 text-xs bg-blue-100 text-blue-800">Active</span>
