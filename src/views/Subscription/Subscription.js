@@ -244,6 +244,7 @@ const Subscription = () => {
               current={page}
               pageSize={limit}
               total={total}
+              pageSizeOptions={['5', '10', '20', '50', '100', '200', '500', '1000']}
               onChange={(newPage) => setPage(newPage)}
               showSizeChanger={true}
               onShowSizeChange={(current, size) => {

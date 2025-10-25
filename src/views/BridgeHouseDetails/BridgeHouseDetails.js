@@ -22,7 +22,7 @@ const BridgeHouseDetails = () => {
   const [showDeleteModal, setShowDeleteModal] = useState(false)
   const [selectedItem, setSelectedItem] = useState(null)
   const [loading, setLoading] = useState(false)
- const [expandedAddresses, setExpandedAddresses] = React.useState({})
+  const [expandedAddresses, setExpandedAddresses] = React.useState({})
 
   const toggleAddress = (id) => {
     setExpandedAddresses((prev) => ({
@@ -177,7 +177,7 @@ const BridgeHouseDetails = () => {
                         className="w-10 h-10 rounded-full object-cover"
                       />
                     </td>
-                     <td
+                    <td
                       className="px-6 py-4 cursor-pointer"
                       onClick={() => toggleAddress(item._id)}
                     >
@@ -229,6 +229,7 @@ const BridgeHouseDetails = () => {
                     current={page}
                     pageSize={limit}
                     total={total}
+                    pageSizeOptions={['5', '10', '20', '50', '100', '200', '500', '1000']}
                     onChange={(newPage) => setPage(newPage)}
                     showSizeChanger={true}
                     onShowSizeChange={(current, size) => {

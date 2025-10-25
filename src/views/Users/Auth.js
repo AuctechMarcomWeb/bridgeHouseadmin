@@ -68,8 +68,7 @@ const Auth = () => {
               <h3 className="text-lg font-semibold text-gray-900">Confirm Delete</h3>
             </div>
             <p className="text-gray-600 mb-6">
-              Are you sure you want to delete{' '}
-              <strong>{selectedItem?.name || 'this user'}</strong>?
+              Are you sure you want to delete <strong>{selectedItem?.name || 'this user'}</strong>?
             </p>
             <div className="flex justify-end space-x-3">
               <button
@@ -184,34 +183,31 @@ const Auth = () => {
                 ))}
               </tbody>
             </table>
-
-           
           </>
         )}
       </div>
-       {/* Pagination */}
-            {!loading && data?.length > 0 && (
-              <div className="px-6 py-4 border-t border-gray-200">
-                <div className="flex items-center justify-between">
-                  <div className="text-sm text-gray-700">
-                    Showing {(page - 1) * limit + 1} to {Math.min(page * limit, total)} of {total}{' '}
-                    results
-                  </div>
-                  <Pagination
-                    current={page}
-                    pageSize={limit}
-                    total={total}
-                    onChange={(newPage) => setPage(newPage)}
-                    showSizeChanger
-                    onShowSizeChange={(current, size) => {
-                      setLimit(size)
-                      setPage(1)
-                    }}
-                    showQuickJumper
-                  />
-                </div>
-              </div>
-            )}
+      {/* Pagination */}
+      {!loading && data?.length > 0 && (
+        <div className="px-6 py-4 border-t border-gray-200">
+          <div className="flex items-center justify-between">
+            <div className="text-sm text-gray-700">
+              Showing {(page - 1) * limit + 1} to {Math.min(page * limit, total)} of {total} results
+            </div>
+            <Pagination
+              current={page}
+              pageSize={limit}
+              total={total}
+              pageSizeOptions={['5', '10', '20', '50', '100', '200', '500', '1000']}
+              onChange={(newPage) => setPage(newPage)}
+              showSizeChanger
+              onShowSizeChange={(current, size) => {
+                setLimit(size)
+                setPage(1)
+              }}
+            />
+          </div>
+        </div>
+      )}
     </div>
   )
 }

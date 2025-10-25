@@ -460,32 +460,30 @@ const Properties = () => {
                 ))}
               </tbody>
             </table>
-
-            
           </>
         )}
       </div>
       {/* ✅ Pagination */}
-            {!loading && data.length > 0 && (
-              <div className="flex justify-between items-center px-6 py-4 border-t border-gray-200">
-                <div className="text-sm text-gray-700">
-                  Showing {data?.length > 0 ? (page - 1) * limit + 1 : 0} to{' '}
-                  {Math.min(page * limit, total)} of {total} properties
-                </div>
-                <Pagination
-                  current={page}
-                  pageSize={limit}
-                  total={total}
-                  onChange={(newPage) => setPage(newPage)}
-                  showSizeChanger={true}
-                  onShowSizeChange={(current, size) => {
-                    setLimit(size)
-                    setPage(1)
-                  }}
-                  showQuickJumper
-                />
-              </div>
-            )}
+      {!loading && data.length > 0 && (
+        <div className="flex justify-between items-center px-6 py-4 border-t border-gray-200">
+          <div className="text-sm text-gray-700">
+            Showing {data?.length > 0 ? (page - 1) * limit + 1 : 0} to{' '}
+            {Math.min(page * limit, total)} of {total} properties
+          </div>
+          <Pagination
+            current={page}
+            pageSize={limit}
+            total={total}
+            pageSizeOptions={['5', '10', '20', '50', '100', '200', '500', '1000']}
+            onChange={(newPage) => setPage(newPage)}
+            showSizeChanger={true}
+            onShowSizeChange={(current, size) => {
+              setLimit(size)
+              setPage(1)
+            }}
+          />
+        </div>
+      )}
 
       {/* Properties Modal */}
       {isModalOpen && (

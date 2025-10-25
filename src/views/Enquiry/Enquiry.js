@@ -21,7 +21,7 @@ const Enquiry = () => {
   const [showDeleteModal, setShowDeleteModal] = useState(false)
   const [selectedItem, setSelectedItem] = useState(null)
   const { user, setUser } = useContext(AppContext)
-const [expandedAddresses, setExpandedAddresses] = React.useState({})
+  const [expandedAddresses, setExpandedAddresses] = React.useState({})
 
   const toggleAddress = (id) => {
     setExpandedAddresses((prev) => ({
@@ -32,11 +32,12 @@ const [expandedAddresses, setExpandedAddresses] = React.useState({})
   // ✅ Fetch Banners with Pagination + Search
   useEffect(() => {
     setLoading(true)
-    getRequest(`enquiry?search=${searchTerm}&page=${page}&limit=${limit}&addedBy=${user?._id}`)
+    getRequest(`enquiry?search=${searchTerm}&page=${page}&limit=${limit}`)
       .then((res) => {
         const responseData = res?.data?.data
         setData(responseData?.enquiries || [])
-        console.log('Enquiry responseData', responseData)
+        console.log('Enquiry responseData', res)
+
         setTotal(responseData?.totalEnquiries || 0)
       })
       .catch((error) => {
@@ -46,7 +47,7 @@ const [expandedAddresses, setExpandedAddresses] = React.useState({})
       .finally(() => {
         setLoading(false)
       })
-  }, [page, limit, searchTerm, updateStatus,user?._id])
+  }, [page, limit, searchTerm, updateStatus])
 
   // ✅ Delete handler
   const confirmDelete = () => {
@@ -96,10 +97,10 @@ const [expandedAddresses, setExpandedAddresses] = React.useState({})
       )}
 
       {/* Header */}
-       <div className="px-4 sm:px-6 py-4 border-b border-gray-200 flex flex-col sm:flex-row justify-between sm:items-center gap-3">
+      <div className="px-4 sm:px-6 py-4 border-b border-gray-200 flex flex-col sm:flex-row justify-between sm:items-center gap-3">
         <div>
-         <h2 className="text-xl sm:text-2xl font-bold text-gray-900">Enquiry</h2>
-           <p className="text-gray-600 text-sm sm:text-base">Manage Enquiry content</p>
+          <h2 className="text-xl sm:text-2xl font-bold text-gray-900">Enquiry</h2>
+          <p className="text-gray-600 text-sm sm:text-base">Manage Enquiry content</p>
         </div>
         <div className="flex flex-wrap items-center gap-2 sm:gap-3">
           {' '}
@@ -169,15 +170,10 @@ const [expandedAddresses, setExpandedAddresses] = React.useState({})
                       {(page - 1) * limit + (index + 1)}
                     </td>
 
-                    <td className="px-6 py-4 whitespace-nowrap">{item?.name}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                     {item?.phone}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      {item?.email}
-                    </td>
-                     <td
+                    <td className="px-6 py-4 whitespace-nowrap">{item?.name}</td>
+                    <td className="px-6 py-4 whitespace-nowrap">{item?.phone}</td>
+                    <td className="px-6 py-4 whitespace-nowrap">{item?.email}</td>
+                    <td
                       className="px-6 py-4 cursor-pointer"
                       onClick={() => toggleAddress(item._id)}
                     >
@@ -235,34 +231,32 @@ const [expandedAddresses, setExpandedAddresses] = React.useState({})
                 ))}
               </tbody>
             </table>
-
-
           </>
         )}
       </div>
-            {/* Pagination */}
-            {!loading && data?.length > 0 && (
-              <div className="px-6 py-4 border-t border-gray-200">
-                <div className="flex items-center justify-between">
-                  <div className="text-sm text-gray-700">
-                    Showing {(page - 1) * limit + 1} to {Math.min(page * limit, total)} of {total}{' '}
-                    results
-                  </div>
-                  <Pagination
-                    current={page}
-                    pageSize={limit}
-                    total={total}
-                    onChange={(newPage) => setPage(newPage)}
-                    showSizeChanger={true}
-                    onShowSizeChange={(current, size) => {
-                      setLimit(size)
-                      setPage(1)
-                    }}
-                    showQuickJumper
-                  />
-                </div>
-              </div>
-            )}
+      {/* Pagination */}
+      {!loading && data?.length > 0 && (
+        <div className="px-6 py-4 border-t border-gray-200">
+          <div className="flex items-center justify-between">
+            <div className="text-sm text-gray-700">
+              Showing {(page - 1) * limit + 1} to {Math.min(page * limit, total)} of {total} results
+            </div>
+            <Pagination
+              current={page}
+              pageSize={limit}
+              total={total}
+              pageSizeOptions={['5', '10', '20', '50', '100', '200', '500', '1000']}
+              onChange={(newPage) => setPage(newPage)}
+              showSizeChanger={true}
+              onShowSizeChange={(current, size) => {
+                setLimit(size)
+                setPage(1)
+              }}
+              showQuickJumper
+            />
+          </div>
+        </div>
+      )}
 
       {/* Enquiry Modal */}
       {isModalOpen && (
