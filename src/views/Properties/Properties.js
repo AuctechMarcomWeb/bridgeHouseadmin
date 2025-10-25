@@ -19,7 +19,11 @@ import PropertiesModal from './PropertiesModal'
 import { AppContext } from '../../Context/AppContext'
 import { MdVerified } from 'react-icons/md'
 import { SiMercadopago } from 'react-icons/si'
+import Filter from './Filter'
+
 const Properties = () => {
+  const googleApiKey = import.meta.env.VITE_GOOGLE_API
+
   const [searchTerm, setSearchTerm] = useState('')
   const [data, setData] = useState([])
   const [total, setTotal] = useState(0)
@@ -32,27 +36,56 @@ const Properties = () => {
   const [approvalStatus, setApprovalStatus] = useState('')
   const [selectedItem, setSelectedItem] = useState(null)
   const [loading, setLoading] = useState(false)
+  // Applied filters for API
+  const [filters, setFilters] = useState({
+    status: '',
+    propertyType: '',
+    approvalStatus: '',
+    isVerified: '',
+    isAdopted: '',
+  })
 
-  const googleApiKey = import.meta.env.VITE_GOOGLE_API
+  // Temporary filters inside Filter component
+  const [tempFilters, setTempFilters] = useState(filters)
 
-  // ✅ Fetch Properties with Pagination + Search
-
+  // Fetch properties
   useEffect(() => {
     setLoading(true)
-    getRequest(
-      `properties?search=${searchTerm}&page=${page}&limit=${limit}&approvalStatus=${approvalStatus}`,
-    )
+    const query = new URLSearchParams({
+      search: searchTerm,
+      page,
+      limit,
+      ...filters,
+    }).toString()
+
+    getRequest(`properties?${query}`)
       .then((res) => {
         const responseData = res?.data?.data
-        console.log('Properties=>>', responseData)
         setData(responseData?.properties || [])
         setTotal(responseData?.totalProperties || responseData?.total || 0)
       })
-      .catch((error) => {
-        console.log('error', error)
-      })
+      .catch(console.error)
       .finally(() => setLoading(false))
-  }, [page, limit, searchTerm, updateStatus])
+  }, [page, limit, searchTerm, filters, updateStatus])
+
+  const applyFilters = () => {
+    setFilters(tempFilters)
+    setPage(1) // Reset page
+  }
+
+  const resetFilters = () => {
+    const defaultFilters = {
+      status: '',
+      propertyType: '',
+      approvalStatus: '',
+      isVerified: '',
+      isAdopted: '',
+    }
+    setTempFilters(defaultFilters)
+    setFilters(defaultFilters)
+    setPage(1)
+    setSearchTerm('')
+  }
 
   // ✅ Delete handler
   const confirmDelete = () => {
@@ -189,21 +222,14 @@ const Properties = () => {
       </div>
 
       {/* Search */}
-      <div className="px-6 py-4 border-b border-gray-200">
-        <div className="relative">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4" />
-          <input
-            type="text"
-            placeholder="Search properties..."
-            value={searchTerm}
-            onChange={(e) => {
-              setSearchTerm(e.target.value)
-              setPage(1)
-            }}
-            className="pl-10 pr-4 py-2 w-full border border-gray-300 focus:ring-2 focus:ring-blue-500"
-          />
-        </div>
-      </div>
+      <Filter
+        tempFilters={tempFilters}
+        setTempFilters={setTempFilters}
+        searchTerm={searchTerm}
+        setSearchTerm={setSearchTerm}
+        applyFilters={applyFilters}
+        resetFilters={resetFilters}
+      />
 
       {/* Table */}
       <div className="overflow-x-auto">
