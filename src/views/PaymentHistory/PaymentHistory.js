@@ -153,7 +153,7 @@ const PaymentHistory = () => {
               }}
               className="bg-blue-600 text-white px-3 sm:px-4 py-2 hover:bg-blue-700 flex items-center justify-center rounded-md text-sm sm:text-base w-full sm:w-auto"
             >
-             <Plus className="w-4 h-4 mr-2" />  Filters
+              <Plus className="w-4 h-4 mr-2" /> Filters
             </button>
 
             {/* Clear Filters */}
@@ -303,13 +303,13 @@ const PaymentHistory = () => {
               current={page}
               pageSize={limit}
               total={total}
+              pageSizeOptions={['5', '10', '20', '50', '100', '200', '500', '1000']}
               onChange={(newPage) => setPage(newPage)}
               showSizeChanger
               onShowSizeChange={(current, size) => {
                 setLimit(size)
                 setPage(1)
               }}
-              showQuickJumper
             />
           </div>
         </div>
