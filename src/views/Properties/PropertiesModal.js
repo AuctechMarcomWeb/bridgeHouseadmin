@@ -26,6 +26,8 @@ const PropertiesModal = ({
   const [services, setServices] = useState([])
   const [facilites, setFacilites] = useState([])
   const [documents, setDocuments] = useState([])
+  const galleryInputRefs = React.useRef([])
+  const documentInputRefs = React.useRef([])
 
   const generatePropertyCode = () => {
     const prefix = 'PROP'
@@ -243,7 +245,7 @@ const PropertiesModal = ({
         .then((res) => {
           setFormData((prev) => ({
             ...prev,
-            gallery: [...(prev.gallery || []), res.data?.data?.imageUrl],
+            gallery: [...(prev.gallery || []), res.data?.data?.imageUrl], //  Push into gallery array
           }))
           console.log('res data pic ', res?.data)
         })
@@ -739,14 +741,15 @@ const PropertiesModal = ({
             <div className="col-md-6">
               <label className="form-label fw-bold">Property Images *</label>
               <input
-                key={formData.gallery.length}
+                key={formData.gallery}
                 type="file"
                 className={`form-control `}
                 name="propertyCode"
                 accept="image/*"
-                required={modalData ? false : true}
+                required={!(formData.gallery && formData.gallery.length > 0)}
                 multiple
                 onChange={handleChangeImage}
+                ref={(el) => (galleryInputRefs.current[0] = el)}
               />
             </div>
             {formData?.gallery?.length > 0 && (
@@ -768,28 +771,17 @@ const PropertiesModal = ({
 
                       {/* Cross Button */}
                       <button
+                        type="button"
                         onClick={() => {
                           setFormData((prev) => ({
                             ...prev,
                             gallery: prev.gallery.filter((_, i) => i !== index),
                           }))
+                          if (galleryInputRefs.current[0]) {
+                            galleryInputRefs.current[0].value = '' // reset input
+                          }
                         }}
-                        style={{
-                          position: 'absolute',
-                          top: '-5px',
-                          right: '-5px',
-                          background: 'red',
-                          color: 'white',
-                          border: 'none',
-                          borderRadius: '50%',
-                          width: '18px',
-                          height: '18px',
-                          fontSize: '12px',
-                          cursor: 'pointer',
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                        }}
+                        className="absolute -top-1 -right-1 bg-red-500 text-white rounded-full w-5 h-5 text-xs flex items-center justify-center cursor-pointer"
                       >
                         ✕
                       </button>
@@ -865,7 +857,7 @@ const PropertiesModal = ({
             {/* Documents */}
             <div className="col-md-12">
               <label className="form-label">
-                <strong>Documents *</strong>
+                <strong>Documents </strong>
               </label>
 
               {formData?.documents?.map((facility, index) => (

@@ -6,6 +6,7 @@ import { deleteRequest, getRequest } from '../../Helpers'
 import toast from 'react-hot-toast'
 import { Empty, Pagination, Spin } from 'antd'
 import BannersModal from './BannersModal'
+import BannersFilters from './BannersFilters'
 
 const Banners = () => {
   const [searchTerm, setSearchTerm] = useState('')
@@ -19,25 +20,56 @@ const Banners = () => {
   // Modal states
   const [showDeleteModal, setShowDeleteModal] = useState(false)
   const [selectedItem, setSelectedItem] = useState(null)
+  // Banner page/component
+  const [filters, setFilters] = useState({
+    type: '',
+  })
 
-  // ✅ Fetch Banners with Pagination + Search
+  const [tempFilters, setTempFilters] = useState(filters)
+
+  // Fetch banners with filters + pagination + search
   useEffect(() => {
     setLoading(true)
-    getRequest(`banner?search=${searchTerm}&page=${page}&limit=${limit}`)
+
+    const query = new URLSearchParams({
+      search: searchTerm,
+      page,
+      limit,
+      ...filters,
+    }).toString()
+
+    getRequest(`banner?${query}`)
       .then((res) => {
         const responseData = res?.data?.data
+        console.log(responseData?.banners)
+
         setData(responseData?.banners || [])
-        console.log('Banner responseData', responseData)
         setTotal(responseData?.totalBanners || 0)
+        console.log('Banner responseData', responseData)
       })
       .catch((error) => {
         console.log('error', error)
         toast.error('Failed to fetch banners')
       })
-      .finally(() => {
-        setLoading(false)
-      })
-  }, [page, limit, searchTerm, updateStatus])
+      .finally(() => setLoading(false))
+  }, [page, limit, searchTerm, filters, updateStatus])
+
+  // Apply filters
+  const applyFilters = () => {
+    setFilters(tempFilters)
+    setPage(1) // reset page
+  }
+
+  // Reset filters
+  const resetFilters = () => {
+    const defaultFilters = {
+      type: '',
+    }
+    setTempFilters(defaultFilters)
+    setFilters(defaultFilters)
+    setPage(1)
+    setSearchTerm('')
+  }
 
   // ✅ Delete handler
   const confirmDelete = () => {
@@ -119,9 +151,18 @@ const Banners = () => {
           </button>
         </div>
       </div>
+      {/* Search */}
+      <BannersFilters
+        tempFilters={tempFilters}
+        setTempFilters={setTempFilters}
+        searchTerm={searchTerm}
+        setSearchTerm={setSearchTerm}
+        applyFilters={applyFilters}
+        resetFilters={resetFilters}
+      />
 
       {/* Search */}
-      <div className="px-6 py-4 border-b border-gray-200">
+      {/* <div className="px-6 py-4 border-b border-gray-200">
         <div className="relative max-w-md">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4" />
           <input
@@ -135,7 +176,7 @@ const Banners = () => {
             className="pl-10 pr-4 py-2 w-full border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
           />
         </div>
-      </div>
+      </div> */}
 
       {/* Table */}
       <div className="overflow-x-auto">
