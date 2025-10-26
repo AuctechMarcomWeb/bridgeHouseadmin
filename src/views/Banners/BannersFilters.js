@@ -1,11 +1,11 @@
 /* eslint-disable prettier/prettier */
 /* eslint-disable react/prop-types */
-/* eslint-disable prettier/prettier */
-/* eslint-disable prettier/prettier */
-/* eslint-disable react/prop-types */
-import React, { useEffect, useState } from 'react'
-import { Search } from 'lucide-react'
-import { getRequest } from '../../Helpers'
+import React, { useEffect, useState } from "react";
+import { Input, Select, Checkbox, Button, Row, Col, Typography, Divider } from "antd";
+import { SearchOutlined } from "@ant-design/icons";
+import { getRequest } from "../../Helpers";
+
+const { Title } = Typography;
 
 const BannersFilters = ({
   tempFilters,
@@ -15,108 +15,104 @@ const BannersFilters = ({
   applyFilters,
   resetFilters,
 }) => {
-  const [typeOptions, setTypeOptions] = useState([])
+  const [typeOptions, setTypeOptions] = useState([]);
 
   useEffect(() => {
     getRequest(`category?isPagination=false`)
       .then((res) => setTypeOptions(res?.data?.data?.categories || []))
-      .catch(console.error)
-  }, [])
+      .catch(console.error);
+  }, []);
 
-  const handleFilterChange = (e) => {
-    const { name, value, type, checked } = e.target
+  const handleFilterChange = (name, value) => {
     setTempFilters((prev) => ({
       ...prev,
-      [name]: type === 'checkbox' ? checked : value,
-    }))
-  }
-  return (
-    <div className="p-4 border-b border-gray-200">
-      {/* Filters Heading */}
-      <h3 className="text-lg font-semibold mb-4">Filters</h3>
+      [name]: value,
+    }));
+  };
 
-      {/* Filters + Search + Buttons */}
-      <div className="flex flex-wrap gap-4">
+  return (
+    <div style={{ padding: 16, borderBottom: "1px solid #f0f0f0" }}>
+      {/* Filters Heading */}
+      <Title level={5} style={{ marginBottom: 16 }}>
+        Filters
+      </Title>
+
+      <Row gutter={[16, 16]}>
         {/* Search */}
-        <div className="flex-1 min-w-[250px]">
-          <label className="form-label fw-bold mb-1 block">Search</label>
-          <div className="relative w-full">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4" />
-            <input
-              type="text"
-              placeholder="Search properties..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-10 pr-4 py-2 w-full border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-          </div>
-        </div>
+        <Col xs={24} sm={12} md={8} lg={6}>
+          <label style={{ fontWeight: 600 }}>Search</label>
+          <Input
+            prefix={<SearchOutlined />}
+            placeholder="Search properties..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            allowClear
+          />
+        </Col>
 
         {/* Property Type */}
-        <div className="flex-1 min-w-[200px]">
-          <label className="form-label fw-bold mb-1 block">Property Type</label>
-          <select
-            className="form-select w-full border border-gray-300 rounded px-2 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            name="propertyType"
-            value={tempFilters.propertyType}
-            onChange={(e) => setTempFilters((prev) => ({ ...prev, propertyType: e.target.value }))}
+        <Col xs={24} sm={12} md={8} lg={6}>
+          <label style={{ fontWeight: 600 }}>Property Type</label>
+          <Select
+            style={{ width: "100%" }}
+            value={tempFilters.propertyType || "select"}
+            onChange={(value) => handleFilterChange("propertyType", value === "select" ? "" : value)}
           >
-            <option value="">Select Property Type</option>
+            <Select.Option value="select" disabled>
+              Select Property Type
+            </Select.Option>
             {typeOptions.map((type) => (
-              <option key={type.id} value={type.name}>
+              <Select.Option key={type.id} value={type.name}>
                 {type.name}
-              </option>
+              </Select.Option>
             ))}
-          </select>
-        </div>
+          </Select>
+        </Col>
 
         {/* Banner Type */}
-        <div className="flex-1 min-w-[200px]">
-          <label className="form-label fw-bold mb-1 block">Banner Type</label>
-          <select
-            className="form-select w-full border border-gray-300 rounded px-2 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            name="bannerType"
-            value={tempFilters.bannerType}
-            onChange={(e) => setTempFilters((prev) => ({ ...prev, bannerType: e.target.value }))}
+        <Col xs={24} sm={12} md={8} lg={6}>
+          <label style={{ fontWeight: 600 }}>Banner Type</label>
+          <Select
+            style={{ width: "100%" }}
+            value={tempFilters.bannerType || "select"}
+            onChange={(value) => handleFilterChange("bannerType", value === "select" ? "" : value)}
           >
-            <option value="">Select Banner Type</option>
-            <option value="leftside">leftside</option>
-            <option value="rightside">rightside</option>
-            <option value="top">top</option>
-            <option value="bottom">bottom</option>
-          </select>
-        </div>
+            <Select.Option value="select" disabled>
+              Select Banner Type
+            </Select.Option>
+            <Select.Option value="leftside">Left Side</Select.Option>
+            <Select.Option value="rightside">Right Side</Select.Option>
+            <Select.Option value="top">Top</Select.Option>
+            <Select.Option value="bottom">Bottom</Select.Option>
+          </Select>
+        </Col>
 
         {/* Active Checkbox */}
-        <div className="flex items-center gap-2 min-w-[150px] mt-4">
-          <input
-            type="checkbox"
-            name="isActive"
+        <Col xs={24} sm={12} md={8} lg={6} style={{ display: "flex", alignItems: "center" }}>
+          <Checkbox
             checked={tempFilters.isActive}
-            onChange={handleFilterChange}
-            className="w-4 h-4"
-          />
-          <label className="form-label fw-bold">Active</label>
-        </div>
+            onChange={(e) => handleFilterChange("isActive", e.target.checked)}
+          >
+            Active
+          </Checkbox>
+        </Col>
 
-        {/* Buttons - centered on next line */}
-        <div className="w-full flex justify-center gap-4 mt-3">
-          <button
+        {/* Buttons */}
+        <Col span={24} style={{ textAlign: "center" }}>
+          <Button
+            type="primary"
             onClick={applyFilters}
-            className="px-6 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition"
+            style={{ marginRight: 8, minWidth: 100 }}
           >
             Apply
-          </button>
-          <button
-            onClick={resetFilters}
-            className="px-6 py-2 bg-gray-300 rounded hover:bg-gray-400 transition"
-          >
+          </Button>
+          <Button onClick={resetFilters} style={{ minWidth: 100 }}>
             Reset
-          </button>
-        </div>
-      </div>
+          </Button>
+        </Col>
+      </Row>
     </div>
-  )
-}
+  );
+};
 
-export default BannersFilters
+export default BannersFilters;

@@ -8,6 +8,7 @@ import { Empty, Pagination, Spin } from 'antd'
 import axios from 'axios'
 import BridgeHouseDetailsModal from './BridgeHouseDetailsModal'
 import { faL } from '@fortawesome/free-solid-svg-icons'
+import GalleryFilters from '../Gallery/GalleryFilters'
 
 const BridgeHouseDetails = () => {
   const [searchTerm, setSearchTerm] = useState('')
@@ -22,6 +23,8 @@ const BridgeHouseDetails = () => {
   const [showDeleteModal, setShowDeleteModal] = useState(false)
   const [selectedItem, setSelectedItem] = useState(null)
   const [loading, setLoading] = useState(false)
+  const [filters, setFilters] = useState({ status: '',})
+  const [tempFilters, setTempFilters] = useState(filters)
   const [expandedAddresses, setExpandedAddresses] = React.useState({})
 
   const toggleAddress = (id) => {
@@ -33,8 +36,14 @@ const BridgeHouseDetails = () => {
   //Fetch Property Type with Pagination + Search
   useEffect(() => {
     setLoading(true)
+      const query = new URLSearchParams({
+      search: searchTerm,
+      page,
+      limit,
+      ...filters,
+    }).toString()
     getRequest(
-      `bridgehouseDetails?search=${searchTerm}&page=${page}&limit=${limit}&sortBy=${sortBy}`,
+      `bridgehouseDetails?${query}`,
     )
       .then((res) => {
         const responseData = res?.data?.data
@@ -46,6 +55,26 @@ const BridgeHouseDetails = () => {
       })
       .finally(() => setLoading(false))
   }, [page, limit, searchTerm, sortBy, updateStatus])
+
+      // Apply filters
+const applyFilters = () => {
+  // Only include isActive if it's true
+  const newFilters = {};
+  if (tempFilters.status) {
+    newFilters.status = false;
+  }
+  setFilters(newFilters);
+  setPage(1);
+};
+
+  // Reset filters
+  const resetFilters = () => {
+    const defaultFilters = {}
+    setTempFilters(defaultFilters)
+    setFilters(defaultFilters)
+    setPage(1)
+    setSearchTerm('')
+  }
 
   //  Delete handler
   const confirmDelete = () => {
@@ -114,22 +143,14 @@ const BridgeHouseDetails = () => {
       </div>
 
       {/* Search */}
-      <div className="px-6 py-4 border-b border-gray-200">
-        <div className="relative">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4" />
-          <input
-            type="text"
-            placeholder="Search..."
-            value={searchTerm}
-            onChange={(e) => {
-              setSearchTerm(e.target.value)
-              setPage(1)
-            }}
-            className="pl-10 pr-4 py-2 w-full border border-gray-300 focus:ring-2 focus:ring-blue-500"
-          />
-        </div>
-      </div>
-
+        <GalleryFilters
+        tempFilters={tempFilters}
+        setTempFilters={setTempFilters}
+        searchTerm={searchTerm}
+        setSearchTerm={setSearchTerm}
+        applyFilters={applyFilters}
+        resetFilters={resetFilters}
+      />
       {/* Table */}
       <div className="overflow-x-auto">
         {loading ? (
