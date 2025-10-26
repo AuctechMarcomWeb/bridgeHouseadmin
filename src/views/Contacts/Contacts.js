@@ -168,7 +168,14 @@ const Contacts = () => {
                         ? item?.address
                         : item?.address.split(' ').slice(0, 2).join(' ') + '...'}
                     </td>
-                    <td className="px-6 py-4">{item?.notes}</td>
+                    <td
+                      className="px-6 py-4 cursor-pointer"
+                      onClick={() => toggleAddress(item._id)}
+                    >
+                      {expandedAddresses[item._id]
+                        ? item?.notes
+                        : item?.notes.split(' ').slice(0, 2).join(' ') + '...'}
+                    </td>
                     <td className="px-6 py-4 flex gap-2 justify-center">
                       <button
                         onClick={() => {

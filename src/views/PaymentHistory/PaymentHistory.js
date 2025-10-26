@@ -7,6 +7,7 @@ import { deleteRequest, getRequest } from '../../Helpers'
 import toast from 'react-hot-toast'
 import { Empty, Pagination, Spin } from 'antd'
 import moment from 'moment'
+import PaymentFilters from './PaymentFilters'
 
 const PaymentHistory = () => {
   const [searchTerm, setSearchTerm] = useState('')
@@ -21,7 +22,8 @@ const PaymentHistory = () => {
   const [loading, setLoading] = useState(false)
   const [fromDate, setFormDate] = useState('')
   const [toDate, setToDate] = useState('')
-
+ const [filters, setFilters] = useState({ fromDate: '', toDate: '',})
+   const [tempFilters, setTempFilters] = useState(filters)
   const formatDate = (dateString) => {
     return dateString ? moment(dateString).format('DD-MM-YYYY') : 'N/A'
   }
@@ -29,8 +31,14 @@ const PaymentHistory = () => {
   // Fetch Payment History
   useEffect(() => {
     setLoading(true)
+     const query = new URLSearchParams({
+      search: searchTerm,
+      page,
+      limit,
+      ...filters,
+    }).toString()
     getRequest(
-      `payment/getList?search=${searchTerm}&page=${page}&limit=${limit}&sortBy=${sortBy}&fromDate=${fromDate}&toDate=${toDate}`,
+      `payment/getList?${query}`,
     )
       .then((res) => {
         const responseData = res?.data?.data
@@ -44,6 +52,24 @@ const PaymentHistory = () => {
       .finally(() => setLoading(false))
   }, [page, limit, searchTerm, sortBy, fromDate, toDate, updateStatus])
 
+
+  // Apply filters
+  const applyFilters = () => {
+    setFilters(tempFilters)
+    setPage(1) // reset page
+  }
+
+  // Reset filters
+  const resetFilters = () => {
+    const defaultFilters = {
+fromDate: '',
+toDate: '',
+    }
+    setTempFilters(defaultFilters)
+    setFilters(defaultFilters)
+    setPage(1)
+    setSearchTerm('')
+  }
   // Delete handler
   const confirmDelete = () => {
     if (!selectedItem?._id) return toast.error('No record selected')
@@ -104,76 +130,15 @@ const PaymentHistory = () => {
         </div>
       </div>
 
-      {/* Filters Section */}
-      <div className="px-6 py-4 border-b border-gray-200 bg-gray-50">
-        <div className="grid grid-cols-1 md:grid-cols-5 gap-4 items-end">
-          {/* From Date */}
-          <div className="flex flex-col">
-            <label className="text-sm font-medium text-gray-700 mb-1">From Date</label>
-            <input
-              type="date"
-              value={fromDate}
-              onChange={(e) => setFormDate(e.target.value)}
-              className="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500"
-            />
-          </div>
-
-          {/* To Date */}
-          <div className="flex flex-col">
-            <label className="text-sm font-medium text-gray-700 mb-1">To Date</label>
-            <input
-              type="date"
-              value={toDate}
-              onChange={(e) => setToDate(e.target.value)}
-              className="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-blue-500"
-            />
-          </div>
-
-          {/* Search Input */}
-          <div className="flex flex-col md:col-span-2">
-            <label className="text-sm font-medium text-gray-700 mb-1">Search</label>
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4" />
-              <input
-                type="text"
-                placeholder="Search by name, email, etc..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-10 pr-4 py-2 w-full border border-gray-300 focus:ring-2 focus:ring-blue-500 rounded-md"
-              />
-            </div>
-          </div>
-
-          <div className="flex flex-wrap items-center gap-2 sm:gap-3">
-            {/* Apply Filters */}
-            <button
-              onClick={() => {
-                setPage(1)
-                setUpdateStatus((prev) => !prev)
-              }}
-              className="bg-blue-600 text-white px-3 sm:px-4 py-2 hover:bg-blue-700 flex items-center justify-center rounded-md text-sm sm:text-base w-full sm:w-auto"
-            >
-              <Plus className="w-4 h-4 mr-2" /> Filters
-            </button>
-
-            {/* Clear Filters */}
-            {(fromDate || toDate || searchTerm) && (
-              <button
-                onClick={() => {
-                  setFormDate('')
-                  setToDate('')
-                  setSearchTerm('')
-                  setPage(1)
-                  setUpdateStatus((prev) => !prev)
-                }}
-                className="bg-red-600 text-white px-3 sm:px-4 py-2 hover:bg-red-700 flex items-center justify-center rounded-md text-sm sm:text-base w-full sm:w-auto"
-              >
-                Clear Filters
-              </button>
-            )}
-          </div>
-        </div>
-      </div>
+       {/* Search */}
+     <PaymentFilters
+        tempFilters={tempFilters}
+        setTempFilters={setTempFilters}
+        searchTerm={searchTerm}
+        setSearchTerm={setSearchTerm}
+        applyFilters={applyFilters}
+        resetFilters={resetFilters}
+      />
 
       {/* Table */}
       <div className="overflow-x-auto">

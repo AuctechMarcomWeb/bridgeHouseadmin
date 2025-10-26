@@ -1,10 +1,8 @@
 import React from "react";
-import { Row, Col, Input, Select, Button } from "antd";
+import { Row, Col, Input, Checkbox, Button } from "antd";
 import { SearchOutlined } from "@ant-design/icons";
 
-const { Option } = Select;
-
-const SubscriptionFilters = ({
+const GalleryFilters = ({
   searchTerm,
   setSearchTerm,
   tempFilters,
@@ -32,35 +30,28 @@ const SubscriptionFilters = ({
           />
         </Col>
 
-        {/* Type */}
+        {/* Active Checkbox */}
         <Col xs={24} sm={12} md={8}>
-          <label style={{ display: "block", fontWeight: 500, marginBottom: 6 }}>
-            Type
-          </label>
-          <Select
-            value={tempFilters.type}
-            onChange={(value) =>
-              setTempFilters((prev) => ({ ...prev, type: value }))
+          <Checkbox
+            checked={tempFilters.isActive}
+            onChange={(e) =>
+              setTempFilters((prev) => ({ ...prev, isActive: e.target.checked }))
             }
-            placeholder="Select Type"
-            style={{ width: "100%" }}
           >
-            <Option value="">Select Type</Option>
-            <Option value="PropertyListing">PropertyListing</Option>
-            <Option value="VerifiedListing">VerifiedListing</Option>
-          </Select>
+            Active
+          </Checkbox>
         </Col>
 
         {/* Buttons */}
         <Col xs={24} sm={24} md={8}>
           <div
-            style={{
-              display: "flex",
-              gap: "10px",
-              justifyContent: "flex-start",
-              flexWrap: "wrap",
-            }}
-          >
+    style={{
+      display: "flex",
+      gap: "10px",
+      justifyContent: "flex-start", // move buttons to the right
+      flexWrap: "wrap",
+    }}
+>
             <Button type="primary" onClick={applyFilters}>
               Apply
             </Button>
@@ -72,4 +63,4 @@ const SubscriptionFilters = ({
   );
 };
 
-export default SubscriptionFilters;
+export default GalleryFilters;

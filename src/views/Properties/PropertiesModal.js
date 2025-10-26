@@ -307,8 +307,8 @@ const PropertiesModal = ({
   }
 
   const handleDocumentImageChange = (e, index) => {
-    const file = e.target.files[0]
-    if (!file) return
+    const file = e.target.files[0];
+    if (!file) return;
 
     // Upload to server
     fileUpload({
@@ -316,28 +316,32 @@ const PropertiesModal = ({
       cred: { file },
     })
       .then((res) => {
-        const uploadedUrl = res.data?.data?.imageUrl
-        const updatedDocuments = [...formData.documents]
-        updatedDocuments[index].image = uploadedUrl
+        const uploadedUrl = res.data?.data?.imageUrl;
+        const updatedDocuments = [...formData.documents];
+        updatedDocuments[index].image = uploadedUrl;
 
         setFormData((prev) => ({
           ...prev,
           documents: updatedDocuments,
-        }))
+        }));
       })
       .catch((error) => {
-        console.error('Document image upload failed:', error)
-      })
-  }
+        console.error("Document image upload failed:", error);
+      });
+  };
 
   const removeDocumentImage = (index) => {
-    const updatedDocuments = [...formData.documents]
-    updatedDocuments[index].image = '' // clear the image
+    const updatedDocuments = [...formData.documents];
+    updatedDocuments[index].image = "";
     setFormData((prev) => ({
       ...prev,
       documents: updatedDocuments,
-    }))
-  }
+    }));
+
+    if (documentInputRefs.current[index]) {
+      documentInputRefs.current[index].value = ""; // reset input field
+    }
+  };
 
   const addDocument = () => {
     setFormData((prev) => ({
@@ -894,6 +898,8 @@ const PropertiesModal = ({
                       accept="image/*"
                       className="form-control"
                       onChange={(e) => handleDocumentImageChange(e, index)}
+                      ref={(el) => (documentInputRefs.current[index] = el)}
+                      required
                     />
                   </div>
                   <div className="col-md-6 m-0 my-2">

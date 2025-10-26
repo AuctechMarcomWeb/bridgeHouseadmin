@@ -6,6 +6,7 @@ import { deleteRequest, getRequest } from '../../Helpers'
 import toast from 'react-hot-toast'
 import { Empty, Pagination, Spin } from 'antd'
 import SubscriptionModal from './SubscriptionModal'
+import SubscriptionFilter from './SubscriptionFilter'
 
 const Subscription = () => {
   const [searchTerm, setSearchTerm] = useState('')
@@ -20,7 +21,8 @@ const Subscription = () => {
   // delete modal state
   const [showDeleteModal, setShowDeleteModal] = useState(false)
   const [selectedItem, setSelectedItem] = useState(null)
-
+  const [filters, setFilters] = useState({ type: '',})
+   const [tempFilters, setTempFilters] = useState(filters)
   const [expandedAddresses, setExpandedAddresses] = React.useState({})
 
   const toggleAddress = (id) => {
@@ -32,7 +34,13 @@ const Subscription = () => {
   //  Fetch subscription packages with pagination + search
   useEffect(() => {
     setLoading(true)
-    getRequest(`subscription-packages?search=${searchTerm}&page=${page}&limit=${limit}`)
+     const query = new URLSearchParams({
+      search: searchTerm,
+      page,
+      limit,
+      ...filters,
+    }).toString()
+    getRequest(`subscription-packages?${query}`)
       .then((res) => {
         const responseData = res?.data?.data
         setData(responseData?.packages || [])
@@ -40,10 +48,27 @@ const Subscription = () => {
       })
       .catch((error) => {
         console.error('Fetch error', error)
-        toast.error('Failed to fetch subscription packages')
+        toast.error(error?.res?.data?.message || 'Failed to fetch subscription packages')
       })
       .finally(() => setLoading(false))
-  }, [page, limit, searchTerm, updateStatus])
+  }, [page, limit, searchTerm, filters, updateStatus])
+
+    // Apply filters
+  const applyFilters = () => {
+    setFilters(tempFilters)
+    setPage(1) // reset page
+  }
+
+  // Reset filters
+  const resetFilters = () => {
+    const defaultFilters = {
+      type: '',
+    }
+    setTempFilters(defaultFilters)
+    setFilters(defaultFilters)
+    setPage(1)
+    setSearchTerm('')
+  }
 
   // ✅ Delete handler
   const confirmDelete = () => {
@@ -117,21 +142,14 @@ const Subscription = () => {
       </div>
 
       {/* Search */}
-      <div className="px-6 py-4 border-b border-gray-200">
-        <div className="relative max-w-md">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4" />
-          <input
-            type="text"
-            placeholder="Search subscriptions..."
-            value={searchTerm}
-            onChange={(e) => {
-              setSearchTerm(e.target.value)
-              setPage(1)
-            }}
-            className="pl-10 pr-4 py-2 w-full border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
-          />
-        </div>
-      </div>
+     <SubscriptionFilter
+        tempFilters={tempFilters}
+        setTempFilters={setTempFilters}
+        searchTerm={searchTerm}
+        setSearchTerm={setSearchTerm}
+        applyFilters={applyFilters}
+        resetFilters={resetFilters}
+      />
 
       {/* Table */}
       <div className="overflow-x-auto">
@@ -191,17 +209,6 @@ const Subscription = () => {
                         ? item?.description
                         : item?.description.split(' ').slice(0, 2).join(' ') + '...'}
                     </td>
-                    {/* <td className="px-6 py-4 whitespace-nowrap">
-                      {item?.isActive ? (
-                        <span className="px-2 py-1 text-xs font-medium bg-green-100 text-green-800 rounded-full">
-                          Active
-                        </span>
-                      ) : (
-                        <span className="px-2 py-1 text-xs font-medium bg-red-100 text-red-800 rounded-full">
-                          Inactive
-                        </span>
-                      )}
-                    </td> */}
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="flex gap-2">
                         <button
