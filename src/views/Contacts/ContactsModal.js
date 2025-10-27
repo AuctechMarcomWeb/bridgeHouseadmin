@@ -56,7 +56,7 @@ const ContactsModal = ({
       })
       .catch((error) => {
         console.log('error', error)
-        toast.error(error?.response?.message)
+        toast.error(error?.response?.data?.message)
       })
       .finally(() => setLoading(false))
   }
@@ -73,7 +73,7 @@ const ContactsModal = ({
       })
       .catch((error) => {
         console.log('error', error)
-        toast.error(error?.response?.message)
+        toast.error(error?.response?.data?.message)
       })
       .finally(() => setLoading(false))
   }
