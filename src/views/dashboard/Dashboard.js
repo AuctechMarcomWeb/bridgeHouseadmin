@@ -52,19 +52,25 @@ export default function Dashboard() {
   const { users, properties, testimonials, enquiries, categories } = data
 
   const StatCard = ({ title, value, icon: Icon, color, bgColor, subStats }) => (
-    <div className="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition-shadow duration-300">
-      <div className="flex items-center justify-between mb-4">
-        <div className={`p-3 rounded-lg ${bgColor}`}>
-          <Icon className={`w-6 h-6 ${color}`} />
+    <div className="bg-white rounded-xl shadow-lg p-4 sm:p-5 md:p-6 hover:shadow-xl transition-shadow duration-300">
+      {/* Top Section */}
+      <div className="flex items-center justify-between mb-3 sm:mb-4">
+        <div className={`p-2 sm:p-3 rounded-lg ${bgColor}`}>
+          <Icon className={`w-5 h-5 sm:w-6 sm:h-6 ${color}`} />
         </div>
-        <span className="text-3xl font-bold text-gray-800">{value}</span>
+        <span className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-800">{value}</span>
       </div>
-      <h3 className="text-gray-600 font-semibold mb-3">{title}</h3>
 
+      {/* Title */}
+      <h3 className="text-sm sm:text-base md:text-lg text-gray-600 font-semibold mb-2 sm:mb-3">
+        {title}
+      </h3>
+
+      {/* Sub Stats */}
       {subStats && (
-        <div className="grid grid-cols-2 gap-2 pt-3 border-t border-gray-100">
+        <div className="grid grid-cols-2 gap-2 pt-2 sm:pt-3 border-t border-gray-100">
           {subStats.map((stat, idx) => (
-            <div key={idx} className="text-sm">
+            <div key={idx} className="text-xs sm:text-sm md:text-base">
               <p className="text-gray-500">{stat.label}</p>
               <p className="font-semibold text-gray-700">{stat.value}</p>
             </div>
@@ -89,7 +95,7 @@ export default function Dashboard() {
       <div className="px-4 sm:px-6 py-6 border-b border-gray-200">
         {/* HEADER */}
         <div className="flex flex-col sm:flex-row justify-between sm:items-center mb-6">
-          <h2 className="text-2xl font-bold text-gray-900">Dashboard</h2>
+          <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-900">Dashboard</h2>
         </div>
 
         {/* MAIN STATS GRID */}
@@ -152,7 +158,7 @@ export default function Dashboard() {
               <div className="p-2 bg-indigo-100 rounded-lg">
                 <Home className="w-6 h-6 text-indigo-600" />
               </div>
-              <h2 className="text-xl font-bold text-gray-800">Property Status</h2>
+              <h2 className="text-lg sm:text-xl font-bold text-gray-800">Property Status</h2>
             </div>
 
             <div className="space-y-3">
@@ -207,39 +213,28 @@ export default function Dashboard() {
               <div className="p-2 bg-pink-100 rounded-lg">
                 <MessageSquare className="w-6 h-6 text-pink-600" />
               </div>
-              <h2 className="text-xl font-bold text-gray-800">Testimonials & Insights</h2>
+              <h2 className="text-lg sm:text-xl font-bold text-gray-800">
+                Testimonials & Insights
+              </h2>
             </div>
 
             <div className="space-y-2">
               <div className="p-4 bg-gradient-to-r from-pink-50 to-purple-50 rounded-lg">
                 <div className="flex justify-between items-center mb-2">
-                  <span className="text-sm font-semibold text-gray-600">Total Testimonials</span>
-                  <span className="text-2xl font-bold text-pink-600">
+                  <span className="text-sm sm:text-base font-semibold text-gray-600">
+                    Total Testimonials
+                  </span>
+                  <span className="text-xl sm:text-2xl font-bold text-pink-600">
                     {testimonials?.totalTestimonials}
                   </span>
                 </div>
                 <div className="flex justify-between items-center">
                   <span className="text-sm text-gray-500">Active Testimonials</span>
-                  <span className="text-lg font-semibold text-purple-600">
+                  <span className="text-base sm:text-lg font-semibold text-purple-600">
                     {testimonials?.activeTestimonials}
                   </span>
                 </div>
               </div>
-
-              {/* <div className="grid grid-cols-2 gap-4 mt-4">
-                <div className="p-4 bg-blue-50 rounded-lg text-center">
-                  <p className="text-sm text-gray-600 mb-1">Registered</p>
-                  <p className="text-2xl font-bold text-blue-600">
-                    {properties.registeredProperties}
-                  </p>
-                </div>
-                <div className="p-4 bg-teal-50 rounded-lg text-center">
-                  <p className="text-sm text-gray-600 mb-1">Adopted</p>
-                  <p className="text-2xl font-bold text-teal-600">
-                    {properties.isAdoptedProperties}
-                  </p>
-                </div>
-              </div> */}
             </div>
           </div>
         </div>

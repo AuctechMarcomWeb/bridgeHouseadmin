@@ -7,6 +7,7 @@ import toast from 'react-hot-toast'
 import { Empty, Pagination, Spin } from 'antd'
 import EnquiryModal from './EnquiryModal'
 import { AppContext } from '../../Context/AppContext'
+import EnquiryFilter from './EnquiryFilter'
 
 const Enquiry = () => {
   const [searchTerm, setSearchTerm] = useState('')
@@ -21,6 +22,8 @@ const Enquiry = () => {
   const [showDeleteModal, setShowDeleteModal] = useState(false)
   const [selectedItem, setSelectedItem] = useState(null)
   const { user, setUser } = useContext(AppContext)
+  const [filters, setFilters] = useState({ status: '' })
+  const [tempFilters, setTempFilters] = useState(filters)
   const [expandedAddresses, setExpandedAddresses] = React.useState({})
 
   const toggleAddress = (id) => {
@@ -32,7 +35,13 @@ const Enquiry = () => {
   // ✅ Fetch Banners with Pagination + Search
   useEffect(() => {
     setLoading(true)
-    getRequest(`enquiry?search=${searchTerm}&page=${page}&limit=${limit}`)
+    const query = new URLSearchParams({
+      search: searchTerm,
+      page,
+      limit,
+      ...filters,
+    }).toString()
+    getRequest(`enquiry?${query}`)
       .then((res) => {
         const responseData = res?.data?.data
         setData(responseData?.enquiries || [])
@@ -47,7 +56,24 @@ const Enquiry = () => {
       .finally(() => {
         setLoading(false)
       })
-  }, [page, limit, searchTerm, updateStatus])
+  }, [page, limit, searchTerm, filters, updateStatus])
+
+  // Apply filters
+  const applyFilters = () => {
+    setFilters(tempFilters)
+    setPage(1) // reset page
+  }
+
+  // Reset filters
+  const resetFilters = () => {
+    const defaultFilters = {
+      type: '',
+    }
+    setTempFilters(defaultFilters)
+    setFilters(defaultFilters)
+    setPage(1)
+    setSearchTerm('')
+  }
 
   // ✅ Delete handler
   const confirmDelete = () => {
@@ -118,22 +144,14 @@ const Enquiry = () => {
       </div>
 
       {/* Search */}
-      <div className="px-6 py-4 border-b border-gray-200">
-        <div className="relative max-w-md">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4" />
-          <input
-            type="text"
-            placeholder="Search banners..."
-            value={searchTerm}
-            onChange={(e) => {
-              setSearchTerm(e.target.value)
-              setPage(1)
-            }}
-            className="pl-10 pr-4 py-2 w-full border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
-          />
-        </div>
-      </div>
-
+      <EnquiryFilter
+        tempFilters={tempFilters}
+        setTempFilters={setTempFilters}
+        searchTerm={searchTerm}
+        setSearchTerm={setSearchTerm}
+        applyFilters={applyFilters}
+        resetFilters={resetFilters}
+      />
       {/* Table */}
       <div className="overflow-x-auto">
         {loading ? (

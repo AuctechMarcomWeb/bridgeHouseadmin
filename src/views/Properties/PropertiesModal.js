@@ -307,8 +307,8 @@ const PropertiesModal = ({
   }
 
   const handleDocumentImageChange = (e, index) => {
-    const file = e.target.files[0];
-    if (!file) return;
+    const file = e.target.files[0]
+    if (!file) return
 
     // Upload to server
     fileUpload({
@@ -316,32 +316,32 @@ const PropertiesModal = ({
       cred: { file },
     })
       .then((res) => {
-        const uploadedUrl = res.data?.data?.imageUrl;
-        const updatedDocuments = [...formData.documents];
-        updatedDocuments[index].image = uploadedUrl;
+        const uploadedUrl = res.data?.data?.imageUrl
+        const updatedDocuments = [...formData.documents]
+        updatedDocuments[index].image = uploadedUrl
 
         setFormData((prev) => ({
           ...prev,
           documents: updatedDocuments,
-        }));
+        }))
       })
       .catch((error) => {
-        console.error("Document image upload failed:", error);
-      });
-  };
+        console.error('Document image upload failed:', error)
+      })
+  }
 
   const removeDocumentImage = (index) => {
-    const updatedDocuments = [...formData.documents];
-    updatedDocuments[index].image = "";
+    const updatedDocuments = [...formData.documents]
+    updatedDocuments[index].image = ''
     setFormData((prev) => ({
       ...prev,
       documents: updatedDocuments,
-    }));
+    }))
 
     if (documentInputRefs.current[index]) {
-      documentInputRefs.current[index].value = ""; // reset input field
+      documentInputRefs.current[index].value = '' // reset input field
     }
-  };
+  }
 
   const addDocument = () => {
     setFormData((prev) => ({
@@ -649,6 +649,7 @@ const PropertiesModal = ({
                   required={isRequired('builtYear')}
                   value={formData?.propertyDetails?.builtYear || ''}
                   onChange={handleChange}
+                  min={1900}
                 />
               </div>
             </div>
@@ -801,12 +802,7 @@ const PropertiesModal = ({
             <div className="col-md-12">
               <label className="form-label">
                 <strong>
-                  Nearby{' '}
-                  {isOptional('nearby') ? (
-                    <span className="text-muted"> (optional)</span>
-                  ) : (
-                    <span> * </span>
-                  )}
+                  Nearby {isOptional('nearby') && <span className="text-muted"> (optional)</span>}
                 </strong>
               </label>
 
@@ -867,7 +863,7 @@ const PropertiesModal = ({
               {formData?.documents?.map((facility, index) => (
                 <div className="row m-0 p-0 border mb-2" key={index}>
                   <div className="col-md-6 m-0 my-2">
-                    <label className="form-label">Document Name</label>
+                    <label className="form-label">Document Name *</label>
 
                     <select
                       name={`facilityName_${index}`}
@@ -881,7 +877,7 @@ const PropertiesModal = ({
                     </select>
                   </div>
                   <div className="col-md-6 m-0 my-2">
-                    <label className="form-label">Document Number</label>
+                    <label className="form-label">Document Number *</label>
                     <input
                       type="text"
                       name={`facilityNumber_${index}`}
@@ -892,7 +888,7 @@ const PropertiesModal = ({
                     />
                   </div>
                   <div className="col-md-6 m-0 my-2">
-                    <label className="form-label">Document Image</label>
+                    <label className="form-label">Document Image *</label>
                     <input
                       type="file"
                       accept="image/*"
