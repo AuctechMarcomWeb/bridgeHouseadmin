@@ -110,7 +110,7 @@ const GalleryModal = ({
         handleCancel()
       })
       .catch((error) => {
-        toast.error(error?.response?.message || 'Something went wrong')
+        toast.error(error?.response?.data?.message || 'Something went wrong')
       })
   }
 
@@ -129,7 +129,7 @@ const GalleryModal = ({
         handleCancel()
       })
       .catch((error) => {
-        toast.error(error?.response?.message || 'Something went wrong')
+        toast.error(error?.response?.data?.message || 'Something went wrong')
       })
   }
 

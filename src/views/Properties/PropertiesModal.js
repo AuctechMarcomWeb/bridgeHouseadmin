@@ -372,7 +372,7 @@ const PropertiesModal = ({
       .catch((error) => {
         console.log('error', error)
         setLoading(false)
-        toast.error(error?.res?.message || 'Update failed')
+        toast.error(error?.res?.data?.message || 'Update failed')
       })
   }
 
@@ -393,7 +393,7 @@ const PropertiesModal = ({
         setLoading(false)
         console.log('dfgddfgdfg', error?.res?.data?.message)
 
-        toast.error(error?.res?.message || 'Creation failed')
+        toast.error(error?.res?.data?.message || 'Creation failed')
       })
   }
 
