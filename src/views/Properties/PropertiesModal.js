@@ -401,7 +401,7 @@ const PropertiesModal = ({
     const type = formData?.propertyType
     const optionalFields = {
       Commercial: ['bhk', 'bedrooms', 'nearby'],
-      Plot: ['facilities', 'services'],
+      Plot: ['facilities', 'services', 'builtYear'],
       Apartment: ['floors'],
     }
     return optionalFields[type]?.includes(field)

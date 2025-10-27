@@ -58,7 +58,7 @@ export default function Dashboard() {
         <div className={`p-2 sm:p-3 rounded-lg ${bgColor}`}>
           <Icon className={`w-5 h-5 sm:w-6 sm:h-6 ${color}`} />
         </div>
-        <span className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-800">{value}</span>
+        <span className="text-l sm:text-xl md:text-2xl font-medium text-gray-800">{value}</span>
       </div>
 
       {/* Title */}
