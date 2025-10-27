@@ -21,12 +21,12 @@ const Gallery = () => {
   const [showDeleteModal, setShowDeleteModal] = useState(false)
   const [selectedItem, setSelectedItem] = useState(null)
   const [loading, setLoading] = useState(false)
-  const [filters, setFilters] = useState({ isActive: '',})
+  const [filters, setFilters] = useState({})
   const [tempFilters, setTempFilters] = useState(filters)
   // ✅ Fetch Property Type with Pagination + Search
   useEffect(() => {
     setLoading(true)
-      const query = new URLSearchParams({
+    const query = new URLSearchParams({
       search: searchTerm,
       page,
       limit,
@@ -44,16 +44,16 @@ const Gallery = () => {
       .finally(() => setLoading(false))
   }, [page, limit, searchTerm, filters, updateStatus])
 
-    // Apply filters
-const applyFilters = () => {
-  // Only include isActive if it's true
-  const newFilters = {};
-  if (tempFilters.isActive) {
-    newFilters.isActive = true;
+  // Apply filters
+  const applyFilters = () => {
+    // Only include isActive if it's true
+    // const newFilters = {};
+    // if (tempFilters.isActive) {
+    //   newFilters.isActive = true;
+    // }
+    setFilters(tempFilters)
+    setPage(1)
   }
-  setFilters(newFilters);
-  setPage(1);
-};
 
   // Reset filters
   const resetFilters = () => {

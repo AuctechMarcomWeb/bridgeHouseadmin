@@ -18,9 +18,6 @@ const PropertiesModal = ({
   const isEditMode = !!modalData
 
   const { user, setUser } = useContext(AppContext)
-
-  console.log('modalData===', modalData)
-
   const [type, setType] = useState([])
   const [bhk, setBhk] = useState([])
   const [services, setServices] = useState([])
@@ -327,6 +324,7 @@ const PropertiesModal = ({
       })
       .catch((error) => {
         console.error('Document image upload failed:', error)
+        toast.error(error?.res?.message || 'Update failed')
       })
   }
 
@@ -374,7 +372,7 @@ const PropertiesModal = ({
       .catch((error) => {
         console.log('error', error)
         setLoading(false)
-        toast.error(error?.response?.data?.message || 'Update failed')
+        toast.error(error?.res?.message || 'Update failed')
       })
   }
 
@@ -393,7 +391,9 @@ const PropertiesModal = ({
       .catch((error) => {
         console.log('error', error)
         setLoading(false)
-        toast.error(error?.response?.data?.message || 'Creation failed')
+        console.log('dfgddfgdfg', error?.res?.data?.message)
+
+        toast.error(error?.res?.message || 'Creation failed')
       })
   }
 
@@ -865,39 +865,36 @@ const PropertiesModal = ({
               {formData?.documents?.map((facility, index) => (
                 <div className="row m-0 p-0 border mb-2" key={index}>
                   <div className="col-md-6 m-0 my-2">
-                    <label className="form-label">Document Name *</label>
+                    <label className="form-label">Document Name </label>
 
                     <select
                       name={`facilityName_${index}`}
                       value={facility?.name}
                       onChange={(e) => handleDocumentChange(e, index)}
                       className="form-control"
-                      required
                     >
                       <option value="">Select Document</option>
                       {documentsOption}
                     </select>
                   </div>
                   <div className="col-md-6 m-0 my-2">
-                    <label className="form-label">Document Number *</label>
+                    <label className="form-label">Document Number </label>
                     <input
                       type="text"
                       name={`facilityNumber_${index}`}
                       value={facility?.number}
                       onChange={(e) => handleDocumentChange(e, index)}
                       className="form-control"
-                      required
                     />
                   </div>
                   <div className="col-md-6 m-0 my-2">
-                    <label className="form-label">Document Image *</label>
+                    <label className="form-label">Document Image </label>
                     <input
                       type="file"
                       accept="image/*"
                       className="form-control"
                       onChange={(e) => handleDocumentImageChange(e, index)}
                       ref={(el) => (documentInputRefs.current[index] = el)}
-                      required
                     />
                   </div>
                   <div className="col-md-6 m-0 my-2">
