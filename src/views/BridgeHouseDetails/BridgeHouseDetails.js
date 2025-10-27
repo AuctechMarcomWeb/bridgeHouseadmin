@@ -42,6 +42,8 @@ const BridgeHouseDetails = () => {
       limit,
       ...filters,
     }).toString()
+    console.log('query====', query)
+
     getRequest(`bridgehouseDetails?${query}`)
       .then((res) => {
         const responseData = res?.data?.data
@@ -52,7 +54,7 @@ const BridgeHouseDetails = () => {
         console.log('error', error)
       })
       .finally(() => setLoading(false))
-  }, [page, limit, searchTerm, sortBy, updateStatus])
+  }, [page, limit, searchTerm, sortBy, filters, updateStatus])
 
   // Apply filters
   const applyFilters = () => {
@@ -61,7 +63,9 @@ const BridgeHouseDetails = () => {
     // if (tempFilters.status) {
     //   newFilters.status = false
     // }
-    setFilters(tempFilters)
+    console.log('ddf', tempFilters)
+
+    setFilters({ status: tempFilters?.isActive })
     setPage(1)
   }
 
@@ -148,6 +152,7 @@ const BridgeHouseDetails = () => {
         setSearchTerm={setSearchTerm}
         applyFilters={applyFilters}
         resetFilters={resetFilters}
+        page={setPage}
       />
       {/* Table */}
       <div className="overflow-x-auto">

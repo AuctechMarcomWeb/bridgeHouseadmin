@@ -5,7 +5,6 @@ import autoprefixer from 'autoprefixer'
 
 import tailwindcss from '@tailwindcss/vite'
 
-
 export default defineConfig(() => {
   return {
     base: './',
@@ -38,7 +37,7 @@ export default defineConfig(() => {
         },
       },
     },
-    plugins: [react(),tailwindcss()],
+    plugins: [react(), tailwindcss()],
     resolve: {
       alias: [
         {
@@ -49,7 +48,9 @@ export default defineConfig(() => {
       extensions: ['.mjs', '.js', '.ts', '.jsx', '.tsx', '.json', '.scss'],
     },
     server: {
-      port: 3000,
+      // port: 3000,
+      port: 5173,
+      open: true,
       proxy: {
         // https://vitejs.dev/config/server-options.html
       },

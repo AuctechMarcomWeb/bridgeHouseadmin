@@ -229,6 +229,7 @@ const Properties = () => {
         setSearchTerm={setSearchTerm}
         applyFilters={applyFilters}
         resetFilters={resetFilters}
+        page={setPage}
       />
 
       {/* Table */}
@@ -250,7 +251,7 @@ const Properties = () => {
               <thead>
                 <tr className="bg-gray-50">
                   <th className="px-6 py-3">Sr. No.</th>
-                  <th className="px-6 py-3">Property</th>
+                  <th className="px-6 py-3">Property Name</th>
                   <th className="px-6 py-3">Type</th>
                   <th className="px-6 py-3">Approval Status</th>
                   <th className="px-6 py-3">Adopted Status</th>

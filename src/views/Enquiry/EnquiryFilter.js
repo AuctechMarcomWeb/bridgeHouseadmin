@@ -13,6 +13,7 @@ const EnquiryFilter = ({
   setTempFilters,
   applyFilters,
   resetFilters,
+  page,
 }) => {
   return (
     <div style={{ padding: '16px', borderBottom: '1px solid #eee' }}>
@@ -24,9 +25,12 @@ const EnquiryFilter = ({
           <label style={{ display: 'block', fontWeight: 500, marginBottom: 6 }}>Search</label>
           <Input
             prefix={<SearchOutlined />}
-            placeholder="Search properties..."
+            placeholder="Search ..."
             value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
+            onChange={(e) => {
+              page(1)
+              setSearchTerm(e.target.value)
+            }}
           />
         </Col>
 

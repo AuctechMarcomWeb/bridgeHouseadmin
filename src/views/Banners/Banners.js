@@ -41,11 +41,11 @@ const Banners = () => {
       .then((res) => {
         const responseData = res?.data?.data
         setData(responseData?.banners || [])
-        setTotal(responseData?.totalBanners || 0)     
-       })
+        setTotal(responseData?.totalBanners || 0)
+      })
       .catch((error) => {
         console.log('error', error)
-        toast.error(error?.res?.data?.message ||'Failed to fetch banners')
+        toast.error(error?.res?.data?.message || 'Failed to fetch banners')
       })
       .finally(() => setLoading(false))
   }, [page, limit, searchTerm, filters, updateStatus])
@@ -155,6 +155,7 @@ const Banners = () => {
         setSearchTerm={setSearchTerm}
         applyFilters={applyFilters}
         resetFilters={resetFilters}
+        page={setPage}
       />
 
       {/* Table */}

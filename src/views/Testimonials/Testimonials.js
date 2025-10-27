@@ -148,6 +148,7 @@ const Testimonials = () => {
         setSearchTerm={setSearchTerm}
         applyFilters={applyFilters}
         resetFilters={resetFilters}
+        page={setPage}
       />
 
       {/* Table */}

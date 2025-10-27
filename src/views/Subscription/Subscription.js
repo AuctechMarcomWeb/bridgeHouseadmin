@@ -21,8 +21,8 @@ const Subscription = () => {
   // delete modal state
   const [showDeleteModal, setShowDeleteModal] = useState(false)
   const [selectedItem, setSelectedItem] = useState(null)
-  const [filters, setFilters] = useState({ type: '',})
-   const [tempFilters, setTempFilters] = useState(filters)
+  const [filters, setFilters] = useState({ type: '' })
+  const [tempFilters, setTempFilters] = useState(filters)
   const [expandedAddresses, setExpandedAddresses] = React.useState({})
 
   const toggleAddress = (id) => {
@@ -34,7 +34,7 @@ const Subscription = () => {
   //  Fetch subscription packages with pagination + search
   useEffect(() => {
     setLoading(true)
-     const query = new URLSearchParams({
+    const query = new URLSearchParams({
       search: searchTerm,
       page,
       limit,
@@ -53,7 +53,7 @@ const Subscription = () => {
       .finally(() => setLoading(false))
   }, [page, limit, searchTerm, filters, updateStatus])
 
-    // Apply filters
+  // Apply filters
   const applyFilters = () => {
     setFilters(tempFilters)
     setPage(1) // reset page
@@ -142,13 +142,14 @@ const Subscription = () => {
       </div>
 
       {/* Search */}
-     <SubscriptionFilter
+      <SubscriptionFilter
         tempFilters={tempFilters}
         setTempFilters={setTempFilters}
         searchTerm={searchTerm}
         setSearchTerm={setSearchTerm}
         applyFilters={applyFilters}
         resetFilters={resetFilters}
+        page={setPage}
       />
 
       {/* Table */}
