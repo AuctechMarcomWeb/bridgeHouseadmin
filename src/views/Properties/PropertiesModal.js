@@ -401,7 +401,7 @@ const PropertiesModal = ({
     const type = formData?.propertyType
     const optionalFields = {
       Commercial: ['bhk', 'bedrooms', 'nearby'],
-      Plot: ['facilities', 'services', 'builtYear'],
+      Plot: ['facilities', 'services'],
       Apartment: ['floors'],
     }
     return optionalFields[type]?.includes(field)
@@ -631,27 +631,29 @@ const PropertiesModal = ({
                 </>
               )}
               {/* Built Year */}
-              <div className="col-md-6">
-                <label className="form-label fw-bold">
-                  {' '}
-                  Built Year
-                  {isOptional('builtYear') ? (
-                    <span className="text-muted"> (optional)</span>
-                  ) : (
-                    <span> * </span>
-                  )}
-                </label>
-                <input
-                  type="text"
-                  className="form-control"
-                  name="builtYear"
-                  data-nested="propertyDetails"
-                  required={isRequired('builtYear')}
-                  value={formData?.propertyDetails?.builtYear || ''}
-                  onChange={handleChange}
-                  min={1900}
-                />
-              </div>
+              {formData?.propertyType !== 'Plot' && (
+                <div className="col-md-6">
+                  <label className="form-label fw-bold">
+                    {' '}
+                    Built Year
+                    {isOptional('builtYear') ? (
+                      <span className="text-muted"> (optional)</span>
+                    ) : (
+                      <span> * </span>
+                    )}
+                  </label>
+                  <input
+                    type="text"
+                    className="form-control"
+                    name="builtYear"
+                    data-nested="propertyDetails"
+                    required={isRequired('builtYear')}
+                    value={formData?.propertyDetails?.builtYear || ''}
+                    onChange={handleChange}
+                    min={1900}
+                  />
+                </div>
+              )}
             </div>
 
             <hr className="m-0 p-0 my-3" />
