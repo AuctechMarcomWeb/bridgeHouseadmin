@@ -19,7 +19,14 @@ const Auth = () => {
   const [showDeleteModal, setShowDeleteModal] = useState(false)
   const [selectedItem, setSelectedItem] = useState(null)
   const [loading, setLoading] = useState(false)
+  const [expandedAddresses, setExpandedAddresses] = React.useState({})
 
+  const toggleAddress = (id) => {
+    setExpandedAddresses((prev) => ({
+      ...prev,
+      [id]: !prev[id],
+    }))
+  }
   const formatDate = (dateString) => {
     return dateString ? moment(dateString).format('DD-MM-YYYY') : 'N/A'
   }
@@ -167,7 +174,14 @@ const Auth = () => {
                       )}
                     </td>
                     <td className="px-6 py-4">{item?.accountType || 'N/A'}</td>
-                    <td className="px-6 py-4">{item?.address || 'N/A'}</td>
+                    <td
+                      className="px-6 py-4 cursor-pointer"
+                      onClick={() => toggleAddress(item._id)}
+                    >
+                      {expandedAddresses[item._id]
+                        ? item?.address
+                        : item?.address.split(' ').slice(0, 2).join(' ') + '...'}
+                    </td>{' '}
                     <td className="px-6 py-4 text-center">
                       <button
                         onClick={() => {
