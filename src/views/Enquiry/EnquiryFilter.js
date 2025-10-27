@@ -1,10 +1,12 @@
 /* eslint-disable prettier/prettier */
 /* eslint-disable react/prop-types */
 import React from 'react'
-import { Row, Col, Input, Checkbox, Button } from 'antd'
+import { Row, Col, Input, Select, Button } from 'antd'
 import { SearchOutlined } from '@ant-design/icons'
 
-const GalleryFilters = ({
+const { Option } = Select
+
+const EnquiryFilter = ({
   searchTerm,
   setSearchTerm,
   tempFilters,
@@ -28,19 +30,21 @@ const GalleryFilters = ({
           />
         </Col>
 
-        {/* Active Checkbox */}
-        <Col
-          xs={24}
-          sm={12}
-          md={8}
-          style={{ display: 'flex', alignItems: 'center', marginTop: 16 }}
-        >
-          <Checkbox
-            checked={tempFilters.isActive}
-            onChange={(e) => setTempFilters((prev) => ({ ...prev, isActive: e.target.checked }))}
+        {/* Type */}
+        <Col xs={24} sm={12} md={8}>
+          <label style={{ display: 'block', fontWeight: 500, marginBottom: 6 }}>Status</label>
+          <Select
+            value={tempFilters.status}
+            onChange={(value) => setTempFilters((prev) => ({ ...prev, status: value }))}
+            placeholder="Select Status"
+            style={{ width: '100%' }}
           >
-            Active
-          </Checkbox>
+            <option value="">Select Status</option>
+            <option value="new">New</option>
+            <option value="viewed">Viewed</option>
+            <option value="contacted">Contacted</option>
+            <option value="closed">Closed</option>
+          </Select>
         </Col>
 
         {/* Buttons */}
@@ -49,7 +53,7 @@ const GalleryFilters = ({
             style={{
               display: 'flex',
               gap: '10px',
-              justifyContent: 'flex-start', // move buttons to the right
+              justifyContent: 'flex-start',
               flexWrap: 'wrap',
             }}
           >
@@ -64,4 +68,4 @@ const GalleryFilters = ({
   )
 }
 
-export default GalleryFilters
+export default EnquiryFilter
