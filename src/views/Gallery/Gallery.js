@@ -136,6 +136,7 @@ const Gallery = () => {
         setSearchTerm={setSearchTerm}
         applyFilters={applyFilters}
         resetFilters={resetFilters}
+        page={setPage}
       />
 
       {/* Table */}

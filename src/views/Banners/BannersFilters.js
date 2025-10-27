@@ -14,6 +14,7 @@ const BannersFilters = ({
   setSearchTerm,
   applyFilters,
   resetFilters,
+  page,
 }) => {
   const [typeOptions, setTypeOptions] = useState([])
 
@@ -43,9 +44,12 @@ const BannersFilters = ({
           <label style={{ fontWeight: 600 }}>Search</label>
           <Input
             prefix={<SearchOutlined />}
-            placeholder="Search properties..."
+            placeholder="Search..."
             value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
+            onChange={(e) => {
+              page(1)
+              setSearchTerm(e.target.value)
+            }}
             allowClear
           />
         </Col>

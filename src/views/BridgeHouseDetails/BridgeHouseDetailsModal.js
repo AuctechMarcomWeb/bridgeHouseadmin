@@ -13,73 +13,90 @@ const BridgeHouseDetailsModal = ({
   isModalOpen,
   setIsModalOpen,
 }) => {
+  // ✅ State for form data
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    phone: '',
+    profile: '',
+    notes: '',
+    status: false,
+  })
+
   const [loading, setLoading] = useState(false)
   const [errors, setErrors] = useState({})
-  const [formData, setFormData] = useState(
-    modalData
-      ? {
-          ...modalData,
-          name: modalData?.name || '',
-          email: modalData?.email || '',
-          phone: modalData?.phone || '',
-          profile: modalData?.profile || '',
-          status: modalData?.status || false,
-          notes: modalData?.notes || '',
-        }
-      : {
-          name: '',
-          email: '',
-          phone: '',
-          profile: '',
-          status: false,
-          notes: '',
-        },
-  )
 
-  // Close modal
+  // ✅ Prefill data in Edit mode
+  useEffect(() => {
+    if (modalData) {
+      setFormData({
+        name: modalData.name || '',
+        email: modalData.email || '',
+        phone: modalData.phone || '',
+        profile: modalData.profile || '',
+        notes: modalData.notes || '',
+        status: modalData.status ?? false,
+      })
+    } else {
+      setFormData({
+        name: '',
+        email: '',
+        phone: '',
+        profile: '',
+        notes: '',
+        status: false,
+      })
+    }
+  }, [modalData])
+
+  // ✅ Close modal and reset state
   const handleCancel = () => {
-    setFormData({ name: '', email: '', phone: '', profile: '', status: false, notes: '' })
+    setFormData({
+      name: '',
+      email: '',
+      phone: '',
+      profile: '',
+      notes: '',
+      status: false,
+    })
     setErrors({})
     setModalData(null)
     setIsModalOpen(false)
   }
 
-  // Handle input changes
+  // ✅ Handle input changes
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target
+    let newValue = type === 'checkbox' ? checked : value
 
-    let newValue = value
     if (name === 'phone') {
-      newValue = validateMobile(value) // only digits, max 10 chars
+      newValue = validateMobile(value)
     }
 
     setFormData((prev) => ({
       ...prev,
-      [name]: type === 'checkbox' ? checked : newValue,
+      [name]: newValue,
     }))
 
-    // ✅ Clear error for that field when user starts typing
-    setErrors((prevErrors) => ({
-      ...prevErrors,
-      [name]: '',
-    }))
+    // Clear field-specific error
+    setErrors((prev) => ({ ...prev, [name]: '' }))
   }
 
-  // Upload profile image
+  // ✅ Handle image upload
   const handleChangeImage = (e) => {
     const file = e.target.files[0]
     if (!file) return
-    setLoading(true)
 
+    setLoading(true)
     fileUpload({
       url: 'upload/uploadImage',
       cred: { file },
     })
       .then((res) => {
-        const uploadedUrl = res.data?.data?.imageUrl
+        const uploadedUrl = res?.data?.data?.imageUrl
         if (uploadedUrl) {
           setFormData((prev) => ({ ...prev, profile: uploadedUrl }))
-          toast.success('Profile uploaded successfully')
+          toast.success('Profile image uploaded successfully')
         } else {
           toast.error('Image URL not received')
         }
@@ -91,28 +108,30 @@ const BridgeHouseDetailsModal = ({
       .finally(() => setLoading(false))
   }
 
-  // Remove profile image
+  // ✅ Remove image
   const handleRemoveImage = () => {
     setFormData((prev) => ({ ...prev, profile: '' }))
   }
 
-  // Validate form
+  // ✅ Validate form fields
   const validateForm = () => {
     const newErrors = {}
     if (!formData.name.trim()) newErrors.name = 'Name is required'
     if (!formData.email.trim()) newErrors.email = 'Email is required'
-    if (!formData.phone.trim()) newErrors.phone = 'Phone is required'
-    if (!formData.notes.trim()) newErrors.notes = 'Notes is required'
+    if (!formData.phone.trim()) newErrors.phone = 'Phone number is required'
+    if (!formData.notes.trim()) newErrors.notes = 'Notes are required'
     if (!formData.profile) newErrors.profile = 'Profile image is required'
+
     setErrors(newErrors)
     return Object.keys(newErrors).length === 0
   }
 
-  // Submit new bridge house
+  // ✅ Add new Bridge House record
   const handleSubmit = (e) => {
     e.preventDefault()
     if (!validateForm()) return
 
+    setLoading(true)
     postRequest({
       url: 'bridgehouseDetails',
       cred: formData,
@@ -123,17 +142,17 @@ const BridgeHouseDetailsModal = ({
         handleCancel()
       })
       .catch((error) => {
-        console.log('dsfdsf', error)
-
         toast.error(error?.response?.data?.message || 'Something went wrong')
       })
+      .finally(() => setLoading(false))
   }
 
-  // Update existing bridge house
+  // ✅ Update existing Bridge House record
   const handleEdit = (e) => {
     e.preventDefault()
     if (!validateForm()) return
 
+    setLoading(true)
     putRequest({
       url: `bridgehouseDetails/${modalData?._id}`,
       cred: formData,
@@ -146,6 +165,7 @@ const BridgeHouseDetailsModal = ({
       .catch((error) => {
         toast.error(error?.response?.data?.message || 'Something went wrong')
       })
+      .finally(() => setLoading(false))
   }
 
   return (
@@ -154,6 +174,7 @@ const BridgeHouseDetailsModal = ({
       open={isModalOpen}
       footer={null}
       onCancel={handleCancel}
+      destroyOnClose
     >
       <form onSubmit={modalData ? handleEdit : handleSubmit} noValidate>
         <div className="row">
@@ -162,14 +183,13 @@ const BridgeHouseDetailsModal = ({
             <label className="form-label fw-bold">Name</label>
             <input
               type="text"
-              className={`form-control ${errors?.name ? 'is-invalid' : ''}`}
               name="name"
-              value={formData?.name}
+              className={`form-control ${errors.name ? 'is-invalid' : ''}`}
+              value={formData.name}
               onChange={handleChange}
-              placeholder="Enter name"
-              required
+              placeholder="Enter Name"
             />
-            {errors?.name && <div className="invalid-feedback">{errors.name}</div>}
+            {errors.name && <div className="invalid-feedback">{errors.name}</div>}
           </div>
 
           {/* Email */}
@@ -177,12 +197,11 @@ const BridgeHouseDetailsModal = ({
             <label className="form-label fw-bold">Email</label>
             <input
               type="email"
-              className={`form-control ${errors?.email ? 'is-invalid' : ''}`}
               name="email"
-              value={formData?.email}
+              className={`form-control ${errors.email ? 'is-invalid' : ''}`}
+              value={formData.email}
               onChange={handleChange}
               placeholder="Enter Email"
-              required
             />
             {errors.email && <div className="invalid-feedback">{errors.email}</div>}
           </div>
@@ -193,104 +212,100 @@ const BridgeHouseDetailsModal = ({
           <div className="col-md-6 mb-3">
             <label className="form-label fw-bold">Phone</label>
             <input
-              type="number"
-              className={`form-control ${errors?.phone ? 'is-invalid' : ''}`}
+              type="text"
               name="phone"
-              maxLength={10}
-              value={formData?.phone}
+              className={`form-control ${errors.phone ? 'is-invalid' : ''}`}
+              value={formData.phone}
               onChange={handleChange}
-              placeholder="Enter Phone"
-              required
+              placeholder="Enter Phone Number"
             />
-            {errors.phone && <div className="invalid-feedback">{errors?.phone}</div>}
+            {errors.phone && <div className="invalid-feedback">{errors.phone}</div>}
           </div>
 
           {/* Notes */}
           <div className="col-md-6 mb-3">
             <label className="form-label fw-bold">Notes</label>
             <textarea
-              className={`form-control ${errors?.notes ? 'is-invalid' : ''}`}
               name="notes"
               rows="1"
-              value={formData?.notes}
+              className={`form-control ${errors.notes ? 'is-invalid' : ''}`}
+              value={formData.notes}
               onChange={handleChange}
-              placeholder="Enter notes"
-              required
-            />
-            {errors.notes && <div className="invalid-feedback">{errors?.notes}</div>}
+              placeholder="Enter Notes"
+            ></textarea>
+            {errors.notes && <div className="invalid-feedback">{errors.notes}</div>}
           </div>
         </div>
 
-        <div className="row">
-          {/* Profile Image */}
-          <div className="col-md-6 mb-3">
-            <label className="form-label fw-bold">Profile Image</label>
-            <input
-              type="file"
-              className={`form-control ${errors.profile ? 'is-invalid' : ''}`}
-              disabled={loading}
-              onChange={handleChangeImage}
-            />
-            {errors.profile && <div className="invalid-feedback">{errors?.profile}</div>}
+        {/* Profile Image */}
+        <div className="mb-3">
+          <label className="form-label fw-bold">Profile Image</label>
+          <input
+            type="file"
+            accept="image/*"
+            className={`form-control ${errors.profile ? 'is-invalid' : ''}`}
+            disabled={loading}
+            onChange={handleChangeImage}
+          />
+          {errors.profile && <div className="invalid-feedback">{errors.profile}</div>}
 
-            {formData?.profile && (
-              <div className="mt-2" style={{ position: 'relative', display: 'inline-block' }}>
-                <img
-                  src={formData.profile}
-                  alt="Preview"
-                  style={{
-                    width: '60px',
-                    height: '60px',
-                    objectFit: 'cover',
-                    borderRadius: '6px',
-                  }}
-                />
-                <button
-                  type="button"
-                  onClick={handleRemoveImage}
-                  style={{
-                    position: 'absolute',
-                    top: '-6px',
-                    right: '-6px',
-                    background: 'red',
-                    color: 'white',
-                    border: 'none',
-                    borderRadius: '50%',
-                    width: '18px',
-                    height: '18px',
-                    fontSize: '12px',
-                    cursor: 'pointer',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                  }}
-                >
-                  ✕
-                </button>
-              </div>
-            )}
-          </div>
-
-          {/* Status */}
-          <div className="col-md-6 mb-3 d-flex align-items-center">
-            <div className="form-check mt-2">
-              <input
-                type="checkbox"
-                className="form-check-input"
-                name="status"
-                checked={formData?.status}
-                onChange={handleChange}
-                id="status"
+          {formData.profile && (
+            <div className="mt-2" style={{ position: 'relative', display: 'inline-block' }}>
+              <img
+                src={formData.profile}
+                alt="Preview"
+                style={{
+                  width: '60px',
+                  height: '60px',
+                  objectFit: 'cover',
+                  borderRadius: '6px',
+                }}
               />
-              <label className="form-check-label" htmlFor="status">
-                Active
-              </label>
+              <button
+                type="button"
+                onClick={handleRemoveImage}
+                style={{
+                  position: 'absolute',
+                  top: '-6px',
+                  right: '-6px',
+                  background: 'red',
+                  color: 'white',
+                  border: 'none',
+                  borderRadius: '50%',
+                  width: '18px',
+                  height: '18px',
+                  fontSize: '12px',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                }}
+              >
+                ✕
+              </button>
             </div>
+          )}
+        </div>
+
+        {/* Active Checkbox */}
+        <div className="col-md-8 d-flex align-items-center">
+          <div className="form-check">
+            <input
+              type="checkbox"
+              className="form-check-input"
+              name="status"
+              checked={formData.status}
+              onChange={handleChange}
+              id="status"
+            />
+            <label className="form-check-label" htmlFor="status">
+              Active
+            </label>
           </div>
         </div>
 
         {/* Buttons */}
-        <div className="d-flex justify-content-end gap-2">
+        <div className="d-flex justify-content-end gap-2 mt-3">
           <button type="button" className="btn btn-secondary" onClick={handleCancel}>
             Cancel
           </button>

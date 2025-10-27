@@ -14,6 +14,8 @@ const Filter = ({
   setSearchTerm,
   applyFilters,
   resetFilters,
+  setPage,
+  page,
 }) => {
   const [typeOptions, setTypeOptions] = useState([])
 
@@ -121,7 +123,10 @@ const Filter = ({
             prefix={<SearchOutlined />}
             placeholder="Search properties..."
             value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
+            onChange={(e) => {
+              page(1)
+              setSearchTerm(e.target.value)
+            }}
             allowClear
           />
         </Col>

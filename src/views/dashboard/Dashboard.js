@@ -14,7 +14,7 @@ import {
   HeartHandshake,
   CheckCircle2,
 } from 'lucide-react'
-import { message, Spin } from 'antd'
+import { Empty, message, Spin } from 'antd'
 import { getRequest } from '../../Helpers'
 
 export default function Dashboard() {
@@ -45,7 +45,11 @@ export default function Dashboard() {
   }
 
   if (!data) {
-    return <div className="p-8 text-center text-red-500">No dashboard data found</div>
+    return (
+      <div className="flex justify-center items-center py-20">
+        <Empty description="No records found" />
+      </div>
+    )
   }
 
   // ✅ Extract the objects from the API response

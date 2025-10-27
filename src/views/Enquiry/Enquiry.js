@@ -8,6 +8,7 @@ import { Empty, Pagination, Spin } from 'antd'
 import EnquiryModal from './EnquiryModal'
 import { AppContext } from '../../Context/AppContext'
 import EnquiryFilter from './EnquiryFilter'
+import moment from 'moment'
 
 const Enquiry = () => {
   const [searchTerm, setSearchTerm] = useState('')
@@ -25,7 +26,9 @@ const Enquiry = () => {
   const [filters, setFilters] = useState({ status: '' })
   const [tempFilters, setTempFilters] = useState(filters)
   const [expandedAddresses, setExpandedAddresses] = React.useState({})
-
+  const formatDate = (dateString) => {
+    return dateString ? moment(dateString).format('DD-MM-YYYY') : 'N/A'
+  }
   const toggleAddress = (id) => {
     setExpandedAddresses((prev) => ({
       ...prev,
@@ -151,6 +154,7 @@ const Enquiry = () => {
         setSearchTerm={setSearchTerm}
         applyFilters={applyFilters}
         resetFilters={resetFilters}
+        page={setPage}
       />
       {/* Table */}
       <div className="overflow-x-auto">
@@ -175,8 +179,9 @@ const Enquiry = () => {
                   <th className="px-6 py-3">Phone</th>
                   <th className="px-6 py-3">E-Mail</th>
                   <th className="px-6 py-3">Message</th>
-                  <th className="px-6 py-3">Property</th>
+                  <th className="px-6 py-3">Property Name</th>
                   <th className="px-6 py-3">Property Code</th>
+                  <th className="px-6 py-3">Date</th>
                   <th className="px-6 py-3">Status</th>
                   <th className="px-6 py-3">Actions</th>
                 </tr>
@@ -209,6 +214,7 @@ const Enquiry = () => {
                         <p className="p-0 m-0">{item?.property?.propertyCode || 'N/A'}</p>
                       </div>
                     </td>
+                    <td className="px-6 py-4 whitespace-nowrap">{formatDate(item?.createdAt)}</td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <span
                         className={`px-2 py-1 text-xs font-medium rounded-full ${
