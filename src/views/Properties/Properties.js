@@ -252,7 +252,8 @@ const Properties = () => {
                 <tr className="bg-gray-50">
                   <th className="px-6 py-3">Sr. No.</th>
                   <th className="px-6 py-3">Property Name</th>
-                  <th className="px-6 py-3">Type</th>
+                  <th className="px-6 py-3">Poperty Type</th>
+                  <th className="px-6 py-3">Poperty Status</th>
                   <th className="px-6 py-3">Approval Status</th>
                   <th className="px-6 py-3">Adopted Status</th>
                   <th className="px-6 py-3">Verified Status</th>
@@ -303,6 +304,27 @@ const Properties = () => {
 
                     {/* Property Type */}
                     <td className="px-6 py-4">{item?.propertyType || 'N/A'}</td>
+                    {/* Property Status */}
+                    {/* Property Status */}
+                    <td className="px-6 py-4">
+                      <span
+                        className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
+                        ${
+                          item?.status === 'Available'
+                            ? 'bg-green-100 text-green-800'
+                            : item?.status === 'Sold'
+                              ? 'bg-red-100 text-red-800'
+                              : item?.status === 'Registered'
+                                ? 'bg-blue-100 text-blue-800'
+                                : item?.status === 'Booked'
+                                  ? 'bg-yellow-100 text-yellow-800'
+                                  : 'bg-gray-100 text-gray-800'
+                        }
+                      `}
+                      >
+                        {item?.status || 'N/A'}
+                      </span>
+                    </td>
 
                     {/* Approval Status */}
                     <td className="px-6 py-4">
