@@ -69,14 +69,14 @@ const GalleryModal = ({
         const uploadedUrl = res.data?.data?.imageUrl
         if (uploadedUrl) {
           setFormData((prev) => ({ ...prev, url: uploadedUrl }))
-          toast.success('Image uploaded successfully')
+          toast.success(res.data?.data?.imageUrl || 'Image uploaded successfully')
         } else {
-          toast.error('Image URL not received')
+          toast.error(err?.res?.message || 'Image URL not received')
         }
       })
       .catch((error) => {
         console.error('Image upload failed:', error)
-        toast.error('Image upload failed')
+        toast.error(err?.res?.message || 'Image upload failed')
       })
       .finally(() => setLoading(false))
   }
@@ -110,7 +110,7 @@ const GalleryModal = ({
         handleCancel()
       })
       .catch((error) => {
-        toast.error(error?.response?.data?.message || 'Something went wrong')
+        toast.error(error?.response?.message || 'Something went wrong')
       })
   }
 
@@ -129,7 +129,7 @@ const GalleryModal = ({
         handleCancel()
       })
       .catch((error) => {
-        toast.error(error?.response?.data?.message || 'Something went wrong')
+        toast.error(error?.response?.message || 'Something went wrong')
       })
   }
 

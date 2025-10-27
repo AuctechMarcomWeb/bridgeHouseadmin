@@ -123,7 +123,7 @@ const BridgeHouseDetailsModal = ({
         handleCancel()
       })
       .catch((error) => {
-        toast.error(error?.response?.data?.message || 'Something went wrong')
+        toast.error(error?.response?.message || 'Something went wrong')
       })
   }
 
@@ -142,7 +142,7 @@ const BridgeHouseDetailsModal = ({
         handleCancel()
       })
       .catch((error) => {
-        toast.error(error?.response?.data?.message || 'Something went wrong')
+        toast.error(error?.response?.message || 'Something went wrong')
       })
   }
 

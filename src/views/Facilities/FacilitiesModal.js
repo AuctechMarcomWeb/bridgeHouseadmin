@@ -92,7 +92,7 @@ const FacilitiesModal = ({
       })
       .catch((error) => {
         console.log('error', error)
-        toast.error(error?.response?.data?.message)
+        toast.error(error?.response?.message)
       })
   }
 
@@ -108,7 +108,7 @@ const FacilitiesModal = ({
       })
       .catch((error) => {
         console.log('error', error)
-        toast.error(error?.response?.data?.message)
+        toast.error(error?.response?.message)
       })
   }
 
