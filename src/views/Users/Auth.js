@@ -178,10 +178,13 @@ const Auth = () => {
                       className="px-6 py-4 cursor-pointer"
                       onClick={() => toggleAddress(item._id)}
                     >
-                      {expandedAddresses[item._id]
-                        ? item?.address
-                        : item?.address.split(' ').slice(0, 2).join(' ') + '...'}
-                    </td>{' '}
+                      {item?.address
+                        ? expandedAddresses[item._id]
+                          ? item.address
+                          : item.address.split(' ').slice(0, 2).join(' ') + '...'
+                        : 'N/A'}
+                    </td>
+
                     <td className="px-6 py-4 text-center">
                       <button
                         onClick={() => {
