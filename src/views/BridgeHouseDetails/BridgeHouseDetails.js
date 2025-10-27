@@ -23,7 +23,7 @@ const BridgeHouseDetails = () => {
   const [showDeleteModal, setShowDeleteModal] = useState(false)
   const [selectedItem, setSelectedItem] = useState(null)
   const [loading, setLoading] = useState(false)
-  const [filters, setFilters] = useState({ status: '',})
+  const [filters, setFilters] = useState({})
   const [tempFilters, setTempFilters] = useState(filters)
   const [expandedAddresses, setExpandedAddresses] = React.useState({})
 
@@ -36,15 +36,13 @@ const BridgeHouseDetails = () => {
   //Fetch Property Type with Pagination + Search
   useEffect(() => {
     setLoading(true)
-      const query = new URLSearchParams({
+    const query = new URLSearchParams({
       search: searchTerm,
       page,
       limit,
       ...filters,
     }).toString()
-    getRequest(
-      `bridgehouseDetails?${query}`,
-    )
+    getRequest(`bridgehouseDetails?${query}`)
       .then((res) => {
         const responseData = res?.data?.data
         setData(responseData?.bridgeHouses || [])
@@ -56,16 +54,16 @@ const BridgeHouseDetails = () => {
       .finally(() => setLoading(false))
   }, [page, limit, searchTerm, sortBy, updateStatus])
 
-      // Apply filters
-const applyFilters = () => {
-  // Only include isActive if it's true
-  const newFilters = {};
-  if (tempFilters.status) {
-    newFilters.status = false;
+  // Apply filters
+  const applyFilters = () => {
+    // Only include isActive if it's true
+    // const newFilters = {}
+    // if (tempFilters.status) {
+    //   newFilters.status = false
+    // }
+    setFilters(tempFilters)
+    setPage(1)
   }
-  setFilters(newFilters);
-  setPage(1);
-};
 
   // Reset filters
   const resetFilters = () => {
@@ -143,7 +141,7 @@ const applyFilters = () => {
       </div>
 
       {/* Search */}
-        <GalleryFilters
+      <GalleryFilters
         tempFilters={tempFilters}
         setTempFilters={setTempFilters}
         searchTerm={searchTerm}
