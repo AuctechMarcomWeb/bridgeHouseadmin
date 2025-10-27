@@ -67,12 +67,23 @@ export default function Dashboard() {
       </h3>
 
       {/* Sub Stats */}
-      {subStats && (
+      {/* {subStats && (
         <div className="grid grid-cols-2 gap-2 pt-2 sm:pt-3 border-t border-gray-100">
           {subStats.map((stat, idx) => (
             <div key={idx} className="text-xs sm:text-sm md:text-base">
               <p className="text-gray-500">{stat.label}</p>
               <p className="font-semibold text-gray-700">{stat.value}</p>
+            </div>
+          ))}
+        </div>
+      )} */}
+
+      {subStats && (
+        <div className="flex flex-col gap-2 pt-3 border-t border-gray-100">
+          {subStats.map((stat, idx) => (
+            <div key={idx} className="flex justify-between text-sm sm:text-base text-gray-700">
+              <span className="text-gray-500">{stat.label}</span>
+              <span className="font-semibold">{stat.value}</span>
             </div>
           ))}
         </div>
