@@ -16,7 +16,7 @@ const PropertiesModal = ({
   setIsModalOpen,
 }) => {
   const isEditMode = !!modalData
-
+  const [uploadingImages, setUploadingImages] = useState([])
   const { user, setUser } = useContext(AppContext)
   const [type, setType] = useState([])
   const [bhk, setBhk] = useState([])
@@ -25,7 +25,7 @@ const PropertiesModal = ({
   const [documents, setDocuments] = useState([])
   const galleryInputRefs = React.useRef([])
   const documentInputRefs = React.useRef([])
-
+  const [uploadingDocs, setUploadingDocs] = useState([])
   const generatePropertyCode = () => {
     const prefix = 'PROP'
     const randomNum = Math.floor(1000 + Math.random() * 9000)
@@ -231,10 +231,38 @@ const PropertiesModal = ({
     })
   }
 
+  // const handleChangeImage = (e) => {
+  //   const files = Array.from(e.target.files)
+
+  //   files.forEach((file) => {
+  //     fileUpload({
+  //       url: `upload/uploadImage`,
+  //       cred: { file },
+  //     })
+  //       .then((res) => {
+  //         setFormData((prev) => ({
+  //           ...prev,
+  //           gallery: [...(prev.gallery || []), res.data?.data?.imageUrl], //  Push into gallery array
+  //         }))
+  //         console.log('res data pic ', res?.data)
+  //       })
+  //       .catch((error) => {
+  //         console.error('Image upload failed:', error)
+  //       })
+  //   })
+  // }
+
+  // nearBY
+
   const handleChangeImage = (e) => {
     const files = Array.from(e.target.files)
 
     files.forEach((file) => {
+      const tempId = URL.createObjectURL(file) // unique local id
+
+      // show temporary loader for this image
+      setUploadingImages((prev) => [...prev, tempId])
+
       fileUpload({
         url: `upload/uploadImage`,
         cred: { file },
@@ -242,17 +270,18 @@ const PropertiesModal = ({
         .then((res) => {
           setFormData((prev) => ({
             ...prev,
-            gallery: [...(prev.gallery || []), res.data?.data?.imageUrl], //  Push into gallery array
+            gallery: [...(prev.gallery || []), res.data?.data?.imageUrl],
           }))
-          console.log('res data pic ', res?.data)
         })
         .catch((error) => {
           console.error('Image upload failed:', error)
         })
+        .finally(() => {
+          // remove from uploading array once done
+          setUploadingImages((prev) => prev.filter((id) => id !== tempId))
+        })
     })
   }
-
-  // nearBY
 
   const handleNearByChange = (e, index) => {
     const { name, value } = e.target
@@ -303,11 +332,38 @@ const PropertiesModal = ({
     }))
   }
 
+  // const handleDocumentImageChange = (e, index) => {
+  //   const file = e.target.files[0]
+  //   if (!file) return
+
+  //   // Upload to server
+  //   fileUpload({
+  //     url: `upload/uploadImage`,
+  //     cred: { file },
+  //   })
+  //     .then((res) => {
+  //       const uploadedUrl = res.data?.data?.imageUrl
+  //       const updatedDocuments = [...formData.documents]
+  //       updatedDocuments[index].image = uploadedUrl
+
+  //       setFormData((prev) => ({
+  //         ...prev,
+  //         documents: updatedDocuments,
+  //       }))
+  //     })
+  //     .catch((error) => {
+  //       console.error('Document image upload failed:', error)
+  //       toast.error(error?.res?.message || 'Update failed')
+  //     })
+  // }
+
   const handleDocumentImageChange = (e, index) => {
     const file = e.target.files[0]
     if (!file) return
 
-    // Upload to server
+    // Mark this doc as uploading
+    setUploadingDocs((prev) => [...prev, index])
+
     fileUpload({
       url: `upload/uploadImage`,
       cred: { file },
@@ -324,7 +380,11 @@ const PropertiesModal = ({
       })
       .catch((error) => {
         console.error('Document image upload failed:', error)
-        toast.error(error?.res?.message || 'Update failed')
+        toast.error(error?.res?.message || 'Upload failed')
+      })
+      .finally(() => {
+        // Remove from uploading state
+        setUploadingDocs((prev) => prev.filter((i) => i !== index))
       })
   }
 
@@ -748,35 +808,44 @@ const PropertiesModal = ({
             <div className="col-md-6">
               <label className="form-label fw-bold">Property Images *</label>
               <input
-                key={formData.gallery}
                 type="file"
-                className={`form-control `}
+                className="form-control"
                 name="propertyCode"
                 accept="image/*"
-                required={!(formData.gallery && formData.gallery.length > 0)}
                 multiple
+                required={!(formData.gallery && formData.gallery.length > 0)}
                 onChange={handleChangeImage}
                 ref={(el) => (galleryInputRefs.current[0] = el)}
               />
             </div>
-            {formData?.gallery?.length > 0 && (
-              <div className="col-md-12 ">
-                <div className="d-flex justify-content-end gap-2 my-2 flex-wrap">
-                  {formData.gallery.map((item, index) => (
-                    <div key={index} style={{ position: 'relative', display: 'inline-block' }}>
-                      {/* Image */}
+
+            {/* Image Preview + Loading Spinner */}
+            {(formData?.gallery?.length > 0 || uploadingImages.length > 0) && (
+              <div className="col-md-12 mt-2">
+                <div className="d-flex flex-wrap gap-2">
+                  {/* Uploaded Images */}
+                  {formData.gallery?.map((item, index) => (
+                    <div
+                      key={`uploaded-${index}`}
+                      style={{
+                        position: 'relative',
+                        width: '70px',
+                        height: '70px',
+                        borderRadius: '6px',
+                        overflow: 'hidden',
+                      }}
+                    >
                       <img
                         src={item}
                         alt={`gallery-${index}`}
                         style={{
-                          width: '50px',
-                          height: '50px',
+                          width: '100%',
+                          height: '100%',
                           objectFit: 'cover',
-                          borderRadius: '4px',
+                          borderRadius: '6px',
+                          border: '1px solid #ddd',
                         }}
                       />
-
-                      {/* Cross Button */}
                       <button
                         type="button"
                         onClick={() => {
@@ -784,14 +853,49 @@ const PropertiesModal = ({
                             ...prev,
                             gallery: prev.gallery.filter((_, i) => i !== index),
                           }))
-                          if (galleryInputRefs.current[0]) {
-                            galleryInputRefs.current[0].value = '' // reset input
-                          }
+                          if (galleryInputRefs.current[0]) galleryInputRefs.current[0].value = ''
                         }}
-                        className="absolute -top-1 -right-1 bg-red-500 text-white rounded-full w-5 h-5 text-xs flex items-center justify-center cursor-pointer"
+                        style={{
+                          position: 'absolute',
+                          top: '-5px',
+                          right: '-5px',
+                          background: 'red',
+                          color: 'white',
+                          border: 'none',
+                          borderRadius: '50%',
+                          width: '20px',
+                          height: '20px',
+                          fontSize: '12px',
+                          cursor: 'pointer',
+                        }}
                       >
                         ✕
                       </button>
+                    </div>
+                  ))}
+
+                  {/* Uploading Loaders */}
+                  {uploadingImages.map((img, index) => (
+                    <div
+                      key={`loading-${index}`}
+                      style={{
+                        width: '70px',
+                        height: '70px',
+                        borderRadius: '6px',
+                        backgroundColor: '#f3f3f3',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        border: '1px solid #ddd',
+                      }}
+                    >
+                      <div
+                        className="spinner-border text-primary"
+                        role="status"
+                        style={{ width: '25px', height: '25px' }}
+                      >
+                        <span className="visually-hidden">Loading...</span>
+                      </div>
                     </div>
                   ))}
                 </div>
@@ -888,7 +992,7 @@ const PropertiesModal = ({
                     />
                   </div>
                   <div className="col-md-6 m-0 my-2">
-                    <label className="form-label">Document Image </label>
+                    <label className="form-label">Document Image</label>
                     <input
                       type="file"
                       accept="image/*"
@@ -897,8 +1001,10 @@ const PropertiesModal = ({
                       ref={(el) => (documentInputRefs.current[index] = el)}
                     />
                   </div>
+
                   <div className="col-md-6 m-0 my-2">
-                    {facility?.image && (
+                    {/* If image uploaded */}
+                    {facility?.image && !uploadingDocs.includes(index) && (
                       <div style={{ position: 'relative', display: 'inline-block' }}>
                         <img
                           src={facility.image}
@@ -909,6 +1015,7 @@ const PropertiesModal = ({
                             marginTop: '5px',
                             borderRadius: '4px',
                             objectFit: 'cover',
+                            border: '1px solid #ddd',
                           }}
                         />
                         {/* ❌ Remove button */}
@@ -935,6 +1042,31 @@ const PropertiesModal = ({
                         >
                           ✕
                         </button>
+                      </div>
+                    )}
+
+                    {/* If uploading */}
+                    {uploadingDocs.includes(index) && (
+                      <div
+                        style={{
+                          width: '60px',
+                          height: '60px',
+                          marginTop: '5px',
+                          borderRadius: '4px',
+                          backgroundColor: '#f3f3f3',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          border: '1px solid #ddd',
+                        }}
+                      >
+                        <div
+                          className="spinner-border text-primary"
+                          role="status"
+                          style={{ width: '22px', height: '22px' }}
+                        >
+                          <span className="visually-hidden">Loading...</span>
+                        </div>
                       </div>
                     )}
                   </div>
