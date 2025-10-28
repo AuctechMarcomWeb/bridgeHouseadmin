@@ -26,7 +26,6 @@ const Enquiry = () => {
   const [filters, setFilters] = useState({ status: '' })
   const [tempFilters, setTempFilters] = useState(filters)
   const [expandedAddresses, setExpandedAddresses] = React.useState({})
-  const [expandedNotes, setExpandedNotes] = React.useState({})
 
   const formatDate = (dateString) => {
     return dateString ? moment(dateString).format('DD-MM-YYYY') : 'N/A'
@@ -38,12 +37,14 @@ const Enquiry = () => {
     }))
   }
 
+  const [expandedNotes, setExpandedNotes] = React.useState({})
   const toggleNotes = (id) => {
     setExpandedNotes((prev) => ({
       ...prev,
       [id]: !prev[id],
     }))
   }
+
   // ✅ Fetch Banners with Pagination + Search
   useEffect(() => {
     setLoading(true)
@@ -225,13 +226,15 @@ const Enquiry = () => {
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">{formatDate(item?.createdAt)}</td>
-                    <td className="px-6 py-4 whitespace-nowrap">{item?.notes || 'N/A'}</td>
+                    {/* <td className="px-6 py-4 whitespace-nowrap">{item?.notes || 'N/A'}</td> */}
 
-                    {/* <td className="px-6 py-4 cursor-pointer" onClick={() => toggleNotes(item._id)}>
+                    <td className="px-6 py-4 cursor-pointer" onClick={() => toggleNotes(item._id)}>
                       {expandedNotes[item._id]
-                        ? item?.notes
-                        : item?.notes.split(' ').slice(0, 2).join(' ') + '...'}
-                    </td> */}
+                        ? item?.notes || 'N/A'
+                        : item?.notes
+                          ? item?.notes.split(' ').slice(0, 2).join(' ') + '...'
+                          : 'N/A'}
+                    </td>
 
                     <td className="px-6 py-4 whitespace-nowrap">
                       <span
