@@ -4,7 +4,7 @@ import { Search, Plus, Edit, Trash2, AlertTriangle, Contact } from 'lucide-react
 import ExportButton from '../ExportButton'
 import { deleteRequest, getRequest } from '../../Helpers'
 import toast from 'react-hot-toast'
-import { Empty, Pagination, Spin } from 'antd'
+import { Empty, Pagination, Spin, Tooltip } from 'antd'
 import ContactsModal from './ContactsModal'
 
 const Contacts = () => {
@@ -143,7 +143,7 @@ const Contacts = () => {
           <>
             <table className="w-full">
               <thead>
-                <tr>
+                <tr className="text-center">
                   <th className="px-6 py-3">Sr. No.</th>
                   <th className="px-6 py-3">Name</th>
                   <th className="px-6 py-3">Email</th>
@@ -160,7 +160,43 @@ const Contacts = () => {
                     <td className="px-6 py-4">{item?.name}</td>
                     <td className="px-6 py-4">{item?.email}</td>
                     <td className="px-6 py-4">{item?.phone}</td>
-                    <td
+                    <td className="px-6 py-4 ">
+                      <Tooltip title={item?.address} placement="topLeft">
+                        <span
+                          style={{
+                            display: 'inline-block',
+                            width: '100%',
+                            whiteSpace: 'nowrap',
+                            overflow: 'hidden',
+                            textOverflow: 'ellipsis',
+                            cursor: 'pointer',
+                          }}
+                        >
+                          {item?.address?.split(' ')?.slice(0, 2)?.join(' ') || '-'}
+                          {item?.address?.split(' ')?.length > 2 ? '…' : ''}
+                        </span>
+                      </Tooltip>
+                    </td>
+
+                    <td className="px-6 py-4 ">
+                      <Tooltip title={item?.notes} placement="topLeft">
+                        <span
+                          style={{
+                            display: 'inline-block',
+                            width: '100%',
+                            whiteSpace: 'nowrap',
+                            overflow: 'hidden',
+                            textOverflow: 'ellipsis',
+                            cursor: 'pointer',
+                          }}
+                        >
+                          {item?.notes?.split(' ')?.slice(0, 2)?.join(' ') || '-'}
+                          {item?.notes?.split(' ')?.length > 2 ? '…' : ''}
+                        </span>
+                      </Tooltip>
+                    </td>
+
+                    {/* <td
                       className="px-6 py-4 cursor-pointer"
                       onClick={() => toggleAddress(item._id)}
                     >
@@ -175,7 +211,7 @@ const Contacts = () => {
                       {expandedAddresses[item._id]
                         ? item?.notes
                         : item?.notes.split(' ').slice(0, 2).join(' ') + '...'}
-                    </td>
+                    </td> */}
                     <td className="px-6 py-4 flex gap-2 justify-center">
                       <button
                         onClick={() => {

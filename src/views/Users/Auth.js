@@ -5,7 +5,7 @@ import { Search, Trash2, AlertTriangle } from 'lucide-react'
 import ExportButton from '../ExportButton'
 import { deleteRequest, getRequest } from '../../Helpers'
 import toast from 'react-hot-toast'
-import { Empty, Pagination, Spin } from 'antd'
+import { Empty, Pagination, Spin, Tooltip } from 'antd'
 import moment from 'moment'
 
 const Auth = () => {
@@ -173,7 +173,7 @@ const Auth = () => {
                         'N/A'
                       )}
                     </td>
-                    <td className="px-6 py-4">{item?.accountType || 'N/A'}</td>
+                    {/* <td className="px-6 py-4">{item?.accountType || 'N/A'}</td>
                     <td
                       className="px-6 py-4 cursor-pointer"
                       onClick={() => toggleAddress(item._id)}
@@ -183,8 +183,24 @@ const Auth = () => {
                           ? item.address
                           : item.address.split(' ').slice(0, 2).join(' ') + '...'
                         : 'N/A'}
+                    </td> */}
+                    <td className="px-6 py-4 ">
+                      <Tooltip title={item?.address} placement="topLeft">
+                        <span
+                          style={{
+                            display: 'inline-block',
+                            width: '100%',
+                            whiteSpace: 'nowrap',
+                            overflow: 'hidden',
+                            textOverflow: 'ellipsis',
+                            cursor: 'pointer',
+                          }}
+                        >
+                          {item?.address?.split(' ')?.slice(0, 2)?.join(' ') || '-'}
+                          {item?.address?.split(' ')?.length > 2 ? '…' : ''}
+                        </span>
+                      </Tooltip>
                     </td>
-
                     <td className="px-6 py-4 text-center">
                       <button
                         onClick={() => {

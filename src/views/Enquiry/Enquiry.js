@@ -4,7 +4,7 @@ import { Search, Plus, Edit, Trash2, AlertTriangle, Loader2 } from 'lucide-react
 import ExportButton from '../ExportButton'
 import { deleteRequest, getRequest } from '../../Helpers'
 import toast from 'react-hot-toast'
-import { Empty, Pagination, Spin } from 'antd'
+import { Empty, Pagination, Spin, Tooltip } from 'antd'
 import EnquiryModal from './EnquiryModal'
 import { AppContext } from '../../Context/AppContext'
 import EnquiryFilter from './EnquiryFilter'
@@ -207,13 +207,22 @@ const Enquiry = () => {
                     <td className="px-6 py-4 whitespace-nowrap">{item?.name}</td>
                     <td className="px-6 py-4 whitespace-nowrap">{item?.phone}</td>
                     <td className="px-6 py-4 whitespace-nowrap">{item?.email}</td>
-                    <td
-                      className="px-6 py-4 cursor-pointer"
-                      onClick={() => toggleAddress(item._id)}
-                    >
-                      {expandedAddresses[item._id]
-                        ? item?.message
-                        : item?.message.split(' ').slice(0, 2).join(' ') + '...'}
+                    <td className="px-6 py-4 max-w-[180px]">
+                      <Tooltip title={item?.message} placement="topLeft">
+                        <span
+                          style={{
+                            display: 'inline-block',
+                            width: '100%',
+                            whiteSpace: 'nowrap',
+                            overflow: 'hidden',
+                            textOverflow: 'ellipsis',
+                            cursor: 'pointer',
+                          }}
+                        >
+                          {item?.message?.split(' ')?.slice(0, 2)?.join(' ') || '-'}
+                          {item?.message?.split(' ')?.length > 2 ? '…' : ''}
+                        </span>
+                      </Tooltip>
                     </td>
 
                     <td className="px-6 py-4 whitespace-nowrap">
@@ -228,14 +237,30 @@ const Enquiry = () => {
                     <td className="px-6 py-4 whitespace-nowrap">{formatDate(item?.createdAt)}</td>
                     {/* <td className="px-6 py-4 whitespace-nowrap">{item?.notes || 'N/A'}</td> */}
 
-                    <td className="px-6 py-4 cursor-pointer" onClick={() => toggleNotes(item._id)}>
+                    {/* <td className="px-6 py-4 cursor-pointer" onClick={() => toggleNotes(item._id)}>
                       {expandedNotes[item._id]
-                        ? item?.notes || 'N/A'
+                        ? item?.notes || '-'
                         : item?.notes
                           ? item?.notes.split(' ').slice(0, 2).join(' ') + '...'
                           : 'N/A'}
+                    </td> */}
+                    <td className="px-6 py-4 max-w-[180px]">
+                      <Tooltip title={item?.notes} placement="topLeft">
+                        <span
+                          style={{
+                            display: 'inline-block',
+                            width: '100%',
+                            whiteSpace: 'nowrap',
+                            overflow: 'hidden',
+                            textOverflow: 'ellipsis',
+                            cursor: 'pointer',
+                          }}
+                        >
+                          {item?.notes?.split(' ')?.slice(0, 2)?.join(' ') || '-'}
+                          {item?.notes?.split(' ')?.length > 2 ? '…' : ''}
+                        </span>
+                      </Tooltip>
                     </td>
-
                     <td className="px-6 py-4 whitespace-nowrap">
                       <span
                         className={`px-2 py-1 text-xs font-medium rounded-full ${

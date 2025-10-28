@@ -4,7 +4,7 @@ import { Search, Plus, Edit, Trash2, AlertTriangle, Loader2 } from 'lucide-react
 import ExportButton from '../ExportButton'
 import { deleteRequest, getRequest } from '../../Helpers'
 import toast from 'react-hot-toast'
-import { Empty, Pagination, Spin } from 'antd'
+import { Empty, Pagination, Spin, Tooltip } from 'antd'
 import SubscriptionModal from './SubscriptionModal'
 import SubscriptionFilter from './SubscriptionFilter'
 
@@ -201,15 +201,32 @@ const Subscription = () => {
                     <td className="px-6 py-4 whitespace-nowrap capitalize">{item?.type || '—'}</td>
                     <td className="px-6 py-4 whitespace-nowrap">{item?.price || '0'}</td>
                     <td className="px-6 py-4 whitespace-nowrap">{item?.currency || '—'}</td>
-                    {/* <td className="px-6 py-4 word-nowrap">{item?.description || '—'}</td> */}
-                    <td
+                    <td className="px-6 py-4 max-w-[180px]">
+                      <Tooltip title={item?.description} placement="topLeft">
+                        <span
+                          style={{
+                            display: 'inline-block',
+                            width: '100%',
+                            whiteSpace: 'nowrap',
+                            overflow: 'hidden',
+                            textOverflow: 'ellipsis',
+                            cursor: 'pointer',
+                          }}
+                        >
+                          {item?.description?.split(' ')?.slice(0, 2)?.join(' ') || '-'}
+                          {item?.description?.split(' ')?.length > 2 ? '…' : ''}
+                        </span>
+                      </Tooltip>
+                    </td>
+
+                    {/* <td
                       className="px-6 py-4 cursor-pointer"
                       onClick={() => toggleAddress(item._id)}
                     >
                       {expandedAddresses[item._id]
                         ? item?.description
                         : item?.description.split(' ').slice(0, 2).join(' ') + '...'}
-                    </td>
+                    </td> */}
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="flex gap-2">
                         <button
