@@ -427,18 +427,18 @@ const Properties = () => {
                     {/* Actions */}
                     <td className="px-6 py-4">
                       <div className="flex gap-2">
-                        {/* Adopted Button */}
+                        {/* Published Button */}
                         <button
-                          onClick={() => adoptProperty(item)}
-                          disabled={item?.isAdopted === true}
+                          onClick={() => approveData(item, 'Published')}
+                          disabled={item?.approvalStatus === 'Published'}
                           className={`p-1 ${
                             item?.approvalStatus === 'Rejected'
                               ? 'text-gray-400 cursor-not-allowed' // disabled style
-                              : 'text-orange-600 hover:text-blue-800 p-1' // active style
+                              : 'text-green-600 hover:text-blue-800 p-1' // active style
                           }`}
-                          title="Adopt property"
+                          title="Approve property"
                         >
-                          <SiMercadopago className="fs-4" />
+                          <CheckCircle className="w-4 h-4" />
                         </button>
 
                         {/* Verified Button */}
@@ -455,18 +455,18 @@ const Properties = () => {
                           <MdVerified className="fs-4 " />
                         </button>
 
-                        {/* Published Button */}
+                        {/* Adopted Button */}
                         <button
-                          onClick={() => approveData(item, 'Published')}
-                          disabled={item?.approvalStatus === 'Published'}
+                          onClick={() => adoptProperty(item)}
+                          disabled={item?.isAdopted === true}
                           className={`p-1 ${
                             item?.approvalStatus === 'Rejected'
                               ? 'text-gray-400 cursor-not-allowed' // disabled style
-                              : 'text-green-600 hover:text-blue-800 p-1' // active style
+                              : 'text-orange-600 hover:text-blue-800 p-1' // active style
                           }`}
-                          title="Approve property"
+                          title="Adopt property"
                         >
-                          <CheckCircle className="w-4 h-4" />
+                          <SiMercadopago className="fs-4" />
                         </button>
 
                         {/* Rejected Button */}
