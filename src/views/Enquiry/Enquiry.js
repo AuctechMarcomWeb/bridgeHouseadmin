@@ -26,11 +26,20 @@ const Enquiry = () => {
   const [filters, setFilters] = useState({ status: '' })
   const [tempFilters, setTempFilters] = useState(filters)
   const [expandedAddresses, setExpandedAddresses] = React.useState({})
+  const [expandedNotes, setExpandedNotes] = React.useState({})
+
   const formatDate = (dateString) => {
     return dateString ? moment(dateString).format('DD-MM-YYYY') : 'N/A'
   }
   const toggleAddress = (id) => {
     setExpandedAddresses((prev) => ({
+      ...prev,
+      [id]: !prev[id],
+    }))
+  }
+
+  const toggleNotes = (id) => {
+    setExpandedNotes((prev) => ({
       ...prev,
       [id]: !prev[id],
     }))
@@ -182,6 +191,7 @@ const Enquiry = () => {
                   <th className="px-6 py-3">Property Name</th>
                   <th className="px-6 py-3">Property Code</th>
                   <th className="px-6 py-3">Date</th>
+                  <th className="px-6 py-3"> Remark</th>
                   <th className="px-6 py-3">Status</th>
                   <th className="px-6 py-3">Actions</th>
                 </tr>
@@ -215,6 +225,14 @@ const Enquiry = () => {
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">{formatDate(item?.createdAt)}</td>
+                    <td className="px-6 py-4 whitespace-nowrap">{item?.notes || 'N/A'}</td>
+
+                    {/* <td className="px-6 py-4 cursor-pointer" onClick={() => toggleNotes(item._id)}>
+                      {expandedNotes[item._id]
+                        ? item?.notes
+                        : item?.notes.split(' ').slice(0, 2).join(' ') + '...'}
+                    </td> */}
+
                     <td className="px-6 py-4 whitespace-nowrap">
                       <span
                         className={`px-2 py-1 text-xs font-medium rounded-full ${
