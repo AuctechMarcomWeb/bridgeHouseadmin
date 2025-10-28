@@ -4,7 +4,7 @@ import { Search, Plus, Edit, Trash2, AlertTriangle } from 'lucide-react'
 import ExportButton from '../ExportButton'
 import { deleteRequest, getRequest } from '../../Helpers'
 import toast from 'react-hot-toast'
-import { Empty, Pagination, Spin } from 'antd'
+import { Empty, Pagination, Spin, Tooltip } from 'antd'
 import axios from 'axios'
 import TestimonialsModals from './TestimonialsModals'
 import GalleryFilters from '../Gallery/GalleryFilters'
@@ -187,15 +187,24 @@ const Testimonials = () => {
                       {(page - 1) * limit + (index + 1)}
                     </td>
                     <td className="px-6 py-4">{item?.title}</td>
-
-                    <td
-                      className="px-6 py-4 cursor-pointer"
-                      onClick={() => toggleAddress(item._id)}
-                    >
-                      {expandedAddresses[item._id]
-                        ? item?.discription
-                        : item?.discription.split(' ').slice(0, 2).join(' ') + '...'}
+                    <td className="px-6 py-4 ">
+                      <Tooltip title={item?.discription} placement="topLeft">
+                        <span
+                          style={{
+                            display: 'inline-block',
+                            width: '100%',
+                            whiteSpace: 'nowrap',
+                            overflow: 'hidden',
+                            textOverflow: 'ellipsis',
+                            cursor: 'pointer',
+                          }}
+                        >
+                          {item?.discription?.split(' ')?.slice(0, 2)?.join(' ') || '-'}
+                          {item?.discription?.split(' ')?.length > 2 ? '…' : ''}
+                        </span>
+                      </Tooltip>
                     </td>
+
                     <td className="px-6 py-4">{item?.rating}</td>
                     <td className="px-6 py-4">
                       <img

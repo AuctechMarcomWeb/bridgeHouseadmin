@@ -4,7 +4,7 @@ import { Search, Plus, Edit, Trash2, AlertTriangle } from 'lucide-react'
 import ExportButton from '../ExportButton'
 import { deleteRequest, getRequest } from '../../Helpers'
 import toast from 'react-hot-toast'
-import { Empty, Pagination, Spin } from 'antd'
+import { Empty, Pagination, Spin, Tooltip } from 'antd'
 import axios from 'axios'
 import BridgeHouseDetailsModal from './BridgeHouseDetailsModal'
 import { faL } from '@fortawesome/free-solid-svg-icons'
@@ -201,13 +201,22 @@ const BridgeHouseDetails = () => {
                         className="w-10 h-10 rounded-full object-cover"
                       />
                     </td>
-                    <td
-                      className="px-6 py-4 cursor-pointer"
-                      onClick={() => toggleAddress(item._id)}
-                    >
-                      {expandedAddresses[item._id]
-                        ? item?.notes
-                        : item?.notes.split(' ').slice(0, 2).join(' ') + '...'}
+                    <td className="px-6 py-4 ">
+                      <Tooltip title={item?.notes} placement="topLeft">
+                        <span
+                          style={{
+                            display: 'inline-block',
+                            width: '100%',
+                            whiteSpace: 'nowrap',
+                            overflow: 'hidden',
+                            textOverflow: 'ellipsis',
+                            cursor: 'pointer',
+                          }}
+                        >
+                          {item?.notes?.split(' ')?.slice(0, 2)?.join(' ') || '-'}
+                          {item?.notes?.split(' ')?.length > 2 ? '…' : ''}
+                        </span>
+                      </Tooltip>
                     </td>
                     <td className="px-6 py-4">
                       {item?.status ? (
