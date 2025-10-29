@@ -908,7 +908,8 @@ const PropertiesModal = ({
             <div className="col-md-12">
               <label className="form-label">
                 <strong>
-                  Nearby {isOptional('nearby') && <span className="text-muted"> (optional)</span>}
+                  Nearby Location
+                  {isOptional('nearby') && <span className="text-muted"> (optional)</span>}
                 </strong>
               </label>
 
