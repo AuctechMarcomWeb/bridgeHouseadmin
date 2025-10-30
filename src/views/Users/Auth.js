@@ -173,17 +173,8 @@ const Auth = () => {
                         'N/A'
                       )}
                     </td>
-                    {/* <td className="px-6 py-4">{item?.accountType || 'N/A'}</td>
-                    <td
-                      className="px-6 py-4 cursor-pointer"
-                      onClick={() => toggleAddress(item._id)}
-                    >
-                      {item?.address
-                        ? expandedAddresses[item._id]
-                          ? item.address
-                          : item.address.split(' ').slice(0, 2).join(' ') + '...'
-                        : 'N/A'}
-                    </td> */}
+                    <td className="px-6 py-4">{item?.accountType || 'N/A'}</td>
+
                     <td className="px-6 py-4 ">
                       <Tooltip title={item?.address} placement="topLeft">
                         <span
