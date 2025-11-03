@@ -7,6 +7,8 @@ import toast from 'react-hot-toast'
 import { fileUpload, postRequest, putRequest, getRequest } from '../../Helpers'
 import { AppContext } from '../../Context/AppContext'
 import LocationSearchInput from '../../components/LocationSearchInput/LocationSearchInput'
+import { House } from 'lucide-react'
+import CurrentLocationField from '../../components/CurrentLocationField'
 
 const PropertiesModal = ({
   setUpdateStatus,
@@ -47,7 +49,7 @@ const PropertiesModal = ({
           addedBy: user?._id,
           name: '',
           propertyType: '',
-          documents: [],
+          documents: [{ name: '', number: '', image: '' }],
           description: '',
           propertyDetails: {
             length: '',
@@ -70,8 +72,12 @@ const PropertiesModal = ({
           nearby: [],
           gallery: [],
           propertyCode: generatePropertyCode(),
+          measurementUnit: '',
+          plotCategory: '',
+          propertyLocation: '',
         },
   )
+  const measurementUnit = formData?.measurementUnit
 
   useEffect(() => {
     getRequest(`category?isPagination=false`)
@@ -212,16 +218,22 @@ const PropertiesModal = ({
           [name]: type === 'checkbox' ? checked : value,
         }
 
-        // Area calculation for nested length/width
-        if (nestedKey === 'propertyDetails' && (name === 'length' || name === 'width')) {
-          const length =
-            name === 'length'
-              ? parseFloat(value || 0)
-              : parseFloat(prev.propertyDetails.length || 0)
-          const width =
-            name === 'width' ? parseFloat(value || 0) : parseFloat(prev.propertyDetails.width || 0)
+        // // Area calculation for nested length/width
+        // if (nestedKey === 'propertyDetails' && (name === 'length' || name === 'width')) {
+        //   const length =
+        //     name === 'length'
+        //       ? parseFloat(value || 0)
+        //       : parseFloat(prev.propertyDetails.length || 0)
+        //   const width =
+        //     name === 'width' ? parseFloat(value || 0) : parseFloat(prev.propertyDetails.width || 0)
 
-          updatedData[nestedKey].area = isNaN(length * width) ? '' : (length * width).toFixed(2)
+        //   updatedData[nestedKey].area = isNaN(length * width) ? '' : (length * width).toFixed(2)
+        // }
+        if (nestedKey === 'propertyDetails') {
+          setFormData((prev) => ({
+            ...prev,
+            propertyDetails: { ...prev.propertyDetails, [name]: value },
+          }))
         }
       } else {
         updatedData[name] = type === 'checkbox' ? checked : value
@@ -316,104 +328,69 @@ const PropertiesModal = ({
 
   // document
 
+  // 🔹 Handle Document Field Changes
   const handleDocumentChange = (e, index) => {
     const { name, value } = e.target
-    const updatedFacilities = [...formData.documents]
+    const updated = [...formData.documents]
 
-    if (name.includes('Name')) {
-      updatedFacilities[index].name = value
-    } else if (name.includes('Number')) {
-      updatedFacilities[index].number = value
-    }
+    if (name.includes('Name')) updated[index].name = value
+    if (name.includes('Number')) updated[index].number = value
 
-    setFormData((prev) => ({
-      ...prev,
-      documents: updatedFacilities,
-    }))
+    setFormData((prev) => ({ ...prev, documents: updated }))
   }
 
-  // const handleDocumentImageChange = (e, index) => {
-  //   const file = e.target.files[0]
-  //   if (!file) return
-
-  //   // Upload to server
-  //   fileUpload({
-  //     url: `upload/uploadImage`,
-  //     cred: { file },
-  //   })
-  //     .then((res) => {
-  //       const uploadedUrl = res.data?.data?.imageUrl
-  //       const updatedDocuments = [...formData.documents]
-  //       updatedDocuments[index].image = uploadedUrl
-
-  //       setFormData((prev) => ({
-  //         ...prev,
-  //         documents: updatedDocuments,
-  //       }))
-  //     })
-  //     .catch((error) => {
-  //       console.error('Document image upload failed:', error)
-  //       toast.error(error?.res?.message || 'Update failed')
-  //     })
-  // }
-
+  // 🔹 Handle File Upload
   const handleDocumentImageChange = (e, index) => {
     const file = e.target.files[0]
     if (!file) return
 
-    // Mark this doc as uploading
-    setUploadingDocs((prev) => [...prev, index])
+    setUploadingDocs((prev) => [...prev, index]) // start loader
 
     fileUpload({
-      url: `upload/uploadImage`,
+      url: 'upload/uploadImage',
       cred: { file },
     })
       .then((res) => {
         const uploadedUrl = res.data?.data?.imageUrl
-        const updatedDocuments = [...formData.documents]
-        updatedDocuments[index].image = uploadedUrl
-
-        setFormData((prev) => ({
-          ...prev,
-          documents: updatedDocuments,
-        }))
+        if (uploadedUrl) {
+          const updated = [...formData.documents]
+          updated[index].image = uploadedUrl
+          setFormData((prev) => ({ ...prev, documents: updated }))
+          toast.success('Document uploaded successfully')
+        } else {
+          toast.error('Upload failed')
+        }
       })
-      .catch((error) => {
-        console.error('Document image upload failed:', error)
-        toast.error(error?.res?.message || 'Upload failed')
+      .catch(() => {
+        toast.error('Upload failed')
       })
       .finally(() => {
-        // Remove from uploading state
-        setUploadingDocs((prev) => prev.filter((i) => i !== index))
+        setUploadingDocs((prev) => prev.filter((i) => i !== index)) // stop loader
       })
   }
 
+  // 🔹 Remove Uploaded Image
   const removeDocumentImage = (index) => {
-    const updatedDocuments = [...formData.documents]
-    updatedDocuments[index].image = ''
-    setFormData((prev) => ({
-      ...prev,
-      documents: updatedDocuments,
-    }))
-
+    const updated = [...formData.documents]
+    updated[index].image = ''
+    setFormData((prev) => ({ ...prev, documents: updated }))
     if (documentInputRefs.current[index]) {
-      documentInputRefs.current[index].value = '' // reset input field
+      documentInputRefs.current[index].value = '' // reset file input
     }
   }
 
+  // 🔹 Add New Document Row
   const addDocument = () => {
     setFormData((prev) => ({
       ...prev,
-      documents: [...prev.nearby, { name: '', number: '', image: '' }],
+      documents: [...prev.documents, { name: '', number: '', image: '' }],
     }))
   }
 
+  // 🔹 Remove Document Row
   const removeDocument = (index) => {
-    const updatedFacilities = formData.documents.filter((_, i) => i !== index)
-    setFormData((prev) => ({
-      ...prev,
-      documents: updatedFacilities,
-    }))
+    const updated = formData.documents.filter((_, i) => i !== index)
+    setFormData((prev) => ({ ...prev, documents: updated }))
   }
 
   // 🔹 Submit handler for edit
@@ -460,9 +437,12 @@ const PropertiesModal = ({
   const isOptional = (field) => {
     const type = formData?.propertyType
     const optionalFields = {
-      Commercial: ['bhk', 'bedrooms', 'nearby'],
-      Plot: ['facilities', 'services'],
-      Apartment: ['floors'],
+      Commercial: ['floors', 'builtYear', 'nearby', 'facilities', 'services'],
+      Plot: ['facilities', 'services', 'nearby'],
+      Apartment: ['facilities', 'services'],
+      'Villa/Banglow': ['bhk', 'facilities', 'services'],
+      Farmhouse: ['facilities', 'services', 'bathrooms', 'bedrooms'],
+      'Individual House': ['facilities', 'services', 'bhk'],
     }
     return optionalFields[type]?.includes(field)
   }
@@ -470,6 +450,121 @@ const PropertiesModal = ({
   const isRequired = (fieldName) => {
     return !isOptional(fieldName)
   }
+
+  // 🧮 Convert or reset values when measurement unit changes
+  useEffect(() => {
+    if (!formData?.propertyDetails) return
+
+    const conversionRates = {
+      area: {
+        'Square Feet': {
+          'Square Meters': 0.092903,
+          'Square Yards': 0.1111,
+          Acres: 1 / 43560,
+          Hectares: 1 / 107639,
+          Bissa: 1 / 1361, // Example conversion
+        },
+        'Square Meters': {
+          'Square Feet': 10.7639,
+          'Square Yards': 1.19599,
+          Acres: 1 / 4046.86,
+          Hectares: 1 / 10000,
+          Bissa: 7.89,
+        },
+        'Square Yards': {
+          'Square Feet': 9,
+          'Square Meters': 0.836127,
+          Acres: 1 / 4840,
+          Hectares: 1 / 11960,
+          Bissa: 1 / 151.22,
+        },
+        Acres: {
+          'Square Feet': 43560,
+          'Square Meters': 4046.86,
+          'Square Yards': 4840,
+          Hectares: 0.404686,
+          Bissa: 32,
+        },
+        Hectares: {
+          'Square Feet': 107639,
+          'Square Meters': 10000,
+          'Square Yards': 11960,
+          Acres: 2.47105,
+          Bissa: 79.1,
+        },
+        Bissa: {
+          'Square Feet': 1361,
+          'Square Meters': 125.5,
+          'Square Yards': 151.22,
+          Acres: 1 / 32,
+          Hectares: 1 / 79.1,
+        },
+      },
+    }
+
+    const formatNumber = (num) => {
+      if (!num) return ''
+      const rounded = parseFloat(num.toFixed(2))
+      return Number.isInteger(rounded) ? rounded.toString() : rounded.toFixed(2)
+    }
+    setFormData((prev) => {
+      const oldUnit = prev.measurementUnit || 'Square Feet'
+      const area = parseFloat(prev.propertyDetails.area) || 0
+
+      if (
+        ['Acres', 'Hectares', 'Bissa'].includes(oldUnit) ||
+        ['Acres', 'Hectares', 'Bissa'].includes(measurementUnit)
+      ) {
+        return {
+          ...prev,
+          measurementUnit,
+          propertyDetails: {
+            ...prev.propertyDetails,
+            length: '',
+            width: '',
+            area: '',
+          },
+        }
+      }
+
+      // Convert area
+      return {
+        ...prev,
+        measurementUnit,
+        propertyDetails: {
+          ...prev.propertyDetails,
+          area: area
+            ? formatNumber(area * (conversionRates.area[oldUnit]?.[measurementUnit] || 1))
+            : '',
+        },
+      }
+    })
+  }, [measurementUnit])
+
+  // 🧮 Auto calculate area for linear units
+  useEffect(() => {
+    if (['Acres', 'Hectares', 'Bissa'].includes(measurementUnit)) return
+
+    const len = parseFloat(formData?.propertyDetails?.length)
+    const wid = parseFloat(formData?.propertyDetails?.width)
+    if (!len || !wid) return
+
+    const newArea = len * wid
+
+    const formatNumber = (num) => {
+      if (!num) return ''
+      const rounded = parseFloat(num.toFixed(2))
+      return Number.isInteger(rounded) ? rounded.toString() : rounded.toFixed(2)
+    }
+
+    setFormData((prev) => ({
+      ...prev,
+      propertyDetails: {
+        ...prev.propertyDetails,
+        area: formatNumber(newArea),
+      },
+    }))
+  }, [formData?.propertyDetails?.length, formData?.propertyDetails?.width, measurementUnit])
 
   return (
     <Modal
@@ -486,7 +581,7 @@ const PropertiesModal = ({
         <form onSubmit={modalData ? handleEdit : handleSubmit} className="needs-validation">
           <div className="row">
             <div className="col-md-6">
-              <label className="form-label fw-bold">PropertyCode *</label>
+              <label className="form-label fw-bold">Property Code *</label>
               <input
                 type="text"
                 className={`form-control ${errors?.propertyCode ? 'is-invalid' : ''}`}
@@ -496,15 +591,14 @@ const PropertiesModal = ({
                 onChange={handleChange}
               />
             </div>
-
-            <div className="col-md-6">
-              {' '}
+            {/* Property Type */}
+            <div className={formData?.propertyType === 'Plot' ? 'col-md-3' : 'col-md-6'}>
               <div className="mb-3">
                 <label className="form-label fw-bold">Property Type *</label>
                 <select
-                  className={`form-select `}
+                  className="form-select"
                   name="propertyType"
-                  value={formData.propertyType}
+                  value={formData?.propertyType || ''}
                   required
                   onChange={handleChange}
                 >
@@ -514,9 +608,29 @@ const PropertiesModal = ({
               </div>
             </div>
 
+            {/* 🪵 Plot Category — only visible when Property Type = "Plot" */}
+            {formData?.propertyType === 'Plot' && (
+              <div className="col-md-3">
+                <div className="mb-3">
+                  <label className="form-label fw-bold">Plot Category *</label>
+                  <select
+                    className="form-select"
+                    name="plotCategory"
+                    value={formData?.plotCategory || ''}
+                    required
+                    onChange={handleChange}
+                  >
+                    <option value="">Select Plot Category</option>
+                    <option value="Residential">Residential</option>
+                    <option value="Commercial">Commercial</option>
+                    <option value="Agricultural">Agricultural</option>
+                  </select>
+                </div>
+              </div>
+            )}
             <div className="col-md-6">
               <div className="mb-3">
-                <label className="form-label fw-bold">Property Name *</label>
+                <label className="form-label fw-bold">Property Title *</label>
                 <input
                   type="text"
                   className={`form-control `}
@@ -529,12 +643,7 @@ const PropertiesModal = ({
               </div>
             </div>
             <div className="col-md-6">
-              <label className="form-label fw-bold">Address *</label>
-              <LocationSearchInput formData={formData} setFormData={setFormData} />
-            </div>
-
-            <div className="col-md-6">
-              <label className="form-label fw-bold">Actual Price (₹) *</label>
+              <label className="form-label fw-bold">Actual Price(₹) *</label>
               <input
                 type="number"
                 className={`form-control `}
@@ -542,12 +651,12 @@ const PropertiesModal = ({
                 value={formData?.actualPrice}
                 required
                 onChange={handleChange}
-                placeholder=""
+                placeholder="Enter Actual Price"
                 min="0"
               />
             </div>
             <div className="col-md-6">
-              <label className="form-label fw-bold">Selling Price (₹) *</label>
+              <label className="form-label fw-bold">Selling Price(₹) *</label>
               <input
                 type="number"
                 className={`form-control `}
@@ -555,162 +664,266 @@ const PropertiesModal = ({
                 value={formData?.sellingPrice}
                 required
                 onChange={handleChange}
-                placeholder=""
+                placeholder="Enter Selling Price"
                 min="0"
               />
             </div>
-            <div className="col-md-12">
-              <label className="form-label fw-bold">Description *</label>
-              <textarea
-                type="text"
-                className={`form-control`}
-                name="description"
-                rows={3}
-                required
-                value={formData?.description}
-                onChange={handleChange}
-              />
+
+            <div className="col-md-6">
+              <label className="form-label fw-bold">Address *</label>
+              <LocationSearchInput formData={formData} setFormData={setFormData} />
             </div>
 
-            {/* =================== */}
+            <div className="col-md-9">
+              <label className="form-label fw-bold">Current Location</label>
+              <CurrentLocationField formData={formData} setFormData={setFormData} />
+            </div>
 
+            {/* ================= Property Details ================= */}
             <hr className="m-0 p-0 my-3" />
-
-            {/* Property Details */}
-
             <label className="form-label fw-bold d-block mb-2">Property Details</label>
 
             <div className="row">
-              <div className="col-md-6">
-                <label className="form-label fw-bold">Length (ft) *</label>
-                <input
-                  type="text"
-                  className="form-control"
-                  name="length"
-                  data-nested="propertyDetails"
-                  value={formData?.propertyDetails?.length}
-                  onChange={handleChange}
-                  required
-                />
+              {/* Measurement Unit */}
+              <div
+                className={
+                  ['Acres', 'Hectares', 'Bissa'].includes(formData?.measurementUnit)
+                    ? 'col-md-6'
+                    : 'col-md-4'
+                }
+              >
+                <div className="mb-3">
+                  <label className="form-label fw-bold">Measurement Unit *</label>
+                  <select
+                    className="form-select"
+                    name="measurementUnit"
+                    value={formData?.measurementUnit || ''}
+                    onChange={handleChange}
+                    required
+                  >
+                    {/* ✅ Common Options */}
+                    <option value="Square Feet">Square Feet</option>
+                    <option value="Square Meters">Square Meters</option>
+
+                    {/* ✅ Villa Additional */}
+                    {formData?.propertyType === 'Villa/Banglow' && (
+                      <option value="Square Yards">Square Yards</option>
+                    )}
+
+                    {/* ✅ Plot / Others Additional */}
+                    {formData?.propertyType !== 'Apartment' &&
+                      formData?.propertyType !== 'Individual House' &&
+                      formData?.propertyType !== 'Villa/Banglow' && (
+                        <>
+                          <option value="Square Yards">Square Yards</option>
+                          <option value="Acres">Acres</option>
+                          <option value="Hectares">Hectares</option>
+                          <option value="Bissa">Bissa</option>
+                        </>
+                      )}
+                  </select>
+                </div>
               </div>
 
-              <div className="col-md-6">
-                <label className="form-label fw-bold">Width (ft) *</label>
-                <input
-                  type="text"
-                  className="form-control"
-                  name="width"
-                  data-nested="propertyDetails"
-                  required
-                  value={formData?.propertyDetails?.width}
-                  onChange={handleChange}
-                />
-              </div>
-
-              <div className="col-md-6">
-                <label className="form-label fw-bold">Area(Sqft) *</label>
-                <input
-                  type="text"
-                  className="form-control"
-                  name="area"
-                  data-nested="propertyDetails"
-                  value={formData?.propertyDetails?.area || ''}
-                  readOnly // 🔹 prevent typing
-                />
-              </div>
-
-              {formData?.propertyType !== 'Plot' && (
+              {/* Length & Width (only for non-acre units) */}
+              {!['Acres', 'Hectares', 'Bissa'].includes(formData?.measurementUnit) && (
                 <>
-                  {/* Bedrooms */}
-                  <div className="col-md-6">
-                    <label className="form-label fw-bold">
-                      {' '}
-                      Bedrooms{' '}
-                      {isOptional('bedrooms') ? (
-                        <span className="text-muted"> (optional)</span>
-                      ) : (
-                        <span> * </span>
-                      )}
-                    </label>
-                    <input
-                      type="text"
-                      className="form-control"
-                      name="bedrooms"
-                      data-nested="propertyDetails"
-                      value={formData?.propertyDetails?.bedrooms || ''}
-                      onChange={handleChange}
-                      required={isRequired('bedrooms')}
-                    />
+                  <div className="col-md-4">
+                    <div className="mb-3">
+                      <label className="form-label fw-bold">
+                        Length{' '}
+                        {formData?.measurementUnit === 'Square Meters'
+                          ? '(m)'
+                          : formData?.measurementUnit === 'Square Yards'
+                            ? '(yd)'
+                            : '(ft)'}{' '}
+                        *
+                      </label>
+                      <input
+                        type="number"
+                        className="form-control"
+                        name="length"
+                        data-nested="propertyDetails"
+                        value={formData?.propertyDetails?.length || ''}
+                        onChange={handleChange}
+                        placeholder="Enter Length"
+                        min={1}
+                        required
+                      />
+                    </div>
                   </div>
-                  {/* Bathrooms */}
-                  <div className="col-md-6">
-                    <label className="form-label fw-bold">Bathrooms *</label>
-                    <input
-                      type="text"
-                      className="form-control"
-                      name="bathrooms"
-                      data-nested="propertyDetails"
-                      value={formData?.propertyDetails?.bathrooms || ''}
-                      onChange={handleChange}
-                      required
-                    />
-                  </div>
-                  {/* Floors */}
-                  <div className="col-md-6">
-                    <label className="form-label fw-bold">
-                      Floors{' '}
-                      {isOptional('floors') ? (
-                        <span className="text-muted"> (optional)</span>
-                      ) : (
-                        <span> * </span>
-                      )}
-                    </label>
-                    <input
-                      type="text"
-                      className="form-control"
-                      name="floors"
-                      data-nested="propertyDetails"
-                      required={isRequired(`floors`)}
-                      value={formData?.propertyDetails?.floors || ''}
-                      onChange={handleChange}
-                    />
-                  </div>
-                  {/* Facing */}
-                  <div className="col-md-6">
-                    <label className="form-label fw-bold">Facing *</label>
-                    <input
-                      type="text"
-                      className="form-control"
-                      name="facing"
-                      data-nested="propertyDetails"
-                      value={formData?.propertyDetails?.facing || ''}
-                      onChange={handleChange}
-                      required
-                    />
+
+                  <div className="col-md-4">
+                    <div className="mb-3">
+                      <label className="form-label fw-bold">
+                        Width{' '}
+                        {formData?.measurementUnit === 'Square Meters'
+                          ? '(m)'
+                          : formData?.measurementUnit === 'Square Yards'
+                            ? '(yd)'
+                            : '(ft)'}{' '}
+                        *
+                      </label>
+                      <input
+                        type="number"
+                        className="form-control"
+                        name="width"
+                        data-nested="propertyDetails"
+                        value={formData?.propertyDetails?.width || ''}
+                        onChange={handleChange}
+                        placeholder="Enter Width"
+                        min={1}
+                        required
+                      />
+                    </div>
                   </div>
                 </>
               )}
-              {/* Built Year */}
-              {formData?.propertyType !== 'Plot' && (
-                <div className="col-md-6">
+
+              {/* Area */}
+              <div
+                className={
+                  ['Acres', 'Hectares', 'Bissa'].includes(formData?.measurementUnit)
+                    ? 'col-md-6'
+                    : 'col-md-6'
+                }
+              >
+                <div className="mb-3">
                   <label className="form-label fw-bold">
-                    {' '}
-                    Built Year
-                    {isOptional('builtYear') ? (
-                      <span className="text-muted"> (optional)</span>
-                    ) : (
-                      <span> * </span>
-                    )}
+                    Area (
+                    {formData?.measurementUnit === 'Square Meters'
+                      ? 'm²'
+                      : formData?.measurementUnit === 'Square Yards'
+                        ? 'sq.yd'
+                        : formData?.measurementUnit === 'Acres'
+                          ? 'acres'
+                          : formData?.measurementUnit === 'Hectares'
+                            ? 'hectares'
+                            : formData?.measurementUnit === 'Bissa'
+                              ? 'bissa'
+                              : 'sq.ft'}
+                    ) *
                   </label>
                   <input
                     type="text"
                     className="form-control"
+                    name="area"
+                    data-nested="propertyDetails"
+                    value={formData?.propertyDetails?.area || ''}
+                    onChange={handleChange}
+                    readOnly={!['Acres', 'Hectares', 'Bissa'].includes(formData?.measurementUnit)}
+                    placeholder={
+                      ['Acres', 'Hectares', 'Bissa'].includes(formData?.measurementUnit)
+                        ? `Enter area in ${formData?.measurementUnit}`
+                        : 'Auto-calculated'
+                    }
+                  />
+                </div>
+              </div>
+
+              {/* Bedrooms, bathrooms, floors, built year */}
+              {!['Plot', 'Commercial'].includes(formData?.propertyType) && (
+                <div className="col-md-6">
+                  <label className="form-label fw-bold">
+                    Bedrooms{' '}
+                    {isOptional('bedrooms') ? (
+                      <span className="text-muted"> (optional)</span>
+                    ) : (
+                      <span> * </span>
+                    )}{' '}
+                  </label>
+                  <input
+                    type="number"
+                    className="form-control"
+                    name="bedrooms"
+                    data-nested="propertyDetails"
+                    value={formData?.propertyDetails?.bedrooms || ''}
+                    onChange={handleChange}
+                    placeholder="Enter number of bedrooms"
+                    required={isRequired('bedrooms')}
+                  />
+                </div>
+              )}
+
+              {!['Plot', 'Commercial'].includes(formData?.propertyType) && (
+                <div className="col-md-6">
+                  <label className="form-label fw-bold">
+                    Bathrooms{' '}
+                    {isOptional('bathrooms') ? (
+                      <span className="text-muted"> (optional)</span>
+                    ) : (
+                      <span> * </span>
+                    )}{' '}
+                  </label>
+                  <input
+                    type="number"
+                    className="form-control"
+                    name="bathrooms"
+                    data-nested="propertyDetails"
+                    value={formData?.propertyDetails?.bathrooms || ''}
+                    onChange={handleChange}
+                    placeholder="Enter number of bathrooms"
+                    required={isRequired('bathrooms')}
+                  />
+                </div>
+              )}
+
+              {!['Plot', 'Apartment'].includes(formData?.propertyType) && (
+                <div className="col-md-6">
+                  <label className="form-label fw-bold">
+                    Floors{' '}
+                    {isOptional('floors') ? (
+                      <span className="text-muted"> (optional)</span>
+                    ) : (
+                      <span> * </span>
+                    )}{' '}
+                  </label>
+                  <input
+                    type="number"
+                    className="form-control"
+                    name="floors"
+                    data-nested="propertyDetails"
+                    value={formData?.propertyDetails?.floors || ''}
+                    onChange={handleChange}
+                    placeholder="Enter number of floors"
+                    required={isRequired('floors')}
+                  />
+                </div>
+              )}
+
+              <div className="col-md-6">
+                <label className="form-label fw-bold">Facing *</label>
+                <input
+                  type="text"
+                  className="form-control"
+                  name="facing"
+                  data-nested="propertyDetails"
+                  value={formData?.propertyDetails?.facing || ''}
+                  onChange={handleChange}
+                  placeholder="Enter facing direction"
+                />
+              </div>
+
+              {formData?.propertyType !== 'Plot' && (
+                <div className="col-md-6">
+                  <label className="form-label fw-bold">
+                    Built Year{' '}
+                    {isOptional('floors') ? (
+                      <span className="text-muted"> (optional)</span>
+                    ) : (
+                      <span> * </span>
+                    )}{' '}
+                  </label>
+                  <input
+                    type="number"
+                    className="form-control"
                     name="builtYear"
                     data-nested="propertyDetails"
-                    required={isRequired('builtYear')}
                     value={formData?.propertyDetails?.builtYear || ''}
                     onChange={handleChange}
+                    placeholder="Enter year built (above 1900)"
                     min={1900}
+                    required={isRequired('builtYear')}
                   />
                 </div>
               )}
@@ -720,7 +933,7 @@ const PropertiesModal = ({
 
             {/* ======================= */}
 
-            {formData?.propertyType !== 'Plot' && (
+            {!['Plot', 'Commercial', 'Farmhouse'].includes(formData?.propertyType) && (
               <div className="col-md-6">
                 <div className="mb-3">
                   <label className="form-label fw-bold">
@@ -738,7 +951,7 @@ const PropertiesModal = ({
                     required={isRequired('bhk')}
                     onChange={handleChange}
                   >
-                    <option value="">Select BHK </option>
+                    <option value="Select BHK">Select BHK </option>
                     {bhkOption}
                   </select>
                 </div>
@@ -906,12 +1119,17 @@ const PropertiesModal = ({
 
             {/* Nearby */}
             <div className="col-md-12">
-              <label className="form-label">
-                <strong>
-                  Nearby Location
-                  {isOptional('nearby') && <span className="text-muted"> (optional)</span>}
-                </strong>
-              </label>
+              <div className="d-flex justify-content-between align-items-center mb-2">
+                <label className="form-label fw-bold">
+                  <strong>
+                    Nearby Location
+                    {isOptional('nearby') && <span className="text-muted"> (optional)</span>}
+                  </strong>
+                </label>
+                <button type="button" className="btn btn-success btn-sm" onClick={addNearBy}>
+                  + Add More
+                </button>
+              </div>
 
               {formData?.nearby?.map((facility, index) => (
                 <div className="row m-0 p-0 border mb-2" key={index}>
@@ -952,148 +1170,158 @@ const PropertiesModal = ({
                   </div>
                 </div>
               ))}
-
-              {/* Button to add new facility */}
-              <div className="col-md-12 mt-2">
-                <button type="button" className="btn btn-success btn-sm" onClick={addNearBy}>
-                  Add More
-                </button>
-              </div>
             </div>
             <hr className="m-0 p-0 my-3" />
-            {/* Documents */}
+
+            {/* 🔹 Documents Section */}
             <div className="col-md-12">
-              <label className="form-label">
-                <strong>Documents </strong>
-              </label>
-
-              {formData?.documents?.map((facility, index) => (
-                <div className="row m-0 p-0 border mb-2" key={index}>
-                  <div className="col-md-6 m-0 my-2">
-                    <label className="form-label">Document Name </label>
-
-                    <select
-                      name={`facilityName_${index}`}
-                      value={facility?.name}
-                      onChange={(e) => handleDocumentChange(e, index)}
-                      className="form-control"
-                    >
-                      <option value="">Select Document</option>
-                      {documentsOption}
-                    </select>
-                  </div>
-                  <div className="col-md-6 m-0 my-2">
-                    <label className="form-label">Document Number </label>
-                    <input
-                      type="text"
-                      name={`facilityNumber_${index}`}
-                      value={facility?.number}
-                      onChange={(e) => handleDocumentChange(e, index)}
-                      className="form-control"
-                    />
-                  </div>
-                  <div className="col-md-6 m-0 my-2">
-                    <label className="form-label">Document Image</label>
-                    <input
-                      type="file"
-                      accept="image/*"
-                      className="form-control"
-                      onChange={(e) => handleDocumentImageChange(e, index)}
-                      ref={(el) => (documentInputRefs.current[index] = el)}
-                    />
-                  </div>
-
-                  <div className="col-md-6 m-0 my-2">
-                    {/* If image uploaded */}
-                    {facility?.image && !uploadingDocs.includes(index) && (
-                      <div style={{ position: 'relative', display: 'inline-block' }}>
-                        <img
-                          src={facility.image}
-                          alt={`doc-${index}`}
-                          style={{
-                            width: '60px',
-                            height: '60px',
-                            marginTop: '5px',
-                            borderRadius: '4px',
-                            objectFit: 'cover',
-                            border: '1px solid #ddd',
-                          }}
-                        />
-                        {/* ❌ Remove button */}
-                        <button
-                          type="button"
-                          onClick={() => removeDocumentImage(index)}
-                          style={{
-                            position: 'absolute',
-                            top: '-5px',
-                            right: '-5px',
-                            background: 'red',
-                            color: 'white',
-                            border: 'none',
-                            borderRadius: '50%',
-                            width: '18px',
-                            height: '18px',
-                            fontSize: '12px',
-                            cursor: 'pointer',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            padding: 0,
-                          }}
-                        >
-                          ✕
-                        </button>
-                      </div>
-                    )}
-
-                    {/* If uploading */}
-                    {uploadingDocs.includes(index) && (
-                      <div
-                        style={{
-                          width: '60px',
-                          height: '60px',
-                          marginTop: '5px',
-                          borderRadius: '4px',
-                          backgroundColor: '#f3f3f3',
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          border: '1px solid #ddd',
-                        }}
-                      >
-                        <div
-                          className="spinner-border text-primary"
-                          role="status"
-                          style={{ width: '22px', height: '22px' }}
-                        >
-                          <span className="visually-hidden">Loading...</span>
-                        </div>
-                      </div>
-                    )}
-                  </div>
-
-                  {/* Button to remove a facility */}
-                  <div className="col-md-12 d-flex justify-content-end">
-                    {formData?.documents?.length > 1 && (
-                      <button
-                        type="button"
-                        className="btn btn-danger btn-sm mb-2"
-                        onClick={() => removeDocument(index)}
-                      >
-                        Remove
-                      </button>
-                    )}
-                  </div>
-                </div>
-              ))}
-
-              {/* Button to add new facility */}
-              <div className="col-md-12 mt-2">
+              <div className="d-flex justify-content-between align-items-center mb-2">
+                <label className="form-label fw-bold">Documents *</label>
                 <button type="button" className="btn btn-success btn-sm" onClick={addDocument}>
-                  Add More
+                  + Add More
                 </button>
               </div>
+
+              <div className="row">
+                {formData?.documents?.map((doc, index) => (
+                  <div className="border rounded p-3 mb-3" key={index}>
+                    <div className="row g-3 align-items-end">
+                      {/* Document Name */}
+                      <div className="col-md-6">
+                        <label className="form-label">Document Name *</label>
+                        <select
+                          name={`docName_${index}`}
+                          value={doc?.name}
+                          onChange={(e) => handleDocumentChange(e, index)}
+                          className="form-control"
+                          required
+                        >
+                          <option value="">Select Document</option>
+                          {documentsOption}
+                        </select>
+                      </div>
+
+                      {/* Document Number */}
+                      <div className="col-md-6">
+                        <label className="form-label">Document Number *</label>
+                        <input
+                          type="text"
+                          name={`docNumber_${index}`}
+                          value={doc?.number}
+                          onChange={(e) => handleDocumentChange(e, index)}
+                          className="form-control"
+                          placeholder="Enter Document Number"
+                          required
+                        />
+                      </div>
+
+                      {/* Document Image Upload */}
+                      <div className="col-md-6">
+                        <label className="form-label">Document Image *</label>
+                        <input
+                          type="file"
+                          accept="image/*,application/pdf"
+                          className="form-control"
+                          onChange={(e) => handleDocumentImageChange(e, index)}
+                          ref={(el) => (documentInputRefs.current[index] = el)}
+                          disabled={uploadingDocs.includes(index)}
+                          required={!doc?.image} // ✅ only required when no image exists
+                        />
+                      </div>
+
+                      {/* Preview / Loader */}
+                      <div className="col-md-6">
+                        {uploadingDocs.includes(index) ? (
+                          <div
+                            style={{
+                              width: '70px',
+                              height: '70px',
+                              background: '#f3f3f3',
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              borderRadius: '4px',
+                              border: '1px solid #ddd',
+                            }}
+                          >
+                            <div
+                              className="spinner-border text-primary"
+                              role="status"
+                              style={{ width: '24px', height: '24px' }}
+                            >
+                              <span className="visually-hidden">Loading...</span>
+                            </div>
+                          </div>
+                        ) : doc?.image ? (
+                          doc.image.endsWith('.pdf') ? (
+                            <a
+                              href={doc.image}
+                              target="_blank"
+                              rel="noreferrer"
+                              className="text-decoration-none"
+                            >
+                              📄 View PDF
+                            </a>
+                          ) : (
+                            <div style={{ position: 'relative', display: 'inline-block' }}>
+                              <img
+                                src={doc.image}
+                                alt={`doc-${index}`}
+                                style={{
+                                  width: '70px',
+                                  height: '70px',
+                                  borderRadius: '4px',
+                                  objectFit: 'cover',
+                                  border: '1px solid #ddd',
+                                }}
+                              />
+                              {/* ❌ Remove Image */}
+                              <button
+                                type="button"
+                                onClick={() => removeDocumentImage(index)}
+                                style={{
+                                  position: 'absolute',
+                                  top: '-6px',
+                                  right: '-6px',
+                                  background: 'red',
+                                  color: 'white',
+                                  border: 'none',
+                                  borderRadius: '50%',
+                                  width: '18px',
+                                  height: '18px',
+                                  fontSize: '12px',
+                                  cursor: 'pointer',
+                                  display: 'flex',
+                                  alignItems: 'center',
+                                  justifyContent: 'center',
+                                  padding: 0,
+                                }}
+                              >
+                                ✕
+                              </button>
+                            </div>
+                          )
+                        ) : null}
+                      </div>
+
+                      {/* Remove Button */}
+                      {formData?.documents?.length > 1 && (
+                        <div className="col-md-12 text-end">
+                          <button
+                            type="button"
+                            className="btn btn-danger btn-sm"
+                            onClick={() => removeDocument(index)}
+                          >
+                            Remove
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
             </div>
+
             <hr className="m-0 p-0 my-3" />
 
             <div className="col-md-6">
@@ -1150,6 +1378,18 @@ const PropertiesModal = ({
                 <option value="Registered">Registered</option>
                 <option value="Booked">Booked</option>
               </select>
+            </div>
+            <div className="col-md-12">
+              <label className="form-label fw-bold">Description *</label>
+              <textarea
+                type="text"
+                className={`form-control`}
+                name="description"
+                rows={3}
+                required
+                value={formData?.description}
+                onChange={handleChange}
+              />
             </div>
           </div>
 

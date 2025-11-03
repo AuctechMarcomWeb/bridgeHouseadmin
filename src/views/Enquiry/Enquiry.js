@@ -188,6 +188,8 @@ const Enquiry = () => {
                   <th className="px-6 py-3">Name</th>
                   <th className="px-6 py-3">Phone</th>
                   <th className="px-6 py-3">E-Mail</th>
+                  <th className="px-6 py-3">Occuption</th>
+                  <th className="px-6 py-3">Planning Month</th>
                   <th className="px-6 py-3">Message</th>
                   <th className="px-6 py-3">Property Name</th>
                   <th className="px-6 py-3">Property Code</th>
@@ -204,9 +206,12 @@ const Enquiry = () => {
                       {(page - 1) * limit + (index + 1)}
                     </td>
 
-                    <td className="px-6 py-4 whitespace-nowrap">{item?.name}</td>
-                    <td className="px-6 py-4 whitespace-nowrap">{item?.phone}</td>
-                    <td className="px-6 py-4 whitespace-nowrap">{item?.email}</td>
+                    <td className="px-6 py-4 whitespace-nowrap">{item?.name || '-'}</td>
+                    <td className="px-6 py-4 whitespace-nowrap">{item?.phone || '-'}</td>
+                    <td className="px-6 py-4 whitespace-nowrap">{item?.email || '-'}</td>
+                    <td className="px-6 py-4 whitespace-nowrap">{item?.occuption || '-'}</td>
+                    <td className="px-6 py-4 whitespace-nowrap">{item?.planingTime || '-'}</td>
+
                     <td className="px-6 py-4 max-w-[180px]">
                       <Tooltip title={item?.message} placement="topLeft">
                         <span
@@ -226,7 +231,7 @@ const Enquiry = () => {
                     </td>
 
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm text-gray-900">{item?.property?.name || 'N/A'}</div>
+                      <div className="text-sm text-gray-900">{item?.property?.name || '-'}</div>
                     </td>
 
                     <td className="px-6 py-4 whitespace-nowrap">

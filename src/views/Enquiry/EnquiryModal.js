@@ -46,6 +46,8 @@ const EnquiryModal = ({
       email: '',
       phone: '',
       message: '',
+      occuption: '',
+      planingTime: '',
       status: '', // default value
     })
     setErrors({})
@@ -85,6 +87,9 @@ const EnquiryModal = ({
     if (!formData.phone?.trim()) newErrors.phone = 'Phone is required'
     if (!formData.email?.trim()) newErrors.email = 'Email is required'
     if (!formData.message?.trim()) newErrors.message = 'Message is required'
+    if (!formData.occuption?.trim()) newErrors.occuption = 'Occuption is required'
+    if (!formData.planingTime?.trim()) newErrors.planingTime = 'Planing Time is required'
+
     if (!formData.property?.trim()) newErrors.property = 'Property selection is required'
 
     setErrors(newErrors)
@@ -188,6 +193,22 @@ const EnquiryModal = ({
             />
             {errors?.email && <div className="invalid-feedback">{errors.email}</div>}
           </div>
+          <div className="col-md-6 mb-3">
+            <label className="form-label fw-bold">Occuption </label>
+            <input
+              type="text"
+              className={`form-control ${errors.occuption ? 'is-invalid' : ''}`}
+              name="occuption"
+              value={formData?.occuption || '-'}
+              onChange={handleChange}
+              placeholder="Enter occuption"
+              disabled={!!modalData} // Disable in edit mode
+            />
+            {errors?.occuption && <div className="invalid-feedback">{errors.occuption}</div>}
+          </div>
+        </div>
+
+        <div className="row">
           {/* Message */}
           <div className="col-md-6 mb-3">
             <label className="form-label fw-bold">Message </label>
@@ -202,9 +223,6 @@ const EnquiryModal = ({
             />
             {errors?.message && <div className="invalid-feedback">{errors.message}</div>}
           </div>
-        </div>
-
-        <div className="row">
           {/* Property Selection */}
           <div className="col-md-6 mb-3">
             <label className="form-label fw-bold">Property</label>
@@ -224,25 +242,31 @@ const EnquiryModal = ({
             </select>
             {errors.property && <div className="invalid-feedback">{errors.property}</div>}
           </div>
-          {/* Notes */}
-          {modalData && (
-            <div className="col-md-6 mb-3">
-              <label className="form-label fw-bold">Notes</label>
-              <input
-                type="text"
-                className={`form-control ${errors.notes ? 'is-invalid' : ''}`}
-                name="notes"
-                value={formData?.notes || ''} // default blank if undefined
-                onChange={handleChange}
-                placeholder="Enter notes"
-              />
-              {errors?.notes && <div className="invalid-feedback">{errors.notes}</div>}
-            </div>
-          )}
+        </div>
 
+        <div className="row">
+          {/* planingTime */}
+          <div className=" col-md-6 mb-3">
+            <label htmlFor="status" className="form-label fw-bold">
+              Planing Time
+            </label>
+            <select
+              id="planingTime"
+              name="planingTime"
+              className="form-select"
+              value={formData?.planingTime} // default "new"
+              onChange={handleChange}
+            >
+              <option value="select">Select</option>
+              <option value="1 Month">Within 1 Month</option>
+              <option value="3 Month">Within 3 Month</option>
+              <option value="6 Month">Within 6 Month</option>
+              <option value="12 Month">Within 12 Month</option>
+            </select>
+          </div>
           {/* Status */}
           <div className=" col-md-6 mb-3">
-            <label htmlFor="status" className="form-label">
+            <label htmlFor="status" className="form-label fw-bold">
               Status
             </label>
             <select
@@ -258,6 +282,21 @@ const EnquiryModal = ({
               <option value="closed">Closed</option>
             </select>
           </div>
+          {/* Notes */}
+          {modalData && (
+            <div className="col-md-6 mb-3">
+              <label className="form-label fw-bold">Notes</label>
+              <input
+                type="text"
+                className={`form-control ${errors.notes ? 'is-invalid' : ''}`}
+                name="notes"
+                value={formData?.notes || ''} // default blank if undefined
+                onChange={handleChange}
+                placeholder="Enter notes"
+              />
+              {errors?.notes && <div className="invalid-feedback">{errors.notes}</div>}
+            </div>
+          )}
         </div>
 
         {/* Buttons */}
