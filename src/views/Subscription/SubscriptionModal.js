@@ -17,11 +17,14 @@ const SubscriptionModal = ({
     name: '',
     description: '',
     type: '',
-    price: '',
+    price: 0,
     currency: '',
-    PropertyListingLimit: '',
-    verifiedListingLimit: '',
+    PropertyListingLimit: 0,
+    verifiedListingLimit: 0,
+    leadListingLimit: 0,
   })
+  console.log('formData', formData)
+
   const [loading, setLoading] = useState(false)
   const [errors, setErrors] = useState({})
 
@@ -32,10 +35,11 @@ const SubscriptionModal = ({
         name: modalData.name || '',
         description: modalData.description || '',
         type: modalData.type || '',
-        price: modalData.price || '',
+        price: modalData.price ?? '',
         currency: modalData.currency || '',
-        PropertyListingLimit: modalData.PropertyListingLimit || '',
-        verifiedListingLimit: modalData.verifiedListingLimit || '',
+        PropertyListingLimit: modalData.PropertyListingLimit ?? '',
+        verifiedListingLimit: modalData.verifiedListingLimit ?? '',
+        leadListingLimit: modalData.leadListingLimit ?? '',
       })
     } else {
       setFormData({
@@ -46,6 +50,7 @@ const SubscriptionModal = ({
         currency: '',
         PropertyListingLimit: '',
         verifiedListingLimit: '',
+        leadListingLimit: '',
       })
     }
   }, [modalData])
@@ -59,6 +64,7 @@ const SubscriptionModal = ({
       currency: '',
       PropertyListingLimit: '',
       verifiedListingLimit: '',
+      leadListingLimit: '',
     })
     setErrors({})
     setModalData(null)
@@ -66,11 +72,19 @@ const SubscriptionModal = ({
   }
 
   const handleChange = (e) => {
-    const { name, value } = e.target
+    const { name, value, type } = e.target
+    let newValue = value
+
+    // ✅ Ensure number inputs stay ≥ 0
+    if (type === 'number') {
+      newValue = Math.max(0, Number(value))
+    }
+
     setFormData((prev) => ({
       ...prev,
-      [name]: value,
+      [name]: newValue,
     }))
+
     // ✅ Clear error for that field when user starts typing
     setErrors((prevErrors) => ({
       ...prevErrors,
@@ -85,10 +99,13 @@ const SubscriptionModal = ({
     if (!formData.type?.trim()) newErrors.type = 'Type is required'
     if (!formData.price?.toString().trim()) newErrors.price = 'Price is required'
     if (!formData.currency?.trim()) newErrors.currency = 'Currency is required'
-    if (!formData.PropertyListingLimit?.toString().trim())
+    if (formData.type === 'PropertyListing' && !formData.PropertyListingLimit?.toString().trim())
       newErrors.PropertyListingLimit = 'Property listing limit is required'
-    if (!formData.verifiedListingLimit?.toString().trim())
+    if (formData.type === 'VerifiedListing' && !formData.verifiedListingLimit?.toString().trim())
       newErrors.verifiedListingLimit = 'Verified listing limit is required'
+    if (formData.type === 'LeadListing' && !formData.leadListingLimit?.toString().trim())
+      newErrors.leadListingLimit = 'Lead listing limit is required'
+
     setErrors(newErrors)
     return Object.keys(newErrors).length === 0
   }
@@ -145,116 +162,143 @@ const SubscriptionModal = ({
         <div className="row">
           {/* Name */}
           <div className="col-md-6 mb-3">
-            <label className="form-label fw-bold">Name</label>
+            <label className="form-label fw-bold">Name *</label>
             <input
               type="text"
               className={`form-control ${errors.name ? 'is-invalid' : ''}`}
               name="name"
-              value={formData?.name}
+              value={formData.name}
               onChange={handleChange}
               placeholder="Enter subscription name"
             />
-            {errors.name && <div className="invalid-feedback">{errors?.name}</div>}
+            {errors.name && <div className="invalid-feedback">{errors.name}</div>}
           </div>
 
           {/* Description */}
           <div className="col-md-6 mb-3">
-            <label className="form-label fw-bold">Description</label>
+            <label className="form-label fw-bold">Description *</label>
             <textarea
               className={`form-control ${errors.description ? 'is-invalid' : ''}`}
               name="description"
-              value={formData?.description}
+              value={formData.description}
               onChange={handleChange}
               placeholder="Enter description"
               rows="1"
             />
-            {errors.description && <div className="invalid-feedback">{errors?.description}</div>}
+            {errors.description && <div className="invalid-feedback">{errors.description}</div>}
           </div>
         </div>
 
         <div className="row">
           {/* Type */}
           <div className="col-md-6 mb-3">
-            <label className="form-label fw-bold">Type</label>
+            <label className="form-label fw-bold">Type *</label>
             <select
               id="type"
               name="type"
               className={`form-select ${errors.type ? 'is-invalid' : ''}`}
-              value={formData?.type}
+              value={formData.type}
               onChange={handleChange}
             >
               <option value="">Select Type</option>
-              <option value="PropertyListing">PropertyListing</option>
-              <option value="VerifiedListing">VerifiedListing</option>
+              <option value="PropertyListing">Property Listing</option>
+              <option value="VerifiedListing">Verified Listing</option>
+              <option value="LeadListing">Lead Listing</option>
             </select>
-            {errors.type && <div className="invalid-feedback">{errors?.type}</div>}
+            {errors.type && <div className="invalid-feedback">{errors.type}</div>}
           </div>
 
           {/* Price */}
           <div className="col-md-6 mb-3">
-            <label className="form-label fw-bold">Price</label>
+            <label className="form-label fw-bold">Price *</label>
             <input
               type="number"
+              min="0"
               className={`form-control ${errors.price ? 'is-invalid' : ''}`}
               name="price"
-              value={formData?.price || 0}
+              value={formData.price}
               onChange={handleChange}
               placeholder="Enter price"
             />
-            {errors.price && <div className="invalid-feedback">{errors?.price}</div>}
+            {errors.price && <div className="invalid-feedback">{errors.price}</div>}
           </div>
         </div>
 
         <div className="row">
           {/* Currency */}
           <div className="col-md-6 mb-3">
-            <label className="form-label fw-bold">Currency</label>
+            <label className="form-label fw-bold">Currency *</label>
             <input
               type="text"
               className={`form-control ${errors.currency ? 'is-invalid' : ''}`}
               name="currency"
-              value={formData?.currency}
+              value={formData.currency}
               onChange={handleChange}
               placeholder="e.g. INR, USD"
             />
-            {errors.currency && <div className="invalid-feedback">{errors?.currency}</div>}
+            {errors.currency && <div className="invalid-feedback">{errors.currency}</div>}
           </div>
 
           {/* Property Listing Limit */}
-          <div className="col-md-6 mb-3">
-            <label className="form-label fw-bold">Property Listing Limit</label>
-            <input
-              type="number"
-              className={`form-control ${errors.PropertyListingLimit ? 'is-invalid' : ''}`}
-              name="PropertyListingLimit"
-              value={formData?.PropertyListingLimit || 0}
-              onChange={handleChange}
-              placeholder="Enter property listing limit"
-            />
-            {errors.PropertyListingLimit && (
-              <div className="invalid-feedback">{errors?.PropertyListingLimit}</div>
-            )}
-          </div>
-        </div>
+          {formData.type === 'PropertyListing' && (
+            <div className="col-md-6 mb-3">
+              <label className="form-label fw-bold">Property Listing Limit *</label>
+              <input
+                type="number"
+                min="0"
+                className={`form-control ${errors.PropertyListingLimit ? 'is-invalid' : ''}`}
+                name="PropertyListingLimit"
+                value={formData.PropertyListingLimit}
+                onChange={handleChange}
+                placeholder="Enter property listing limit"
+              />
+              {errors.PropertyListingLimit && (
+                <div className="invalid-feedback">{errors.PropertyListingLimit}</div>
+              )}
+            </div>
+          )}
 
-        {/* Verified Listing Limit */}
-        <div className="col-md-6 mb-3">
-          <label className="form-label fw-bold">Verified Listing Limit</label>
-          <input
-            type="number"
-            className={`form-control ${errors.verifiedListingLimit ? 'is-invalid' : ''}`}
-            name="verifiedListingLimit"
-            value={formData?.verifiedListingLimit || 0}
-            onChange={handleChange}
-            placeholder="Enter verified listing limit"
-          />
-          {errors.verifiedListingLimit && (
-            <div className="invalid-feedback">{errors?.verifiedListingLimit}</div>
+          {/* Verified Listing Limit */}
+          {formData.type === 'VerifiedListing' && (
+            <div className="col-md-6 mb-3">
+              <label className="form-label fw-bold">Verified Listing Limit *</label>
+              <input
+                type="number"
+                min="0"
+                className={`form-control ${errors.verifiedListingLimit ? 'is-invalid' : ''}`}
+                name="verifiedListingLimit"
+                value={formData.verifiedListingLimit}
+                onChange={handleChange}
+                placeholder="Enter verified listing limit"
+              />
+              {errors.verifiedListingLimit && (
+                <div className="invalid-feedback">{errors.verifiedListingLimit}</div>
+              )}
+            </div>
+          )}
+
+          {/* Lead Listing Limit */}
+          {formData.type === 'LeadListing' && (
+            <div className="col-md-6 mb-3">
+              <label className="form-label fw-bold">Lead Listing Limit *</label>
+              <input
+                type="number"
+                min="0"
+                className={`form-control ${errors.leadListingLimit ? 'is-invalid' : ''}`}
+                name="leadListingLimit"
+                value={formData?.leadListingLimit}
+                onChange={handleChange}
+                placeholder="Enter lead listing limit"
+              />
+              {errors.leadListingLimit && (
+                <div className="invalid-feedback">{errors.leadListingLimit}</div>
+              )}
+            </div>
           )}
         </div>
 
         {/* Buttons */}
-        <div className="d-flex justify-content-end gap-2">
+        <div className="d-flex justify-content-end gap-2 mt-3">
           <button type="button" className="btn btn-secondary" onClick={handleCancel}>
             Cancel
           </button>
