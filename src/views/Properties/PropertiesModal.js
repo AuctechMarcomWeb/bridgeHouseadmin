@@ -699,11 +699,11 @@ const PropertiesModal = ({
                     className="form-select"
                     name="measurementUnit"
                     value={formData?.measurementUnit || ''}
-                    onChange={handleChange}
                     required
+                    onChange={handleChange}
                   >
                     {/* ✅ Common Options */}
-                    <option value="Please Select">Please Select</option>
+                    <option value="">Please Select</option>
                     <option value="Square Feet">Square Feet</option>
                     <option value="Square Meters">Square Meters</option>
 
