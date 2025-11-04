@@ -10,6 +10,8 @@ import {
   IndianRupee,
   CheckCircle,
   XCircle,
+  BadgeCheck,
+  Handshake,
 } from 'lucide-react'
 import ExportButton from '../ExportButton'
 import { deleteRequest, getRequest, putRequest } from '../../Helpers'
@@ -434,11 +436,11 @@ const Properties = () => {
                           className={`flex items-center justify-center w-6 h-6 rounded ${
                             item?.approvalStatus === 'Rejected'
                               ? 'text-gray-400 cursor-not-allowed'
-                              : 'text-green-600 hover:text-blue-800'
+                              : 'text-green-600 hover:text-blue-800 cursor-pointer'
                           }`}
                           title="Approve property"
                         >
-                          <CheckCircle className="w-4 h-4" />
+                          <CheckCircle className="w-5 h-5" />
                         </button>
 
                         {/* Rejected Button */}
@@ -448,12 +450,13 @@ const Properties = () => {
                           className={`flex items-center justify-center w-6 h-6 rounded ${
                             item?.approvalStatus === 'Rejected'
                               ? 'text-gray-400 cursor-not-allowed'
-                              : 'text-red-600 hover:text-blue-800'
+                              : 'text-red-600 hover:text-blue-800 cursor-pointer'
                           }`}
                           title="Reject property"
                         >
-                          <XCircle className="w-4 h-4" />
+                          <XCircle className="w-5 h-5" />
                         </button>
+
                         {/* Verified Button */}
                         <button
                           onClick={() => verifyProperty(item)}
@@ -461,12 +464,11 @@ const Properties = () => {
                           className={`flex items-center justify-center w-6 h-6 rounded ${
                             item?.approvalStatus === 'Rejected'
                               ? 'text-gray-400 cursor-not-allowed'
-                              : 'text-blue-600 hover:text-blue-800'
+                              : 'text-blue-600 hover:text-blue-800 cursor-pointer'
                           }`}
                           title="Verify property"
                         >
-                          <MdVerified className="w-[15px] h-[15px]" />{' '}
-                          {/* Slightly smaller for balance */}
+                          <BadgeCheck className="w-5 h-5" />
                         </button>
 
                         {/* Adopted Button */}
@@ -476,12 +478,11 @@ const Properties = () => {
                           className={`flex items-center justify-center w-6 h-6 rounded ${
                             item?.approvalStatus === 'Rejected'
                               ? 'text-gray-400 cursor-not-allowed'
-                              : 'text-orange-600 hover:text-blue-800'
+                              : 'text-orange-600 hover:text-blue-800 cursor-pointer'
                           }`}
                           title="Adopt property"
                         >
-                          <SiMercadopago className="w-[15px] h-[15px]" />{' '}
-                          {/* Adjusted for equal size */}
+                          <Handshake className="w-5 h-5" />
                         </button>
 
                         {/* Edit Button */}
@@ -490,10 +491,10 @@ const Properties = () => {
                             setSelectedItem(item)
                             setIsModalOpen(true)
                           }}
-                          className="flex items-center justify-center w-6 h-6 rounded text-blue-600 hover:text-blue-800"
+                          className="flex items-center justify-center w-6 h-6 rounded text-blue-600 hover:text-blue-800 cursor-pointer"
                           title="Edit property"
                         >
-                          <Edit className="w-4 h-4" />
+                          <Edit className="w-5 h-5" />
                         </button>
 
                         {/* Delete Button */}
@@ -502,10 +503,10 @@ const Properties = () => {
                             setSelectedItem(item)
                             setShowDeleteModal(true)
                           }}
-                          className="flex items-center justify-center w-6 h-6 rounded text-red-600 hover:text-red-800"
+                          className="flex items-center justify-center w-6 h-6 rounded text-red-600 hover:text-red-800 cursor-pointer"
                           title="Delete property"
                         >
-                          <Trash2 className="w-4 h-4" />
+                          <Trash2 className="w-5 h-5" />
                         </button>
                       </div>
                     </td>
