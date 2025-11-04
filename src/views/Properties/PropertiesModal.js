@@ -589,6 +589,7 @@ const PropertiesModal = ({
                 name="propertyCode"
                 value={formData?.propertyCode}
                 required
+                disabled
                 onChange={handleChange}
               />
             </div>
