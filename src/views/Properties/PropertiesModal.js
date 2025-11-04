@@ -9,6 +9,7 @@ import { AppContext } from '../../Context/AppContext'
 import LocationSearchInput from '../../components/LocationSearchInput/LocationSearchInput'
 import { House } from 'lucide-react'
 import CurrentLocationField from '../../components/CurrentLocationField'
+import DescriptionField from '../../components/DescriptionField'
 
 const PropertiesModal = ({
   setUpdateStatus,
@@ -441,7 +442,7 @@ const PropertiesModal = ({
       Plot: ['facilities', 'services', 'nearby'],
       Apartment: ['facilities', 'services'],
       'Villa/Banglow': ['bhk', 'facilities', 'services'],
-      Farmhouse: ['facilities', 'services', 'bathrooms', 'bedrooms'],
+      Farmhouse: ['facilities', 'services', 'bathrooms', 'bedrooms', 'floors'],
       'Individual House': ['facilities', 'services', 'bhk'],
     }
     return optionalFields[type]?.includes(field)
@@ -655,7 +656,7 @@ const PropertiesModal = ({
                 min="0"
               />
             </div>
-            <div className="col-md-6">
+            <div className="col-md-6 mb-3">
               <label className="form-label fw-bold">Selling Price(₹) *</label>
               <input
                 type="number"
@@ -674,8 +675,8 @@ const PropertiesModal = ({
               <LocationSearchInput formData={formData} setFormData={setFormData} />
             </div>
 
-            <div className="col-md-9">
-              <label className="form-label fw-bold">Current Location</label>
+            <div className="col-md-6">
+              <label className="form-label fw-bold">Property Location</label>
               <CurrentLocationField formData={formData} setFormData={setFormData} />
             </div>
 
@@ -702,6 +703,7 @@ const PropertiesModal = ({
                     required
                   >
                     {/* ✅ Common Options */}
+                    <option value="Please Select">Please Select</option>
                     <option value="Square Feet">Square Feet</option>
                     <option value="Square Meters">Square Meters</option>
 
@@ -846,7 +848,7 @@ const PropertiesModal = ({
               )}
 
               {!['Plot', 'Commercial'].includes(formData?.propertyType) && (
-                <div className="col-md-6">
+                <div className="col-md-6 mb-3">
                   <label className="form-label fw-bold">
                     Bathrooms{' '}
                     {isOptional('bathrooms') ? (
@@ -908,7 +910,7 @@ const PropertiesModal = ({
                 <div className="col-md-6">
                   <label className="form-label fw-bold">
                     Built Year{' '}
-                    {isOptional('floors') ? (
+                    {isOptional('builtYear') ? (
                       <span className="text-muted"> (optional)</span>
                     ) : (
                       <span> * </span>
@@ -1217,7 +1219,7 @@ const PropertiesModal = ({
 
                       {/* Document Image Upload */}
                       <div className="col-md-6">
-                        <label className="form-label">Document Image *</label>
+                        <label className="form-label">Document Image(.jpg, .png, .jpeg) *</label>
                         <input
                           type="file"
                           accept="image/*,application/pdf"
@@ -1324,7 +1326,7 @@ const PropertiesModal = ({
 
             <hr className="m-0 p-0 my-3" />
 
-            <div className="col-md-6">
+            <div className="col-md-6 mb-3">
               <label className="form-label fw-bold"> Adopted Status *</label>
 
               <select
@@ -1350,7 +1352,7 @@ const PropertiesModal = ({
                 <option value="false"> Not Verifyed</option>
               </select>
             </div>
-            <div className="col-md-6">
+            <div className="col-md-6 mb-3">
               <label className="form-label fw-bold">Approval Status *</label>
 
               <select
@@ -1380,15 +1382,10 @@ const PropertiesModal = ({
               </select>
             </div>
             <div className="col-md-12">
-              <label className="form-label fw-bold">Description *</label>
-              <textarea
-                type="text"
-                className={`form-control`}
-                name="description"
-                rows={3}
-                required
-                value={formData?.description}
-                onChange={handleChange}
+              <DescriptionField
+                formData={formData}
+                setFormData={setFormData}
+                handleChange={handleChange}
               />
             </div>
           </div>

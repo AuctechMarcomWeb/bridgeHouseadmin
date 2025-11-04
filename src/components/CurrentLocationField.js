@@ -127,14 +127,14 @@ const CurrentLocationField = ({ formData, setFormData }) => {
           type="button"
           onClick={handleCurrentLocation}
           disabled={loading}
-          className="btn btn-primary whitespace-nowrap"
+          className="btn btn-success whitespace-nowrap"
         >
           {loading ? 'Fetching...' : 'Current Location'}
         </button>
       </div>
 
       {/* 📍 Suggestions dropdown */}
-      {detailsVisible && places.length > 0 && (
+      {/* {detailsVisible && places.length > 0 && (
         <div className="bg-white border rounded shadow position-absolute w-100 z-10 mt-1 p-2 max-h-60 overflow-auto">
           {places.map((place, idx) => (
             <div
@@ -147,7 +147,7 @@ const CurrentLocationField = ({ formData, setFormData }) => {
             </div>
           ))}
         </div>
-      )}
+      )} */}
     </div>
   )
 }
