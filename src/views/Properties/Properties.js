@@ -251,7 +251,7 @@ const Properties = () => {
               <thead>
                 <tr className="bg-gray-50">
                   <th className="px-6 py-3">Sr. No.</th>
-                  <th className="px-6 py-3">Property Name</th>
+                  <th className="px-6 py-3">Property Title</th>
                   <th className="px-6 py-3">Poperty Type</th>
                   <th className="px-6 py-3">Poperty Status</th>
                   <th className="px-6 py-3">Approval Status</th>
