@@ -426,79 +426,83 @@ const Properties = () => {
 
                     {/* Actions */}
                     <td className="px-6 py-4">
-                      <div className="flex gap-2">
+                      <div className="flex gap-2 items-center">
                         {/* Published Button */}
                         <button
                           onClick={() => approveData(item, 'Published')}
                           disabled={item?.approvalStatus === 'Published'}
-                          className={`p-1 ${
+                          className={`flex items-center justify-center w-6 h-6 rounded ${
                             item?.approvalStatus === 'Rejected'
-                              ? 'text-gray-400 cursor-not-allowed' // disabled style
-                              : 'text-green-600 hover:text-blue-800 p-1' // active style
+                              ? 'text-gray-400 cursor-not-allowed'
+                              : 'text-green-600 hover:text-blue-800'
                           }`}
                           title="Approve property"
                         >
                           <CheckCircle className="w-4 h-4" />
                         </button>
 
+                        {/* Rejected Button */}
+                        <button
+                          onClick={() => approveData(item, 'Rejected')}
+                          disabled={item?.approvalStatus === 'Rejected'}
+                          className={`flex items-center justify-center w-6 h-6 rounded ${
+                            item?.approvalStatus === 'Rejected'
+                              ? 'text-gray-400 cursor-not-allowed'
+                              : 'text-red-600 hover:text-blue-800'
+                          }`}
+                          title="Reject property"
+                        >
+                          <XCircle className="w-4 h-4" />
+                        </button>
                         {/* Verified Button */}
                         <button
                           onClick={() => verifyProperty(item)}
                           disabled={item?.isVerified === true}
-                          className={`p-1 ${
+                          className={`flex items-center justify-center w-6 h-6 rounded ${
                             item?.approvalStatus === 'Rejected'
-                              ? 'text-gray-400 cursor-not-allowed' // disabled style
-                              : 'text-blue-600 hover:text-blue-800 p-1' // active style
+                              ? 'text-gray-400 cursor-not-allowed'
+                              : 'text-blue-600 hover:text-blue-800'
                           }`}
                           title="Verify property"
                         >
-                          <MdVerified className="fs-4 " />
+                          <MdVerified className="w-[15px] h-[15px]" />{' '}
+                          {/* Slightly smaller for balance */}
                         </button>
 
                         {/* Adopted Button */}
                         <button
                           onClick={() => adoptProperty(item)}
                           disabled={item?.isAdopted === true}
-                          className={`p-1 ${
+                          className={`flex items-center justify-center w-6 h-6 rounded ${
                             item?.approvalStatus === 'Rejected'
-                              ? 'text-gray-400 cursor-not-allowed' // disabled style
-                              : 'text-orange-600 hover:text-blue-800 p-1' // active style
+                              ? 'text-gray-400 cursor-not-allowed'
+                              : 'text-orange-600 hover:text-blue-800'
                           }`}
                           title="Adopt property"
                         >
-                          <SiMercadopago className="fs-4" />
+                          <SiMercadopago className="w-[15px] h-[15px]" />{' '}
+                          {/* Adjusted for equal size */}
                         </button>
 
-                        {/* Rejected Button */}
-                        <button
-                          onClick={() => approveData(item, 'Rejected')}
-                          disabled={item?.approvalStatus === 'Rejected'}
-                          className={`p-1 ${
-                            item?.approvalStatus === 'Rejected'
-                              ? 'text-gray-400 cursor-not-allowed' // disabled style
-                              : 'text-red-600 hover:text-blue-800' // active style
-                          }`}
-                          title="Reject property"
-                        >
-                          <XCircle className="w-4 h-4" />
-                        </button>
-
+                        {/* Edit Button */}
                         <button
                           onClick={() => {
                             setSelectedItem(item)
                             setIsModalOpen(true)
                           }}
-                          className="text-blue-600 hover:text-blue-800 p-1"
+                          className="flex items-center justify-center w-6 h-6 rounded text-blue-600 hover:text-blue-800"
                           title="Edit property"
                         >
                           <Edit className="w-4 h-4" />
                         </button>
+
+                        {/* Delete Button */}
                         <button
                           onClick={() => {
                             setSelectedItem(item)
                             setShowDeleteModal(true)
                           }}
-                          className="text-red-600 hover:text-red-800 p-1"
+                          className="flex items-center justify-center w-6 h-6 rounded text-red-600 hover:text-red-800"
                           title="Delete property"
                         >
                           <Trash2 className="w-4 h-4" />
