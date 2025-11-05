@@ -174,6 +174,7 @@ const Subscription = () => {
                   <th className="px-6 py-3">Name</th>
                   <th className="px-6 py-3">Property Limit</th>
                   <th className="px-6 py-3">Verified Limit</th>
+                  <th className="px-6 py-3">Lead Limit</th>
                   <th className="px-6 py-3">Type</th>
                   <th className="px-6 py-3">Price</th>
                   <th className="px-6 py-3">Currency</th>
@@ -198,6 +199,7 @@ const Subscription = () => {
                     <td className="px-6 py-4 whitespace-nowrap">
                       {item?.verifiedListingLimit || '0'}
                     </td>
+                    <td className="px-6 py-4 whitespace-nowrap">{item?.leadListingLimit || '0'}</td>
                     <td className="px-6 py-4 whitespace-nowrap capitalize">{item?.type || '—'}</td>
                     <td className="px-6 py-4 whitespace-nowrap">{item?.price || '0'}</td>
                     <td className="px-6 py-4 whitespace-nowrap">{item?.currency || '—'}</td>
