@@ -44,8 +44,9 @@ const SubscriptionFilters = ({
             style={{ width: '100%' }}
           >
             <Option value="">Select Status</Option>
-            <Option value="PropertyListing">PropertyListing</Option>
-            <Option value="VerifiedListing">VerifiedListing</Option>
+            <Option value="PropertyListing">Property Listing</Option>
+            <Option value="VerifiedListing">Verified Listing</Option>
+            <Option value="LeadListing">Lead Listing</Option>
           </Select>
         </Col>
 
