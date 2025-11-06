@@ -200,6 +200,9 @@ const PropertiesModal = ({
       nearby: [],
       gallery: [],
       propertyCode: '',
+      measurementUnit: '',
+      plotCategory: '',
+      propertyLocation: '',
     })
 
     setModalData(null)
@@ -567,6 +570,44 @@ const PropertiesModal = ({
     }))
   }, [formData?.propertyDetails?.length, formData?.propertyDetails?.width, measurementUnit])
 
+  const handleLatLngChange = (e) => {
+    const { name, value } = e.target
+    const updatedCoordinates = [...(formData?.location?.coordinates || [])]
+
+    if (name === 'latitude') updatedCoordinates[1] = parseFloat(value)
+    if (name === 'longitude') updatedCoordinates[0] = parseFloat(value)
+
+    setFormData({
+      ...formData,
+      location: {
+        type: 'Point',
+        coordinates: updatedCoordinates,
+      },
+    })
+
+    // If both lat & lng are present, reverse geocode address
+    if (
+      updatedCoordinates[0] !== undefined &&
+      updatedCoordinates[1] !== undefined &&
+      !isNaN(updatedCoordinates[0]) &&
+      !isNaN(updatedCoordinates[1])
+    ) {
+      const [lng, lat] = updatedCoordinates
+      const apiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY
+
+      fetch(`https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=${apiKey}`)
+        .then((res) => res.json())
+        .then((data) => {
+          if (data.results && data.results.length > 0) {
+            setFormData((prev) => ({
+              ...prev,
+              propertyLocation: data.results[0].formatted_address,
+            }))
+          }
+        })
+        .catch((err) => console.error('Reverse geocode error:', err))
+    }
+  }
   return (
     <Modal
       title={isEditMode ? `Edit Property` : `Add Property`}
@@ -675,12 +716,38 @@ const PropertiesModal = ({
               <label className="form-label fw-bold">Address *</label>
               <LocationSearchInput formData={formData} setFormData={setFormData} />
             </div>
-
             <div className="col-md-6">
               <label className="form-label fw-bold">Property Location</label>
               <CurrentLocationField formData={formData} setFormData={setFormData} />
             </div>
 
+            <div className="col-md-6">
+              <div className="row">
+                <div className="col-md-6">
+                  <label className="form-label fw-bold">Latitude</label>
+                  <input
+                    type="number"
+                    name="latitude"
+                    className="form-control"
+                    value={formData?.location?.coordinates?.[1] || ''}
+                    onChange={handleLatLngChange}
+                    placeholder="Enter Latitude"
+                  />
+                </div>
+
+                <div className="col-md-6">
+                  <label className="form-label fw-bold">Longitude</label>
+                  <input
+                    type="number"
+                    name="longitude"
+                    className="form-control"
+                    value={formData?.location?.coordinates?.[0] || ''}
+                    onChange={handleLatLngChange}
+                    placeholder="Enter Longitude"
+                  />
+                </div>
+              </div>
+            </div>
             {/* ================= Property Details ================= */}
             <hr className="m-0 p-0 my-3" />
             <label className="form-label fw-bold d-block mb-2">Property Details</label>
