@@ -46,7 +46,21 @@ const DetailsFilter = ({
       </Title>
 
       {/* Filters Row */}
-      <Row gutter={[16, 16]} wrap={true} style={{ marginBottom: 16 }}>
+      <Row gutter={[16, 16]}>
+        {/* Search */}
+        <Col xs={24} sm={12} md={8} lg={6}>
+          <label style={{ fontWeight: 600 }}>Search</label>
+          <Input
+            prefix={<SearchOutlined />}
+            placeholder="Search details..."
+            value={searchTerm}
+            onChange={(e) => {
+              setPage(1)
+              setSearchTerm(e.target.value)
+            }}
+            allowClear
+          />
+        </Col>
         {/* Property Type */}
         <Col xs={24} sm={12} md={8} lg={6}>
           <label style={{ fontWeight: 600 }}>Property Type</label>
@@ -101,32 +115,15 @@ const DetailsFilter = ({
             Active
           </Checkbox>
         </Col>
-      </Row>
 
-      {/* Search + Buttons */}
-      <Row gutter={[16, 16]} align="middle">
-        <Col xs={24} sm={12} md={12} lg={12}>
-          <Input
-            prefix={<SearchOutlined />}
-            placeholder="Search details..."
-            value={searchTerm}
-            onChange={(e) => {
-              setPage(1)
-              setSearchTerm(e.target.value)
-            }}
-            allowClear
-          />
-        </Col>
-        <Col>
-          <Button type="primary" onClick={applyFilters} style={{ minWidth: 100 }}>
-            Apply
-          </Button>
-        </Col>
-        <Col>
-          <Button onClick={resetFilters} style={{ minWidth: 100 }}>
-            Reset
-          </Button>
-        </Col>
+    <Col span={24} style={{ textAlign: 'center' }}>
+             <Button type="primary" onClick={applyFilters} style={{ marginRight: 8, minWidth: 100 }}>
+               Apply
+             </Button>
+             <Button onClick={resetFilters} style={{ minWidth: 100 }}>
+               Reset
+             </Button>
+           </Col>
       </Row>
     </div>
   )
