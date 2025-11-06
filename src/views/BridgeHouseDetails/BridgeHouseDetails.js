@@ -8,7 +8,7 @@ import { Empty, Pagination, Spin, Tooltip } from 'antd'
 import axios from 'axios'
 import BridgeHouseDetailsModal from './BridgeHouseDetailsModal'
 import { faL } from '@fortawesome/free-solid-svg-icons'
-import GalleryFilters from '../Gallery/GalleryFilters'
+import DetailsFilter from './DetailsFilter'
 
 const BridgeHouseDetails = () => {
   const [searchTerm, setSearchTerm] = useState('')
@@ -23,7 +23,10 @@ const BridgeHouseDetails = () => {
   const [showDeleteModal, setShowDeleteModal] = useState(false)
   const [selectedItem, setSelectedItem] = useState(null)
   const [loading, setLoading] = useState(false)
-  const [filters, setFilters] = useState({})
+  const [filters, setFilters] = useState({
+    propertyType: '',
+    property: '',
+  })
   const [tempFilters, setTempFilters] = useState(filters)
   const [expandedAddresses, setExpandedAddresses] = React.useState({})
 
@@ -58,20 +61,17 @@ const BridgeHouseDetails = () => {
 
   // Apply filters
   const applyFilters = () => {
-    // Only include isActive if it's true
-    // const newFilters = {}
-    // if (tempFilters.status) {
-    //   newFilters.status = false
-    // }
     console.log('ddf', tempFilters)
-
-    setFilters({ status: tempFilters?.isActive })
+    setFilters({
+      ...tempFilters,
+      status: tempFilters?.status,
+    })
     setPage(1)
   }
 
   // Reset filters
   const resetFilters = () => {
-    const defaultFilters = {}
+    const defaultFilters = { propertyType: '', property: '' }
     setTempFilters(defaultFilters)
     setFilters(defaultFilters)
     setPage(1)
@@ -145,7 +145,7 @@ const BridgeHouseDetails = () => {
       </div>
 
       {/* Search */}
-      <GalleryFilters
+      <DetailsFilter
         tempFilters={tempFilters}
         setTempFilters={setTempFilters}
         searchTerm={searchTerm}

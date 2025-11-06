@@ -1,9 +1,9 @@
 /* eslint-disable prettier/prettier */
 /* eslint-disable react/prop-types */
-import { Modal } from 'antd'
-import React, { useState, useEffect } from 'react'
+import { Modal, Select } from 'antd'
+import React, { useState, useEffect, useRef } from 'react'
 import toast from 'react-hot-toast'
-import { fileUpload, postRequest, putRequest } from '../../Helpers'
+import { fileUpload, getRequest, postRequest, putRequest } from '../../Helpers'
 import { validateMobile } from '../../Utils'
 
 const BridgeHouseDetailsModal = ({
@@ -20,11 +20,20 @@ const BridgeHouseDetailsModal = ({
     phone: '',
     profile: '',
     notes: '',
+    propertyType: [],
+    property: [],
     status: false,
   })
+  console.log('formData', formData)
 
   const [loading, setLoading] = useState(false)
   const [errors, setErrors] = useState({})
+  const profileInputRef = useRef(null)
+  const [type12, setType] = useState([])
+  const [property, setProperty] = useState([])
+  const [properyTypeName, setProperyTypeName] = useState('')
+
+  console.log('properyTypeName', properyTypeName)
 
   // ✅ Prefill data in Edit mode
   useEffect(() => {
@@ -35,6 +44,8 @@ const BridgeHouseDetailsModal = ({
         phone: modalData.phone || '',
         profile: modalData.profile || '',
         notes: modalData.notes || '',
+        propertyType: modalData.propertyType || [],
+        property: modalData.property || [],
         status: modalData.status ?? false,
       })
     } else {
@@ -44,11 +55,44 @@ const BridgeHouseDetailsModal = ({
         phone: '',
         profile: '',
         notes: '',
+        propertyType: [],
+        property: [],
         status: false,
       })
     }
   }, [modalData])
 
+  console.log('property', modalData.property)
+
+  // ✅ Fetch property types
+  useEffect(() => {
+    getRequest(`category?isPagination=false`)
+      .then((res) => {
+        const responseData = res?.data?.data
+        setType(responseData?.categories || [])
+      })
+      .catch((error) => console.log('error', error))
+  }, [])
+
+  // ✅ Fetch properties based on selected property type ID
+  useEffect(() => {
+    if (!formData.propertyType?.length) return
+
+    getRequest(`properties?isPagination=false&propertyType=${properyTypeName}`)
+      .then((res) => {
+        const responseData = res?.data?.data
+        setProperty(responseData?.properties || [])
+      })
+      .catch((error) => console.log('error', error))
+  }, [formData.propertyType])
+
+  const typeOption = type12?.map((item, index) => {
+    return (
+      <>
+        <option value={item?._id}>{item?.name}</option>
+      </>
+    )
+  })
   // ✅ Close modal and reset state
   const handleCancel = () => {
     setFormData({
@@ -57,6 +101,8 @@ const BridgeHouseDetailsModal = ({
       phone: '',
       profile: '',
       notes: '',
+      propertyType: [],
+      property: [],
       status: false,
     })
     setErrors({})
@@ -72,11 +118,15 @@ const BridgeHouseDetailsModal = ({
     if (name === 'phone') {
       newValue = validateMobile(value)
     }
+    if (name === 'propertyType') {
+      setFormData((prev) => ({ ...prev, [name]: [newValue] }))
 
-    setFormData((prev) => ({
-      ...prev,
-      [name]: newValue,
-    }))
+      const properyname = type12.filter((item) => item._id == newValue)
+
+      setProperyTypeName(properyname[0]?.name)
+    } else {
+      setFormData((prev) => ({ ...prev, [name]: newValue }))
+    }
 
     // Clear field-specific error
     setErrors((prev) => ({ ...prev, [name]: '' }))
@@ -88,6 +138,7 @@ const BridgeHouseDetailsModal = ({
     if (!file) return
 
     setLoading(true)
+
     fileUpload({
       url: 'upload/uploadImage',
       cred: { file },
@@ -98,19 +149,19 @@ const BridgeHouseDetailsModal = ({
           setFormData((prev) => ({ ...prev, profile: uploadedUrl }))
           toast.success('Profile image uploaded successfully')
         } else {
-          toast.error('Image URL not received')
+          toast.error('Upload failed — no URL returned')
         }
       })
       .catch((error) => {
-        console.error('Image upload failed:', error)
+        console.error('Profile upload failed:', error)
         toast.error('Image upload failed')
       })
       .finally(() => setLoading(false))
   }
 
-  // ✅ Remove image
   const handleRemoveImage = () => {
     setFormData((prev) => ({ ...prev, profile: '' }))
+    if (profileInputRef.current) profileInputRef.current.value = '' // clear input
   }
 
   // ✅ Validate form fields
@@ -121,6 +172,8 @@ const BridgeHouseDetailsModal = ({
     if (!formData.phone.trim()) newErrors.phone = 'Phone number is required'
     if (!formData.notes.trim()) newErrors.notes = 'Notes are required'
     if (!formData.profile) newErrors.profile = 'Profile image is required'
+    if (!formData.propertyType?.length) newErrors.propertyType = 'Property Type is required'
+    if (!formData.property?.length) newErrors.property = 'At least one Property is required'
 
     setErrors(newErrors)
     return Object.keys(newErrors).length === 0
@@ -221,70 +274,140 @@ const BridgeHouseDetailsModal = ({
             />
             {errors.phone && <div className="invalid-feedback">{errors.phone}</div>}
           </div>
-
-          {/* Notes */}
+          {/* Profile Image */}
           <div className="col-md-6 mb-3">
-            <label className="form-label fw-bold">Notes</label>
-            <textarea
-              name="notes"
-              rows="1"
-              className={`form-control ${errors.notes ? 'is-invalid' : ''}`}
-              value={formData.notes}
-              onChange={handleChange}
-              placeholder="Enter Notes"
-            ></textarea>
-            {errors.notes && <div className="invalid-feedback">{errors.notes}</div>}
+            <label className="form-label fw-bold">Profile Image</label>
+
+            <div className="d-flex align-items-center" style={{ gap: '10px' }}>
+              {/* 🔹 File Input */}
+              <input
+                type="file"
+                accept="image/*"
+                className={`form-control ${errors.profile ? 'is-invalid' : ''}`}
+                disabled={loading}
+                onChange={handleChangeImage}
+                ref={profileInputRef}
+                style={{ flex: '1 1 auto', maxWidth: '250px' }}
+              />
+              {errors.profile && <div className="invalid-feedback">{errors.profile}</div>}
+
+              {/* 🔹 Loader / Preview */}
+              {loading ? (
+                <div
+                  style={{
+                    width: '60px',
+                    height: '60px',
+                    background: '#f3f3f3',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    borderRadius: '6px',
+                    border: '1px solid #ddd',
+                  }}
+                >
+                  <div
+                    className="spinner-border text-primary"
+                    role="status"
+                    style={{ width: '20px', height: '20px' }}
+                  >
+                    <span className="visually-hidden">Loading...</span>
+                  </div>
+                </div>
+              ) : formData.profile ? (
+                <div style={{ position: 'relative', display: 'inline-block' }}>
+                  <img
+                    src={formData.profile}
+                    alt="Preview"
+                    style={{
+                      width: '60px',
+                      height: '60px',
+                      objectFit: 'cover',
+                      borderRadius: '6px',
+                      border: '1px solid #ddd',
+                    }}
+                  />
+                  <button
+                    type="button"
+                    onClick={handleRemoveImage}
+                    style={{
+                      position: 'absolute',
+                      top: '-6px',
+                      right: '-6px',
+                      background: 'red',
+                      color: 'white',
+                      border: 'none',
+                      borderRadius: '50%',
+                      width: '18px',
+                      height: '18px',
+                      fontSize: '12px',
+                      cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                    }}
+                  >
+                    ✕
+                  </button>
+                </div>
+              ) : null}
+            </div>
           </div>
         </div>
 
-        {/* Profile Image */}
-        <div className="mb-3">
-          <label className="form-label fw-bold">Profile Image</label>
-          <input
-            type="file"
-            accept="image/*"
-            className={`form-control ${errors.profile ? 'is-invalid' : ''}`}
-            disabled={loading}
-            onChange={handleChangeImage}
-          />
-          {errors.profile && <div className="invalid-feedback">{errors.profile}</div>}
+        <div className="row">
+          {/* Property Type */}
+          <div className="col-md-6 mb-3">
+            <label className="form-label fw-bold">Property Type </label>
+            <select
+              className={`form-select ${errors.propertyType ? 'is-invalid' : ''}`}
+              name="propertyType"
+              value={formData?.propertyType?.[0] || ''}
+              required
+              onChange={handleChange}
+            >
+              <option value="">Select Property Type</option>
+              {typeOption}
+            </select>
+            {errors.propertyType && <div className="invalid-feedback">{errors.propertyType}</div>}
+          </div>
 
-          {formData.profile && (
-            <div className="mt-2" style={{ position: 'relative', display: 'inline-block' }}>
-              <img
-                src={formData.profile}
-                alt="Preview"
-                style={{
-                  width: '60px',
-                  height: '60px',
-                  objectFit: 'cover',
-                  borderRadius: '6px',
-                }}
-              />
-              <button
-                type="button"
-                onClick={handleRemoveImage}
-                style={{
-                  position: 'absolute',
-                  top: '-6px',
-                  right: '-6px',
-                  background: 'red',
-                  color: 'white',
-                  border: 'none',
-                  borderRadius: '50%',
-                  width: '18px',
-                  height: '18px',
-                  fontSize: '12px',
-                  cursor: 'pointer',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                }}
-              >
-                ✕
-              </button>
-            </div>
-          )}
+          {/* Property */}
+          <div className="col-md-6 mb-3">
+            <label className="form-label fw-bold">Property</label>
+            <Select
+              mode="multiple"
+              allowClear
+              size="large"
+              style={{ width: '100%' }}
+              placeholder="Select Properties"
+              value={formData.property}
+              onChange={(selectedIds) =>
+                setFormData((prev) => ({
+                  ...prev,
+                  property: selectedIds, // array of property IDs
+                }))
+              }
+              options={property?.map((prop) => ({
+                label: prop?.name,
+                value: prop?._id, // ensures only IDs are stored
+              }))}
+            />
+            {errors.property && <div className="text-danger small">{errors.property}</div>}
+          </div>
+        </div>
+
+        {/* Notes */}
+        <div className=" mb-3">
+          <label className="form-label fw-bold">Notes</label>
+          <textarea
+            name="notes"
+            rows="1"
+            className={`form-control ${errors.notes ? 'is-invalid' : ''}`}
+            value={formData.notes}
+            onChange={handleChange}
+            placeholder="Enter Notes"
+          ></textarea>
+          {errors.notes && <div className="invalid-feedback">{errors.notes}</div>}
         </div>
 
         {/* Active Checkbox */}
