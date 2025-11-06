@@ -7,6 +7,7 @@ import { deleteRequest, getRequest } from '../../Helpers'
 import toast from 'react-hot-toast'
 import { Empty, Pagination, Spin, Tooltip } from 'antd'
 import moment from 'moment'
+import AuthFilter from './AuthFilter'
 
 const Auth = () => {
   const [searchTerm, setSearchTerm] = useState('')
@@ -20,6 +21,8 @@ const Auth = () => {
   const [selectedItem, setSelectedItem] = useState(null)
   const [loading, setLoading] = useState(false)
   const [expandedAddresses, setExpandedAddresses] = React.useState({})
+  const [filters, setFilters] = useState({ accountType: '' })
+  const [tempFilters, setTempFilters] = useState(filters)
 
   const toggleAddress = (id) => {
     setExpandedAddresses((prev) => ({
@@ -34,7 +37,13 @@ const Auth = () => {
   // Fetch Users
   useEffect(() => {
     setLoading(true)
-    getRequest(`auth/getAllUsers?search=${searchTerm}&page=${page}&limit=${limit}&sortBy=${sortBy}`)
+       const query = new URLSearchParams({
+         search: searchTerm,
+         page,
+         limit,
+         ...filters,
+       }).toString()
+       getRequest(`auth/getAllusers?${query}`)
       .then((res) => {
         const responseData = res?.data?.data
         setData(responseData?.users || [])
@@ -45,8 +54,23 @@ const Auth = () => {
         toast.error('Failed to fetch users')
       })
       .finally(() => setLoading(false))
-  }, [page, limit, searchTerm, sortBy, updateStatus])
+  }, [page, limit, searchTerm, sortBy,filters, updateStatus])
 
+  const applyFilters = () => {
+    setFilters(tempFilters)
+    setPage(1) // reset page
+  }
+
+  // Reset filters
+  const resetFilters = () => {
+    const defaultFilters = {
+      accountType: '',
+    }
+    setTempFilters(defaultFilters)
+    setFilters(defaultFilters)
+    setPage(1)
+    setSearchTerm('')
+  }
   // Delete handler
   const confirmDelete = () => {
     if (!selectedItem?._id) return toast.error('No user selected')
@@ -107,21 +131,15 @@ const Auth = () => {
       </div>
 
       {/* Search */}
-      <div className="px-6 py-4 border-b border-gray-200">
-        <div className="relative">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4" />
-          <input
-            type="text"
-            placeholder="Search..."
-            value={searchTerm}
-            onChange={(e) => {
-              setSearchTerm(e.target.value)
-              setPage(1)
-            }}
-            className="pl-10 pr-4 py-2 w-full border border-gray-300 focus:ring-2 focus:ring-blue-500 rounded-md"
-          />
-        </div>
-      </div>
+     <AuthFilter
+        tempFilters={tempFilters}
+        setTempFilters={setTempFilters}
+        searchTerm={searchTerm}
+        setSearchTerm={setSearchTerm}
+        applyFilters={applyFilters}
+        resetFilters={resetFilters}
+        page={setPage}
+      />
 
       {/* Table */}
       <div className="overflow-x-auto">
