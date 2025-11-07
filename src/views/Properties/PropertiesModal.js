@@ -40,10 +40,10 @@ const PropertiesModal = ({
       ? {
           ...modalData,
           propertyCode: generatePropertyCode(),
-          propertyType: modalData.propertyType || '',
-          plotCategory: modalData.plotCategory || '',
-          // measurementUnit: modalData.measurementUnit || '',
-          propertyLocation: modalData.propertyLocation || '',
+          propertyType: modalData?.propertyType || '',
+          plotCategory: modalData?.plotCategory || '',
+          measurementUnit: modalData?.measurementUnit || '',
+          propertyLocation: modalData?.propertyLocation || '',
         }
       : {
           address: '',
@@ -82,6 +82,7 @@ const PropertiesModal = ({
           propertyLocation: '',
         },
   )
+  console.log('measurementUnit', modalData?.measurementUnit)
 
   const measurementUnit = formData?.measurementUnit
 
