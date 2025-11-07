@@ -44,9 +44,8 @@ const AuthFilter = ({
             style={{ width: '100%' }}
           >
             <option value="">Select Account Type </option>
-            <option value="buyer">Buyer</option>
-            <option value="seller">Seller</option>
-         
+            <option value="Buyer">Buyer</option>
+            <option value="Seller">Seller</option>
           </Select>
         </Col>
 
