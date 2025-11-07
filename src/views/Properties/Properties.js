@@ -253,6 +253,7 @@ const Properties = () => {
               <thead>
                 <tr className="bg-gray-50">
                   <th className="px-6 py-3">Sr. No.</th>
+                  <th className="px-6 py-3">Property Code</th>
                   <th className="px-6 py-3">Property Title</th>
                   <th className="px-6 py-3">Poperty Type</th>
                   <th className="px-6 py-3">Poperty Status</th>
@@ -282,7 +283,8 @@ const Properties = () => {
                     <td className="px-6 py-4 text-sm text-gray-700">
                       {(page - 1) * limit + (index + 1)}
                     </td>
-
+                    {/* Property Code */}
+                    <td className="px-6 py-4 whitespace-nowrap">{item?.propertyCode || 'N/A'}</td>
                     {/* Property Details */}
                     <td className="px-6 py-4">
                       <div className="flex flex-col">
@@ -305,7 +307,7 @@ const Properties = () => {
                     </td>
 
                     {/* Property Type */}
-                    <td className="px-6 py-4">{item?.propertyType || 'N/A'}</td>
+                    <td className="px-6 py-4 whitespace-nowrap">{item?.propertyType || 'N/A'}</td>
                     {/* Property Status */}
                     {/* Property Status */}
                     <td className="px-6 py-4">

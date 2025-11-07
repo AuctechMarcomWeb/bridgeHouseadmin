@@ -185,15 +185,16 @@ const Enquiry = () => {
               <thead className="bg-gray-50">
                 <tr>
                   <th className="px-6 py-3">Sr. No.</th>
+                  <th className="px-6 py-3">Date</th>
+                  <th className="px-6 py-3">Property Code</th>
+                  <th className="px-6 py-3">Property Title</th>
+                  <th className="px-6 py-3">Property Type</th>
                   <th className="px-6 py-3">Name</th>
                   <th className="px-6 py-3">Phone</th>
                   <th className="px-6 py-3">E-Mail</th>
                   <th className="px-6 py-3">Occuption</th>
                   <th className="px-6 py-3">Planning Month</th>
                   <th className="px-6 py-3">Message</th>
-                  <th className="px-6 py-3">Property Name</th>
-                  <th className="px-6 py-3">Property Code</th>
-                  <th className="px-6 py-3">Date</th>
                   <th className="px-6 py-3"> Remark</th>
                   <th className="px-6 py-3">Status</th>
                   <th className="px-6 py-3">Actions</th>
@@ -205,7 +206,20 @@ const Enquiry = () => {
                     <td className="px-6 py-4 text-sm text-gray-700">
                       {(page - 1) * limit + (index + 1)}
                     </td>
-
+                    <td className="px-6 py-4 whitespace-nowrap">{formatDate(item?.createdAt)}</td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="text-sm text-gray-900">
+                        <p className="p-0 m-0">{item?.property?.propertyCode || '-'}</p>
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="text-sm text-gray-900">{item?.property?.name || '-'}</div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="text-sm text-gray-900">
+                        {item?.property?.propertyType || '-'}
+                      </div>
+                    </td>
                     <td className="px-6 py-4 whitespace-nowrap">{item?.name || '-'}</td>
                     <td className="px-6 py-4 whitespace-nowrap">{item?.phone || '-'}</td>
                     <td className="px-6 py-4 whitespace-nowrap">{item?.email || '-'}</td>
@@ -230,16 +244,6 @@ const Enquiry = () => {
                       </Tooltip>
                     </td>
 
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm text-gray-900">{item?.property?.name || '-'}</div>
-                    </td>
-
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm text-gray-900">
-                        <p className="p-0 m-0">{item?.property?.propertyCode || 'N/A'}</p>
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">{formatDate(item?.createdAt)}</td>
                     {/* <td className="px-6 py-4 whitespace-nowrap">{item?.notes || 'N/A'}</td> */}
 
                     {/* <td className="px-6 py-4 cursor-pointer" onClick={() => toggleNotes(item._id)}>
