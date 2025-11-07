@@ -40,10 +40,10 @@ const PropertiesModal = ({
       ? {
           ...modalData,
           propertyCode: generatePropertyCode(),
-          propertyType:modalData.propertyType || '',
+          propertyType: modalData.propertyType || '',
           plotCategory: modalData.plotCategory || '',
-            measurementUnit: modalData.measurementUnit || '',
-        propertyLocation: modalData.propertyLocation || '',
+          // measurementUnit: modalData.measurementUnit || '',
+          propertyLocation: modalData.propertyLocation || '',
         }
       : {
           address: '',
@@ -82,8 +82,7 @@ const PropertiesModal = ({
           propertyLocation: '',
         },
   )
-  console.log
-  ('formData init', modalData.measurementUnit);
+
   const measurementUnit = formData?.measurementUnit
 
   useEffect(() => {
