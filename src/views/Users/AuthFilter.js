@@ -6,7 +6,7 @@ import { SearchOutlined } from '@ant-design/icons'
 
 const { Option } = Select
 
-const SubscriptionFilters = ({
+const AuthFilter = ({
   searchTerm,
   setSearchTerm,
   tempFilters,
@@ -25,7 +25,7 @@ const SubscriptionFilters = ({
           <label style={{ display: 'block', fontWeight: 500, marginBottom: 6 }}>Search</label>
           <Input
             prefix={<SearchOutlined />}
-            placeholder="Search "
+            placeholder="Search ..."
             value={searchTerm}
             onChange={(e) => {
               page(1)
@@ -36,17 +36,17 @@ const SubscriptionFilters = ({
 
         {/* Type */}
         <Col xs={24} sm={12} md={8}>
-          <label style={{ display: 'block', fontWeight: 500, marginBottom: 6 }}>Type</label>
+          <label style={{ display: 'block', fontWeight: 500, marginBottom: 6 }}>Account Type</label>
           <Select
-            value={tempFilters.type}
-            onChange={(value) => setTempFilters((prev) => ({ ...prev, type: value }))}
-            placeholder="Select Type"
+            value={tempFilters.accountType}
+            onChange={(value) => setTempFilters((prev) => ({ ...prev, accountType: value }))}
+            placeholder="Select Status"
             style={{ width: '100%' }}
           >
-            <Option value="">Select Status</Option>
-            <Option value="PropertyListing">Property Listing</Option>
-            <Option value="VerifiedListing">Verified Listing</Option>
-            <Option value="LeadListing">Lead Listing</Option>
+            <option value="">Select Account Type </option>
+            <option value="buyer">Buyer</option>
+            <option value="seller">Seller</option>
+         
           </Select>
         </Col>
 
@@ -71,4 +71,4 @@ const SubscriptionFilters = ({
   )
 }
 
-export default AuthFilters.js
+export default AuthFilter
