@@ -3,25 +3,40 @@
 import { CNavGroup, CNavItem } from '@coreui/react'
 import { FaRegAddressCard } from 'react-icons/fa'
 import { MdOutlineDashboard } from 'react-icons/md'
+import {
+  AppstoreOutlined,
+  UserOutlined,
+  ProfileOutlined,
+  HomeOutlined,
+  PictureOutlined,
+  MessageOutlined,
+  ShoppingOutlined,
+  ContactsOutlined,
+  CameraOutlined,
+  CommentOutlined,
+  BuildOutlined,
+  CreditCardOutlined,
+} from '@ant-design/icons'
+
 const useNav = () => {
   const navItems = [
     {
       component: CNavItem,
       name: 'Dashboard',
       to: '/dashboard',
-      icon: <MdOutlineDashboard className="me-3" />,
+      icon: <AppstoreOutlined className="me-3" />,
     },
     {
       component: CNavItem,
       name: 'Users',
       to: '/users',
-      icon: <MdOutlineDashboard className="me-3" />,
+      icon: <UserOutlined className="me-3" />,
     },
     {
       component: CNavGroup,
       name: 'Masters',
       to: '/Customer-Profile',
-      icon: <FaRegAddressCard className="me-3" />,
+      icon: <ProfileOutlined className="me-3" />,
       items: [
         {
           component: CNavItem,
@@ -59,56 +74,56 @@ const useNav = () => {
       component: CNavItem,
       name: 'Properties',
       to: '/properties',
-      icon: <MdOutlineDashboard className="me-3" />,
+      icon: <HomeOutlined className="me-3" />,
     },
 
     {
       component: CNavItem,
       name: 'Banner',
       to: '/banner',
-      icon: <MdOutlineDashboard className="me-3" />,
+      icon: <PictureOutlined className="me-3" />,
     },
     {
       component: CNavItem,
       name: 'Enquiry',
       to: '/enquiry',
-      icon: <MdOutlineDashboard className="me-3" />,
+      icon: <MessageOutlined className="me-3" />,
     },
     {
       component: CNavItem,
       name: 'Subscription',
       to: '/subscription',
-      icon: <MdOutlineDashboard className="me-3" />,
+      icon: <ShoppingOutlined className="me-3" />,
     },
     {
       component: CNavItem,
       name: 'Contacts',
       to: '/contacts',
-      icon: <MdOutlineDashboard className="me-3" />,
+      icon: <ContactsOutlined className="me-3" />,
     },
     {
       component: CNavItem,
       name: 'Gallery',
       to: '/gallery',
-      icon: <MdOutlineDashboard className="me-3" />,
+      icon: <CameraOutlined className="me-3" />,
     },
     {
       component: CNavItem,
       name: 'Testimonials',
       to: '/testimonials',
-      icon: <MdOutlineDashboard className="me-3" />,
+      icon: <CommentOutlined className="me-3" />,
     },
     {
       component: CNavItem,
       name: 'Bridge House Details',
       to: '/bridgehouse-details',
-      icon: <MdOutlineDashboard className="me-3" />,
+      icon: <BuildOutlined className="me-3" />,
     },
     {
       component: CNavItem,
       name: 'Payment List',
       to: '/payment-history',
-      icon: <MdOutlineDashboard className="me-3" />,
+      icon: <CreditCardOutlined className="me-3" />,
     },
   ]
 
