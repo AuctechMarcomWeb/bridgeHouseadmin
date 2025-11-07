@@ -378,20 +378,26 @@ const BridgeHouseDetailsModal = ({
               mode="multiple"
               allowClear
               size="large"
+              showSearch
+              optionFilterProp="label"
+              filterOption={(input, option) =>
+                (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
+              }
               style={{ width: '100%' }}
               placeholder="Select Properties"
               value={formData.property}
               onChange={(selectedIds) =>
                 setFormData((prev) => ({
                   ...prev,
-                  property: selectedIds, // array of property IDs
+                  property: selectedIds,
                 }))
               }
               options={property?.map((prop) => ({
                 label: prop?.name,
-                value: prop?._id, // ensures only IDs are stored
+                value: prop?._id,
               }))}
             />
+
             {errors.property && <div className="text-danger small">{errors.property}</div>}
           </div>
         </div>
