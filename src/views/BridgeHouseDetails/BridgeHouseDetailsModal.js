@@ -62,7 +62,7 @@ const BridgeHouseDetailsModal = ({
     }
   }, [modalData])
 
-  console.log('property', modalData.property)
+  // console.log('property', modalData.property)
 
   // ✅ Fetch property types
   useEffect(() => {
