@@ -978,12 +978,12 @@ const PropertiesModal = ({
                 >
                   <option value="">Select Facing </option>
                   <option value="North">North</option>
-                  <option value="Northeast">Northeast</option>
                   <option value="East">East</option>
-                  <option value="Southeast">Southeast</option>
                   <option value="South">South</option>
-                  <option value="Southwest">Southwest</option>
                   <option value="West">West</option>
+                  <option value="Northeast">Northeast</option>
+                  <option value="Southeast">Southeast</option>
+                  <option value="Southwest">Southwest</option>
                   <option value="Northwest">Northwest</option>
                 </select>
               </div>
