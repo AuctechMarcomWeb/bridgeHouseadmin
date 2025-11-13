@@ -969,15 +969,23 @@ const PropertiesModal = ({
 
               <div className="col-md-6">
                 <label className="form-label fw-bold">Facing *</label>
-                <input
-                  type="text"
-                  className="form-control"
+                <select
+                  className="form-select"
                   name="facing"
                   data-nested="propertyDetails"
                   value={formData?.propertyDetails?.facing || ''}
                   onChange={handleChange}
-                  placeholder="Enter facing direction"
-                />
+                >
+                  <option value="">Select Facing </option>
+                  <option value="North">North</option>
+                  <option value="Northeast">Northeast</option>
+                  <option value="East">East</option>
+                  <option value="Southeast">Southeast</option>
+                  <option value="South">South</option>
+                  <option value="Southwest">Southwest</option>
+                  <option value="West">West</option>
+                  <option value="Northwest">Northwest</option>
+                </select>
               </div>
 
               {formData?.propertyType !== 'Plot' && (
